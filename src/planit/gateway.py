@@ -2,14 +2,13 @@ import re
 
 class GatewayConfig(object):
     # jar class path entries since the java install might not have them on their class path (even if Python does)
-    JAVA_P4J_JAR_PATH = 'C:\\Users\\garym\\AppData\\Local\\Programs\\Python\\Python38-32\\share\\py4j\\py4j0.10.9.jar'
-    
+    JAVA_P4J_JAR_PATH = 'C:\\Program Files\\Python37\\share\\py4j\\py4j0.10.9.jar'
     # jar for the gateway server wrapper
-    JAVA_PLANIT_WRAPPER_PATH = 'C:\\Users\\garym\\.m2\\repository\\org\\planit\\python\\PLANitJ2Py\\0.0.4-beta\\PLANitJ2Py-0.0.4-beta.jar'
+    JAVA_PLANIT_WRAPPER_PATH = 'C:\\Users\\gman6028\\.m2\\repository\\org\\planit\\python\\PLANitJ2Py\\0.0.4-beta\\PLANitJ2Py-0.0.4-beta.jar'
     # jar for the PLANit code
-    JAVA_PLANIT_JAR_PATH = 'C:\\Users\\garym\\.m2\\repository\\org\\planit\\PlanIt\\0.0.4-SNAPSHOT\\PLANit-0.0.4-SNAPSHOT.jar'
+    JAVA_PLANIT_JAR_PATH = 'C:\\Users\\gman6028\\.m2\\repository\\org\\planit\\PLANit\\0.0.4-SNAPSHOT\\PLANit-0.0.4-SNAPSHOT.jar'
     # jar for the default I/O implementation of the PLANit core used by simple project implementation
-    JAVA_PLANIT_IO_JAR_PATH = 'C:\\Users\\garym\\.m2\\repository\\org\\planit\\io\\PLANitIO\\0.0.4-SNAPSHOT\\PLANitIO-0.0.4-SNAPSHOT.jar'  
+    JAVA_PLANIT_IO_JAR_PATH = 'C:\\Users\\gman6028\\.m2\\repository\\org\\planit\\io\\PLANitIO\\0.0.4-SNAPSHOT\\PLANitIO-0.0.4-SNAPSHOT.jar'
     # the main entry point of the Java gateway implementation for PLANit
     JAVA_GATEWAY_WRAPPER_CLASS =  'org.planit.python.PLANitJ2Py'  
 
