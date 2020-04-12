@@ -12,11 +12,15 @@ from planit.wrappers import PhysicalNetworkWrapper
 from planit.wrappers import DemandsWrapper
 from planit.wrappers import AssignmentWrapper
 from planit.wrappers import ZoningWrapper
-from planit.enums import Network, TrafficAssignment
+from planit.wrappers import PlanItOutputFormatterWrapper
+from planit.wrappers import MemoryOutputFormatterWrapper
+from planit.enums import TrafficAssignment
+from planit.enums import OutputFormatter
+from builtins import isinstance
 
 class PLANit:
             
-    def __init__(self, standalone=True):
+    def __init__(self, project_path, standalone=True):
         """Constructor of PLANit python wrapper which acts as an interface to the underlying PLANit Java code
         :param standalone: when true this PLANit instance bootstraps a java gateway and closes it upon completion of the scripts when false <to be implemented>
         :param project_path: the path location of the XML input file(s) to be used by PLANitIO
@@ -31,8 +35,9 @@ class PLANit:
         
         if not standalone:
             raise Exception('Standalone argument can only be true at this time, server mode not yet supported')  
-
-        
+        self.start_java()
+        self.initialize_project(project_path)
+       
     def start_java(self):            
         """Start the gateway to Java 
         """  
@@ -71,9 +76,23 @@ class PLANit:
         # the one demands is created and populated
         self._demands_instance = DemandsWrapper(self._project_instance.field("demands").getFirstDemands())
         
-    def set(self, traffic_assignment : TrafficAssignment):
-        assignment_counterpart = self._project_instance.create_and_register_traffic_assignment(traffic_assignment.value)
-        self._assignment_instance = AssignmentWrapper(assignment_counterpart)
+    def set(self, assignment_component):
+        if isinstance(assignment_component, TrafficAssignment):
+            assignment_counterpart = self._project_instance.create_and_register_traffic_assignment(assignment_component.value)
+            self._assignment_instance = AssignmentWrapper(assignment_counterpart)
+        elif isinstance(assignment_component, OutputFormatter):
+            if assignment_component == OutputFormatter.PLANIT_IO:
+                xml_output_formatter_counterpart = self._project_instance.create_and_register_output_formatter(assignment_component.value)
+                xml_output_formatter = PlanItOutputFormatterWrapper(xml_output_formatter_counterpart)
+                self._assignment_instance.set(xml_output_formatter)
+            elif assignment_component == OutputFormatter.MEMORY:
+                memory_output_formatter_counterpart =  self._project_instance.create_and_register_output_formatter(assignment_component.value)
+                memory_output_formatter = MemoryOutputFormatterWrapper(memory_output_formatter_counterpart)
+                self._assignment_instance.set(memory_output_formatter)
+
+        
+    def __del__(self):
+        self.stop_java()
         
     def stop_java(self):        
         """the destructor cleans up the gateway in Java in case this has not been done yet. It assumes a single instance available in Python tied
@@ -97,7 +116,7 @@ class PLANit:
                 traceback.print_exc()         
     
     def run(self):  
-        self._project_instance.execute_all_traffic_assignments()                                 
+        self._project_instance.execute_all_traffic_assignments()      
         
     def __getattr__(self, name):
         """ all methods invoked on the PLANit Java gateway wrapper as passed on to it without the user seeing the actual gateway. This is to be

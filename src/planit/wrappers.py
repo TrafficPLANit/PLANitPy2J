@@ -78,13 +78,13 @@ class AssignmentWrapper(BaseWrapper):
         elif isinstance(assignment_component, PlanItOutputFormatterWrapper):
             self.register_output_formatter(assignment_component.java)
             self._xml_output_formatter_instance = assignment_component
-        elif isinstance(assignment_component, MemoryFormatterWrapper):
+        elif isinstance(assignment_component, MemoryOutputFormatterWrapper):
             self.register_output_formatter(assignment_component.java)
             self._memory_output_formatter_instance = assignment_component
         else:
-            raise Exception('Unrecognised component cannot be set on assignment instance')
+            raise Exception('Unrecognized component ' + assignment_component.type + ' cannot be set on assignment instance')
          
-    def activate_output(self, output_type : OutputType):
+    def activate(self, output_type : OutputType):
         """ pass on to Java not as an Enum as Py4J does not seem to properly handle this at this stage
             instead we pass on the enum string which on the Java side is converted into the proper enum instead
             
@@ -96,8 +96,19 @@ class AssignmentWrapper(BaseWrapper):
             self._link_output_type_configuration = LinkOutputTypeConfigurationWrapper(self._java_counterpart.activateOutput(output_type_instance))
         elif output_type.value == "OD":
             self._origin_destination_output_type_configuration = OriginDestinationOutputTypeConfigurationWrapper(self._java_counterpart.activateOutput(output_type_instance))
-        else:
+        elif output_type.value == 'PATH':
             self._path_output_type_configuration = PathOutputTypeConfigurationWrapper(self._java_counterpart.activateOutput(output_type_instance))
+        else:
+            raise ValueError("Attempted to activate unknown output type " + output_type.value)
+
+    def set_xml_name_root(self, description):
+        self._xml_output_formatter_instance.set_xml_name_root(description)
+        
+    def set_csv_name_root(self, description):
+        self._xml_output_formatter_instance.set_csv_name_root(description)
+
+    def set_output_directory(self, project_path):
+        self._xml_output_formatter_instance.set_output_directory(project_path)
         
     @property
     def output_configuration(self):
@@ -174,7 +185,7 @@ class PlanItOutputFormatterWrapper(OutputFormatterWrapper):
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
         
-class MemoryFormatterWrapper(OutputFormatterWrapper):
+class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
     """ Wrapper around the Java PlanItOutputFormatter class instance
     """
     
@@ -188,11 +199,11 @@ class OutputTypeConfigurationWrapper(BaseWrapper):
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
         
-    def add_property(self, output_property : OutputProperty):
+    def add(self, output_property : OutputProperty):
         output_property_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_property.java_class_name(), output_property.value)
         self._java_counterpart.addProperty(output_property_instance)
         
-    def remove_property(self, output_property : OutputProperty):
+    def remove(self, output_property : OutputProperty):
         output_property_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_property.java_class_name(), output_property.value)
         return self._java_counterpart.removeProperty(output_property_instance)
         
