@@ -224,11 +224,11 @@ class OriginDestinationOutputTypeConfigurationWrapper(OutputTypeConfigurationWra
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
 
-    def activate_od_skim_output_type(self, od_skim_sub_output_type):
+    def activate(self, od_skim_sub_output_type):
         od_skim_sub_output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(od_skim_sub_output_type.java_class_name(), od_skim_sub_output_type.value)
         self._java_counterpart.activateOdSkimOutputType(od_skim_sub_output_type_instance)
  
-    def deactivate_od_skim_output_type(self, od_skim_sub_output_type):
+    def deactivate(self, od_skim_sub_output_type):
         od_skim_sub_output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(od_skim_sub_output_type.java_class_name(), od_skim_sub_output_type.value)
         self._java_counterpart.deactivateOdSkimOutputType(od_skim_sub_output_type_instance)
         

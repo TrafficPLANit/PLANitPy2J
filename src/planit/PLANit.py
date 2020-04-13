@@ -14,6 +14,8 @@ from planit.wrappers import AssignmentWrapper
 from planit.wrappers import ZoningWrapper
 from planit.wrappers import PlanItOutputFormatterWrapper
 from planit.wrappers import MemoryOutputFormatterWrapper
+from planit.wrappers import TimePeriodWrapper
+from planit.wrappers import InitialCostWrapper
 from planit.enums import TrafficAssignment
 from planit.enums import OutputFormatter
 from builtins import isinstance
@@ -67,6 +69,7 @@ class PLANit:
     
     def initialize_project(self, project_path):
         self._project_instance = BaseWrapper(GatewayState.python_2_java_gateway.entry_point.initialiseSimpleProject2(project_path))
+
         # The one macroscopic network, zoning, demand is created and populated and wrapped in a Python object
         # (Note1: to access public members in Java, we must collect it via the field method in the wrapper)
         # (Note2: since we only have a single network, demand, zoning, we do not have a wrapper for the fields, so we must access the methods directly
@@ -114,7 +117,29 @@ class PLANit:
                 print ("Terminated PLANitJava interface")   
             except:
                 traceback.print_exc()         
-    
+  
+    def dictionary_register_initial_costs(self, initial_link_segment_locations_per_time_period):
+        for time_period_id in initial_link_segment_locations_per_time_period.keys():
+            initial_costs_file_location = initial_link_segment_locations_per_time_period[time_period_id]
+            initial_cost_counterpart = self._project_instance.create_and_register_initial_link_segment_cost(self._network_instance.java, initial_costs_file_location)
+            initial_cost_wrapper = InitialCostWrapper(initial_cost_counterpart)
+            time_period_counterpart = self._demands_instance.get_time_period_by_id(time_period_id)
+            time_period_wrapper = TimePeriodWrapper(time_period_counterpart)
+            self._assignment_instance.register_initial_link_segment_cost(time_period_wrapper.java, initial_cost_wrapper.java)
+  
+    def default_register_initial_costs(self, initial_costs_file_location1, initial_costs_file_location2, init_costs_file_pos):
+        if initial_costs_file_location1 != None:
+            initial_cost_counterpart = None
+            if initial_costs_file_location2 != None:
+                if init_costs_file_pos == 0:
+                    initial_cost_counterpart = self._project_instance.create_and_register_initial_link_segment_cost(self._network_instance.java, initial_costs_file_location1)
+                else:
+                    initial_cost_counterpart = self._project_instance.create_and_register_initial_link_segment_cost(self._network_instance.java, initial_costs_file_location2)
+            else:
+                initial_cost_counterpart = self._project_instance.create_and_register_initial_link_segment_cost(self._network_instance.java, initial_costs_file_location1)
+            initial_cost_wrapper = InitialCostWrapper(initial_cost_counterpart)
+            self._assignment_instance.register_initial_link_segment_cost(initial_cost_wrapper.java)
+   
     def run(self):  
         self._project_instance.execute_all_traffic_assignments()      
         

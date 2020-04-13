@@ -9,40 +9,11 @@ from planit.enums import OutputProperty
 from planit.enums import RouteIdType
 from planit.enums import OutputFormatter
 from planit.enums import ODSkimSubOutputType
-from planit.wrappers import TimePeriodWrapper
-from planit.wrappers import InitialCostWrapper
 from planit.PLANit import PLANit
 from builtins import staticmethod
 
 class Helper:
     
-    @staticmethod
-    def default_register_initial_costs(initial_costs_file_location1, 
-                                       initial_costs_file_location2, 
-                                       init_costs_file_pos,
-                                       plan_it):
-        if initial_costs_file_location1 != None:
-            initial_cost_counterpart = None
-            if initial_costs_file_location2 != None:
-                if init_costs_file_pos == 0:
-                    initial_cost_counterpart = plan_it.project.create_and_register_initial_link_segment_cost(plan_it.network.java, initial_costs_file_location1)
-                else:
-                    initial_cost_counterpart = plan_it.project.create_and_register_initial_link_segment_cost(plan_it.network.java, initial_costs_file_location2)
-            else:
-                initial_cost_counterpart = plan_it.project.create_and_register_initial_link_segment_cost(plan_it.network.java, initial_costs_file_location1)
-            initial_cost_wrapper = InitialCostWrapper(initial_cost_counterpart)
-            plan_it.assignment.register_initial_link_segment_cost(initial_cost_wrapper.java)
-
-    @staticmethod
-    def dictionary_register_initial_costs(initial_link_segment_locations_per_time_period, plan_it):
-        for time_period_id in initial_link_segment_locations_per_time_period.keys():
-            initial_costs_file_location = initial_link_segment_locations_per_time_period[time_period_id]
-            initial_cost_counterpart = plan_it.project.create_and_register_initial_link_segment_cost(plan_it.network.java, initial_costs_file_location)
-            initial_cost_wrapper = InitialCostWrapper(initial_cost_counterpart)
-            time_period_counterpart = plan_it.demands.get_time_period_by_id(time_period_id)
-            time_period_wrapper = TimePeriodWrapper(time_period_counterpart)
-            plan_it.assignment.register_initial_link_segment_cost(time_period_wrapper.java, initial_cost_wrapper.java)
-
     @staticmethod
     def run_test(
                  project_path, 
@@ -78,7 +49,7 @@ class Helper:
             plan_it.assignment.link_output_type_configuration.remove(OutputProperty.UPSTREAM_NODE_EXTERNAL_ID)
 
         plan_it.assignment.activate(OutputType.OD)
-        plan_it.assignment.origin_destination_output_type_configuration.deactivate_od_skim_output_type(ODSkimSubOutputType.NONE)
+        plan_it.assignment.origin_destination_output_type_configuration.deactivate(ODSkimSubOutputType.NONE)
         plan_it.assignment.origin_destination_output_type_configuration.remove(OutputProperty.TIME_PERIOD_EXTERNAL_ID)
         plan_it.assignment.origin_destination_output_type_configuration.remove(OutputProperty.RUN_ID)
         plan_it.assignment.activate(OutputType.PATH)
@@ -95,9 +66,9 @@ class Helper:
         plan_it.assignment.set_output_directory(project_path)
 
         if register_initial_costs_option == 1:
-            Helper.default_register_initial_costs(initial_costs_file_location1, initial_costs_file_location2, init_costs_file_pos, plan_it)
+            plan_it.default_register_initial_costs(initial_costs_file_location1, initial_costs_file_location2, init_costs_file_pos)
         elif register_initial_costs_option == 2:
-            Helper.dictionary_register_initial_costs(initial_link_segment_locations_per_time_period, plan_it)
+            plan_it.dictionary_register_initial_costs(initial_link_segment_locations_per_time_period)
         
         plan_it.run()
     
