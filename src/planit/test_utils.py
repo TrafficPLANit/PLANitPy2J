@@ -15,19 +15,12 @@ from builtins import staticmethod
 class Helper:
     
     @staticmethod
-    def run_test(
-                 project_path, 
-                 max_iterations, 
-                 epsilon, 
-                 description, 
-                 output_type_configuration_option, 
-                 initial_costs_file_location1, 
-                 initial_costs_file_location2, 
-                 init_costs_file_pos,
-                 initial_link_segment_locations_per_time_period,
-                 register_initial_costs_option):
+    def run_test(max_iterations, epsilon, description, output_type_configuration_option, initial_costs_file_location1, initial_costs_file_location2, init_costs_file_pos,  initial_link_segment_locations_per_time_period, register_initial_costs_option, project_path=None):
         
-        plan_it = PLANit(project_path)
+        if project_path == None:
+            plan_it = PLANit()
+        else:
+            plan_it = PLANit(project_path)
         plan_it.set(TrafficAssignment.TRADITIONAL_STATIC)
         
         plan_it.assignment.set(PhysicalCost.BPR)
@@ -73,7 +66,9 @@ class Helper:
         plan_it.run()
     
     @staticmethod
-    def delete_file(output_type : OutputType, project_path, description, file_name):
+    def delete_file(output_type : OutputType, description, file_name, project_path=None):
+        if project_path == None:
+            project_path = os.getcwd()
         full_file_name = Helper.create_full_file_name(output_type, project_path, description, file_name)
         os.remove(full_file_name)
         
@@ -120,7 +115,9 @@ class Helper:
         return df1.equals(df2)
     
     @staticmethod
-    def compare_csv_files_and_clean_up(output_type : OutputType, project_path, description, file_name):
+    def compare_csv_files_and_clean_up(output_type : OutputType, description, file_name, project_path=None):
+        if project_path == None:
+            project_path = os.getcwd()
         full_file_name = Helper.create_full_file_name(output_type, project_path, description, file_name)
         short_file_name = Helper.create_short_file_name(output_type, project_path, file_name)
         comparison_result = Helper.compare_csv_files(short_file_name, full_file_name)

@@ -22,7 +22,7 @@ from builtins import isinstance
 
 class PLANit:
             
-    def __init__(self, project_path, standalone=True):
+    def __init__(self, project_path=None, standalone=True):
         """Constructor of PLANit python wrapper which acts as an interface to the underlying PLANit Java code
         :param standalone: when true this PLANit instance bootstraps a java gateway and closes it upon completion of the scripts when false <to be implemented>
         :param project_path: the path location of the XML input file(s) to be used by PLANitIO
@@ -37,10 +37,10 @@ class PLANit:
         
         if not standalone:
             raise Exception('Standalone argument can only be true at this time, server mode not yet supported')  
-        self.start_java()
-        self.initialize_project(project_path)
+        self.__start_java__()
+        self.__initialize_project__(project_path)
        
-    def start_java(self):            
+    def __start_java__(self):            
         """Start the gateway to Java 
         """  
         
@@ -67,8 +67,10 @@ class PLANit:
         else:
             raise Exception('PLANit java interface already running, only a single instance allowed at this point')
     
-    def initialize_project(self, project_path):
-        self._project_instance = BaseWrapper(GatewayState.python_2_java_gateway.entry_point.initialiseSimpleProject2(project_path))
+    def __initialize_project__(self, project_path):
+        if project_path == None:
+            project_path = os.getcwd()
+        self._project_instance = BaseWrapper(GatewayState.python_2_java_gateway.entry_point.initialiseSimpleProject(project_path))
 
         # The one macroscopic network, zoning, demand is created and populated and wrapped in a Python object
         # (Note1: to access public members in Java, we must collect it via the field method in the wrapper)
@@ -95,9 +97,9 @@ class PLANit:
 
         
     def __del__(self):
-        self.stop_java()
+        self.__stop_java__()
         
-    def stop_java(self):        
+    def __stop_java__(self):        
         """the destructor cleans up the gateway in Java in case this has not been done yet. It assumes a single instance available in Python tied
         to a particular self. Only that instance is allowed to terminate the gateway.
         """          

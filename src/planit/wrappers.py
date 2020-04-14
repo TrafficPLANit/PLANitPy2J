@@ -1,3 +1,4 @@
+import os
 from py4j.java_gateway import get_field
 
 from planit.gateway import GatewayUtils
@@ -107,7 +108,9 @@ class AssignmentWrapper(BaseWrapper):
     def set_csv_name_root(self, description):
         self._xml_output_formatter_instance.set_csv_name_root(description)
 
-    def set_output_directory(self, project_path):
+    def set_output_directory(self, project_path=None):
+        if project_path == None:
+            project_path = os.getcwd()
         self._xml_output_formatter_instance.set_output_directory(project_path)
         
     @property

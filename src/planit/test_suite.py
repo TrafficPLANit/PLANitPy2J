@@ -1,7 +1,7 @@
+import gc
 from unittest import TestCase
 from planit.test_utils import Helper
 from planit.enums import OutputType
-import gc
 
 class TestSuite(TestCase):
     
@@ -24,25 +24,25 @@ class TestSuite(TestCase):
         initial_link_segment_locations_per_time_period[1] = "C:\\springsource\\PLANitPy2J\\testcases\\route_choice\\xml\\test2initialCostsOneIterationThreeTimePeriods\\initial_link_segment_costs_time_period_2.csv"
         initial_link_segment_locations_per_time_period[2] = "C:\\springsource\\PLANitPy2J\\testcases\\route_choice\\xml\\test2initialCostsOneIterationThreeTimePeriods\\initial_link_segment_costs_time_period_3.csv"
         epsilon = 0.001
-        Helper.run_test(project_path, max_iterations, epsilon, description, 1, None, None, 0, initial_link_segment_locations_per_time_period, 2)
-        Helper.delete_file(OutputType.LINK, project_path, description, xml_file_name1)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, project_path, description, csv_file_name1))
-        Helper.delete_file(OutputType.LINK, project_path, description, xml_file_name2)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, project_path, description, csv_file_name2))
-        Helper.delete_file(OutputType.LINK, project_path, description, xml_file_name3)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, project_path, description, csv_file_name3))
-        Helper.delete_file(OutputType.PATH, project_path, description, xml_file_name1)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, project_path, description, csv_file_name1))
-        Helper.delete_file(OutputType.PATH, project_path, description, xml_file_name2)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, project_path, description, csv_file_name2))
-        Helper.delete_file(OutputType.PATH, project_path, description, xml_file_name3)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, project_path, description, csv_file_name3))
-        Helper.delete_file(OutputType.OD, project_path, description, xml_file_name1)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, project_path, description, od_csv_file_name1))
-        Helper.delete_file(OutputType.OD, project_path, description, xml_file_name2)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, project_path, description, od_csv_file_name2))
-        Helper.delete_file(OutputType.OD, project_path, description, xml_file_name3)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, project_path, description, od_csv_file_name3))
+        Helper.run_test(max_iterations, epsilon, description, 1, None, None, 0, initial_link_segment_locations_per_time_period, 2, project_path)
+        Helper.delete_file(OutputType.LINK, description, xml_file_name1, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name1, project_path))
+        Helper.delete_file(OutputType.LINK, description, xml_file_name2, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name2, project_path))
+        Helper.delete_file(OutputType.LINK, description, xml_file_name3, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name3, project_path))
+        Helper.delete_file(OutputType.PATH, description, xml_file_name1, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name1, project_path))
+        Helper.delete_file(OutputType.PATH, description, xml_file_name2, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name2, project_path))
+        Helper.delete_file(OutputType.PATH, description, xml_file_name3, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name3, project_path))
+        Helper.delete_file(OutputType.OD, description, xml_file_name1, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name1, project_path))
+        Helper.delete_file(OutputType.OD, description, xml_file_name2, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name2, project_path))
+        Helper.delete_file(OutputType.OD, description, xml_file_name3, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name3, project_path))
         gc.collect()
 
     def test_basic_shortest_path_algorithm_a_to_c(self):
@@ -54,13 +54,13 @@ class TestSuite(TestCase):
         xml_file_name = "Time Period 1.xml";
         max_iterations = 500
         epsilon = 0.001
-        Helper.run_test(project_path, max_iterations, epsilon, description, 1, None, None, 0, None, 1)
-        Helper.delete_file(OutputType.LINK, project_path, description, xml_file_name)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, project_path, description, csv_file_name))
-        Helper.delete_file(OutputType.PATH, project_path, description, xml_file_name)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, project_path, description, csv_file_name))
-        Helper.delete_file(OutputType.OD, project_path, description, xml_file_name)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, project_path, description, od_csv_file_name))
+        Helper.run_test(max_iterations, epsilon, description, 1, None, None, 0, None, 1, project_path)
+        Helper.delete_file(OutputType.LINK, description, xml_file_name, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name, project_path))
+        Helper.delete_file(OutputType.PATH, description, xml_file_name, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name, project_path))
+        Helper.delete_file(OutputType.OD, description, xml_file_name, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name, project_path))
         gc.collect()
         
     def test_basic_shortest_path_algorithm_a_to_d(self):
@@ -72,13 +72,30 @@ class TestSuite(TestCase):
         xml_file_name = "Time Period 1.xml";
         max_iterations = 500
         epsilon = 0.001
-        Helper.run_test(project_path, max_iterations, epsilon, description, 1, None, None, 0, None, 1)
-        Helper.delete_file(OutputType.LINK, project_path, description, xml_file_name)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, project_path, description, csv_file_name))
-        Helper.delete_file(OutputType.PATH, project_path, description, xml_file_name)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, project_path, description, csv_file_name))
-        Helper.delete_file(OutputType.OD, project_path, description, xml_file_name)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, project_path, description, od_csv_file_name))
+        Helper.run_test(max_iterations, epsilon, description, 1, None, None, 0, None, 1, project_path)
+        Helper.delete_file(OutputType.LINK, description, xml_file_name, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name, project_path))
+        Helper.delete_file(OutputType.PATH, description, xml_file_name, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name, project_path))
+        Helper.delete_file(OutputType.OD, description, xml_file_name, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name, project_path))
+        gc.collect()
+    
+    def test_explanatory(self):
+        print("Running test_explanatory")
+        description = "explanatory";
+        csv_file_name = "Time Period 1_2.csv";
+        od_csv_file_name = "Time Period 1_1.csv";
+        xml_file_name = "Time Period 1.xml";
+        max_iterations = 500
+        epsilon = 0.001
+        Helper.run_test(max_iterations, epsilon, description, 1, None, None, 0, None, 1)
+        Helper.delete_file(OutputType.LINK, description, xml_file_name)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name))
+        Helper.delete_file(OutputType.PATH, description, xml_file_name)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name))
+        Helper.delete_file(OutputType.OD, description, xml_file_name)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name))
         gc.collect()
     
     def test_basic_three_time_periods(self):
@@ -96,25 +113,25 @@ class TestSuite(TestCase):
         xml_file_name3 = "Time Period 3.xml"
         max_iterations = 500
         epsilon = 0.001
-        Helper.run_test(project_path, max_iterations, epsilon, description, 1, None, None, 0, None, 1)
-        Helper.delete_file(OutputType.LINK, project_path, description, xml_file_name1)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, project_path, description, csv_file_name1))
-        Helper.delete_file(OutputType.LINK, project_path, description, xml_file_name2)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, project_path, description, csv_file_name2))
-        Helper.delete_file(OutputType.LINK, project_path, description, xml_file_name3)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, project_path, description, csv_file_name3))
-        Helper.delete_file(OutputType.PATH, project_path, description, xml_file_name1)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, project_path, description, csv_file_name1))
-        Helper.delete_file(OutputType.PATH, project_path, description, xml_file_name2)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, project_path, description, csv_file_name2))
-        Helper.delete_file(OutputType.PATH, project_path, description, xml_file_name3)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, project_path, description, csv_file_name3))
-        Helper.delete_file(OutputType.OD, project_path, description, xml_file_name1)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, project_path, description, od_csv_file_name1))
-        Helper.delete_file(OutputType.OD, project_path, description, xml_file_name2)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, project_path, description, od_csv_file_name2))
-        Helper.delete_file(OutputType.OD, project_path, description, xml_file_name3)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, project_path, description, od_csv_file_name3))
+        Helper.run_test(max_iterations, epsilon, description, 1, None, None, 0, None, 1, project_path)
+        Helper.delete_file(OutputType.LINK, description, xml_file_name1, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name1, project_path))
+        Helper.delete_file(OutputType.LINK, description, xml_file_name2, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name2, project_path))
+        Helper.delete_file(OutputType.LINK, description, xml_file_name3, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name3, project_path))
+        Helper.delete_file(OutputType.PATH, description, xml_file_name1, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name1, project_path))
+        Helper.delete_file(OutputType.PATH, description, xml_file_name2, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name2, project_path))
+        Helper.delete_file(OutputType.PATH, description, xml_file_name3, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name3, project_path))
+        Helper.delete_file(OutputType.OD, description, xml_file_name1, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name1, project_path))
+        Helper.delete_file(OutputType.OD, description, xml_file_name2, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name2, project_path))
+        Helper.delete_file(OutputType.OD, description, xml_file_name3, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name3, project_path))
         gc.collect()
         
     def test_route_choice_compare_with_OmniTRANS4_using_two_time_periods(self):
@@ -129,18 +146,18 @@ class TestSuite(TestCase):
         xml_file_name2 = "Time Period 2.xml"
         max_iterations = 500
         epsilon = 0.0
-        Helper.run_test(project_path, max_iterations, epsilon, description, 1, None, None, 0, None, 1)
-        Helper.delete_file(OutputType.LINK, project_path, description, xml_file_name1)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, project_path, description, csv_file_name1))
-        Helper.delete_file(OutputType.LINK, project_path, description, xml_file_name2)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, project_path, description, csv_file_name2))
-        Helper.delete_file(OutputType.PATH, project_path, description, xml_file_name1)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, project_path, description, csv_file_name1))
-        Helper.delete_file(OutputType.PATH, project_path, description, xml_file_name2)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, project_path, description, csv_file_name2))
-        Helper.delete_file(OutputType.OD, project_path, description, xml_file_name1)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, project_path, description, od_csv_file_name1))
-        Helper.delete_file(OutputType.OD, project_path, description, xml_file_name2)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, project_path, description, od_csv_file_name2))
+        Helper.run_test(max_iterations, epsilon, description, 1, None, None, 0, None, 1, project_path)
+        Helper.delete_file(OutputType.LINK, description, xml_file_name1, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name1, project_path))
+        Helper.delete_file(OutputType.LINK, description, xml_file_name2, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name2, project_path))
+        Helper.delete_file(OutputType.PATH, description, xml_file_name1, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name1, project_path))
+        Helper.delete_file(OutputType.PATH, description, xml_file_name2, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name2, project_path))
+        Helper.delete_file(OutputType.OD, description, xml_file_name1, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name1, project_path))
+        Helper.delete_file(OutputType.OD, description, xml_file_name2, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name2, project_path))
         gc.collect()
     
