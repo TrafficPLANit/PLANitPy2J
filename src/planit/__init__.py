@@ -1,3 +1,5 @@
+"""Package initialization file for the planit package
+"""
 from .enums import Network
 from .enums import OutputFormatter
 from .enums import OutputProperty
