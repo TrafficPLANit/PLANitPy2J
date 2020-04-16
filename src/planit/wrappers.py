@@ -1,6 +1,5 @@
 import os
 from py4j.java_gateway import get_field
-
 from planit.gateway import GatewayUtils
 from planit.gateway import GatewayState
 from planit.enums import OutputType
@@ -17,6 +16,9 @@ class BaseWrapper(object):
     """
 
     def __init__(self, java_counterpart):
+        """Top-level constructor which defines the Java counterpart to each wrapper
+            :param   the Java counterpart to the current object
+        """
         self._java_counterpart = java_counterpart
 
     def __getattr__(self, name):
@@ -102,42 +104,65 @@ class AssignmentWrapper(BaseWrapper):
             raise ValueError("Attempted to activate unknown output type " + output_type.value)
 
     def set_xml_name_root(self, description):
+        """Set the root name of XML input files
+        :param description root name of XML input files
+        """
         self._xml_output_formatter_instance.set_xml_name_root(description)
         
     def set_csv_name_root(self, description):
+        """Set the root name of CSV output files
+        :param description root name of CSV output files
+        """
         self._xml_output_formatter_instance.set_csv_name_root(description)
 
     def set_output_directory(self, project_path=None):
+        """Set the directory for CSV output files
+        :param project_path directory of CSV output files (if omitted, defaults to current run directory)
+        """
         if project_path == None:
             project_path = os.getcwd()
         self._xml_output_formatter_instance.set_output_directory(project_path)
         
     @property
     def output_configuration(self):
+        """Access to current output configuration
+        """
         return self._output_configuration
     
     @property
     def gap_function(self):
+        """Access to current gap function
+        """
         return self._gap_function
     
     @property
     def link_output_type_configuration(self):
+        """Access to current link output type configuration
+        """
         return self._link_output_type_configuration
     
     @property
     def origin_destination_output_type_configuration(self):
+        """Access to current origin-destination output type configuration
+        """
         return self._origin_destination_output_type_configuration
     
     @property
     def path_output_type_configuration(self):
+        """Access to current path output type configuration
+        """
         return self._path_output_type_configuration
            
     @property
     def xml_output_formatter(self):  
+        """Access to current XML output formatter
+        """
         return self._xml_output_formatter_instance
      
     @property
     def memory_output_formatter(self):  
+        """Access to current memory output formatter
+        """
         return self._memory_output_formatter_instance
     
 class DemandsWrapper(BaseWrapper):
@@ -202,10 +227,14 @@ class OutputTypeConfigurationWrapper(BaseWrapper):
         super().__init__(java_counterpart)
         
     def add(self, output_property : OutputProperty):
+        """Add an output type property to the current output type configuration
+        """
         output_property_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_property.java_class_name(), output_property.value)
         self._java_counterpart.addProperty(output_property_instance)
         
     def remove(self, output_property : OutputProperty):
+        """Remove an output type property from the current output type configuration
+        """
         output_property_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_property.java_class_name(), output_property.value)
         return self._java_counterpart.removeProperty(output_property_instance)
         
@@ -227,10 +256,14 @@ class OriginDestinationOutputTypeConfigurationWrapper(OutputTypeConfigurationWra
         super().__init__(java_counterpart)
 
     def activate(self, od_skim_sub_output_type):
+        """Activate an OD skim output type
+        """
         od_skim_sub_output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(od_skim_sub_output_type.java_class_name(), od_skim_sub_output_type.value)
         self._java_counterpart.activateOdSkimOutputType(od_skim_sub_output_type_instance)
  
     def deactivate(self, od_skim_sub_output_type):
+        """Deactivate an OD skim output type
+        """
         od_skim_sub_output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(od_skim_sub_output_type.java_class_name(), od_skim_sub_output_type.value)
         self._java_counterpart.deactivateOdSkimOutputType(od_skim_sub_output_type_instance)
         

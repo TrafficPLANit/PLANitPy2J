@@ -16,6 +16,18 @@ class Helper:
     
     @staticmethod
     def run_test(max_iterations, epsilon, description, output_type_configuration_option, initial_costs_file_location1, initial_costs_file_location2, init_costs_file_pos,  initial_link_segment_locations_per_time_period, register_initial_costs_option, project_path=None):
+        """Top-level method which runs unit tests
+        :param max_iterations the maximum number of iterations for the current unit test
+        :param epsilon the convergence epsilon for the current unit test
+        :param description the name to be used to identify input and output files
+        :param output_type_configuration_option used to specify which properties to remove from link output type configuration
+        :param initial_costs_file_location1 location of first initial costs file, if used (None if not required)
+        :param initial_costs_file_location2 location of second initial costs file, if used (None if not required)
+        :param init_costs_file_pos position of which initial costs file is being used, if required
+        :param initial_link_segment_locations_per_time_period dictionary of initial link cost files per time period, if required
+        :param register_initial_costs_option used to specify which method of the selecting initial cost (default or dictionary) is being used
+        :param project_path directory of XML input file (if omitted, defaults to None which will make methods use the current directory)
+        """
         
         if project_path == None:
             plan_it = PLANit()
@@ -28,15 +40,13 @@ class Helper:
         plan_it.assignment.set(Smoothing.MSA)
         plan_it.assignment.output_configuration.set_persist_only_final_Iteration(True)
         plan_it.assignment.activate_output(OutputType.LINK)
+        plan_it.assignment.link_output_type_configuration.remove(OutputProperty.TIME_PERIOD_EXTERNAL_ID)
+        plan_it.assignment.link_output_type_configuration.remove(OutputProperty.TIME_PERIOD_ID)
 
         if output_type_configuration_option == 1:
-            plan_it.assignment.link_output_type_configuration.remove(OutputProperty.TIME_PERIOD_EXTERNAL_ID)
-            plan_it.assignment.link_output_type_configuration.remove(OutputProperty.TIME_PERIOD_ID)
             plan_it.assignment.link_output_type_configuration.remove(OutputProperty.MAXIMUM_SPEED)
             plan_it.assignment.link_output_type_configuration.remove(OutputProperty.TOTAL_COST_TO_END_NODE)
         elif output_type_configuration_option == 2:
-            plan_it.assignment.link_output_type_configuration.remove(OutputProperty.TIME_PERIOD_EXTERNAL_ID)
-            plan_it.assignment.link_output_type_configuration.remove(OutputProperty.TIME_PERIOD_ID)
             plan_it.assignment.link_output_type_configuration.remove(OutputProperty.TOTAL_COST_TO_END_NODE)
             plan_it.assignment.link_output_type_configuration.remove(OutputProperty.DOWNSTREAM_NODE_EXTERNAL_ID)
             plan_it.assignment.link_output_type_configuration.remove(OutputProperty.UPSTREAM_NODE_EXTERNAL_ID)
@@ -67,6 +77,11 @@ class Helper:
     
     @staticmethod
     def delete_file(output_type : OutputType, description, file_name, project_path=None):
+        """Delete an output file
+        :param output_type type of the output file (link, origin-destination or path)
+        :param description root name of the output file
+        :param project_path directory of the output file
+        """
         if project_path == None:
             project_path = os.getcwd()
         full_file_name = Helper.create_full_file_name(output_type, project_path, description, file_name)
@@ -74,6 +89,13 @@ class Helper:
         
     @staticmethod
     def create_full_file_name(output_type : OutputType, project_path, description, file_name):
+        """Create the long name of the output file (containing results created by the current test run)
+        :param output_type type of the output file (link, origin-destination or path)
+        :param description root name of the output file
+        :param project_path directory of the output file
+        :param file_name name of the file of standard results
+        :return the name of the file containing the test results
+        """
         type_name = None
         if output_type.value == "LINK":
             type_name = 'Link'
@@ -94,6 +116,12 @@ class Helper:
     
     @staticmethod
     def create_short_file_name(output_type : OutputType, project_path, file_name):
+        """Create the short name of the output file (containing standard results)
+        :param output_type type of the output file (link, origin-destination or path)
+        :param project_path directory of the output file
+        :param file_name name of the file of standard results
+        :return the name of the file containing the standard results
+        """
         if output_type.value == "LINK":
             type_name = 'Link'
         elif output_type.value == "OD":
@@ -110,12 +138,24 @@ class Helper:
     
     @staticmethod
     def compare_csv_files(csv_file_location1, csv_file_location2):
+        """Compare the contents of two CSV files, returning true if they are equal, false otherwise
+        :param csv_file_location1 first CSV file to be compared
+        :param csv_file_location2 second CSV file to be compared
+        :return true if the files have equal contents, false otherwise
+        """
         df1 = pd.read_csv(csv_file_location1)
         df2 = pd.read_csv(csv_file_location2)
         return df1.equals(df2)
     
     @staticmethod
     def compare_csv_files_and_clean_up(output_type : OutputType, description, file_name, project_path=None):
+        """Compare the file of test results with the file of standard results, and delete the test results file if they are equal
+        :param output_type type of the output file (link, origin-destination or path)
+        :param description root name of the output file
+        :param project_path directory of the output file
+        :param file_name name of the file of standard results
+        :return true if the files have equal contents and the results file has been deleted, false otherwise
+        """
         if project_path == None:
             project_path = os.getcwd()
         full_file_name = Helper.create_full_file_name(output_type, project_path, description, file_name)

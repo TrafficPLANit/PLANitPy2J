@@ -12,6 +12,8 @@ from planit import OutputType
 class TestSuite(unittest.TestCase):
     
     def test_route_choice_2_initial_costs_one_iteration_three_time_periods(self):
+        """Unit test for route 2 with three time periods (corresponds to testRouteChoice2InitialCostsOneIterationThreeTimePeriods() in Java)
+        """
         print("Running test_route_choice_2_initial_costs_one_iteration_three_time_periods")
         project_path = test_data_path + "route_choice\\xml\\test2initialCostsOneIterationThreeTimePeriods"
         description = "test2initialCostsOneIterationThreeTimePeriods"
@@ -52,6 +54,8 @@ class TestSuite(unittest.TestCase):
         gc.collect()
 
     def test_basic_shortest_path_algorithm_a_to_c(self):
+        """ Unit test 2 using basic network (corresponds to testBasicShortestPathAlgorithmAtoC() in Java)
+        """
         print("Running test_basic_shortest_path_algorithm_a_to_c")
         project_path = test_data_path + "basic\\xml\\test2";
         description = "testBasic2";
@@ -70,6 +74,8 @@ class TestSuite(unittest.TestCase):
         gc.collect()
         
     def test_basic_shortest_path_algorithm_a_to_d(self):
+        """Unit test 3 using basic network (corresponds to testBasicShortestPathAlgorithmAtoD() in Java)
+        """
         print("Running test_basic_shortes_path_algorithm_a_to_d")
         project_path = test_data_path + "basic\\xml\\test3";
         description = "testBasic3";
@@ -88,6 +94,8 @@ class TestSuite(unittest.TestCase):
         gc.collect()
     
     def test_explanatory(self):
+        """Explanatory unit test, which uses the default project path rather than specifying its own (corresponds to testExplanatory() in Java)
+        """
         print("Running test_explanatory")
         description = "explanatory";
         csv_file_name = "Time Period 1_2.csv";
@@ -105,6 +113,8 @@ class TestSuite(unittest.TestCase):
         gc.collect()
     
     def test_basic_three_time_periods(self):
+        """Unit test 1 using basic network three time periods (corresponds to testBasicThreeTimePeriods() in Java)
+        """
         print("Running test_basic_three_time_periods")
         project_path = test_data_path + "basic\\xml\\test13"
         description = "testBasic13"
@@ -141,6 +151,8 @@ class TestSuite(unittest.TestCase):
         gc.collect()
         
     def test_route_choice_compare_with_OmniTRANS4_using_two_time_periods(self):
+        """Unit test using route choice network 4 and two time periods (corresponds to testRouteChoiceCompareWithOmniTRANS4UsingTwoTimePeriods() in Java)
+        """
         print("Running test_route_choice_compare_with_OmniTRANS4_using_two_time_periods")
         project_path = test_data_path + "route_choice\\xml\\test42"
         description = "testRouteChoice42"

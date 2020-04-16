@@ -1,9 +1,7 @@
 import os
 import subprocess
 import traceback
-
 from py4j.java_gateway import JavaGateway
-
 from planit.wrappers import BaseWrapper 
 from planit.gateway import GatewayUtils
 from planit.gateway import GatewayState
@@ -18,30 +16,14 @@ from planit.wrappers import TimePeriodWrapper
 from planit.wrappers import InitialCostWrapper
 from planit.enums import TrafficAssignment
 from planit.enums import OutputFormatter
-#===============================================================================
-# from planit import BaseWrapper 
-# from planit import GatewayUtils
-# from planit import GatewayState
-# from planit import GatewayConfig
-# from planit import PhysicalNetworkWrapper 
-# from planit import DemandsWrapper
-# from planit import AssignmentWrapper
-# from planit import ZoningWrapper
-# from planit import PlanItOutputFormatterWrapper
-# from planit import MemoryOutputFormatterWrapper
-# from planit import TimePeriodWrapper
-# from planit import InitialCostWrapper
-# from planit import TrafficAssignment
-# from planit import OutputFormatter
-#===============================================================================
 from builtins import isinstance
 
 class PLANit:
             
     def __init__(self, project_path=None, standalone=True):
         """Constructor of PLANit python wrapper which acts as an interface to the underlying PLANit Java code
-        :param standalone: when true this PLANit instance bootstraps a java gateway and closes it upon completion of the scripts when false <to be implemented>
         :param project_path: the path location of the XML input file(s) to be used by PLANitIO
+        :param standalone: when true this PLANit instance bootstraps a java gateway and closes it upon completion of the scripts when false <to be implemented>
         """  
         # explicitly set uninitialized member variables to None
         self._assignment_instance = None
@@ -60,6 +42,7 @@ class PLANit:
         """Start the gateway to Java 
         """  
         
+        #find the location of this file, so that other directories can be located relative to it    
         dir_path = os.path.dirname(os.path.realpath(__file__))
         # Bootstrap the java gateway server
         if not GatewayState.gateway_is_running:
@@ -85,6 +68,8 @@ class PLANit:
             raise Exception('PLANit java interface already running, only a single instance allowed at this point')
     
     def __initialize_project__(self, project_path):
+        """Initialize the project using the input file in the directory specified by project_path
+        """
         if project_path == None:
             project_path = os.getcwd()
         self._project_instance = BaseWrapper(GatewayState.python_2_java_gateway.entry_point.initialiseSimpleProject(project_path))
@@ -99,6 +84,9 @@ class PLANit:
         self._demands_instance = DemandsWrapper(self._project_instance.field("demands").getFirstDemands())
         
     def set(self, assignment_component):
+        """Set the traffic assignment component
+        :param the traffic  assignment component
+        """
         if isinstance(assignment_component, TrafficAssignment):
             assignment_counterpart = self._project_instance.create_and_register_traffic_assignment(assignment_component.value)
             self._assignment_instance = AssignmentWrapper(assignment_counterpart)
@@ -114,10 +102,12 @@ class PLANit:
 
         
     def __del__(self):
+        """Destructor of PLANit object which shuts down the connection to Java
+        """
         self.__stop_java__()
         
     def __stop_java__(self):        
-        """the destructor cleans up the gateway in Java in case this has not been done yet. It assumes a single instance available in Python tied
+        """Cleans up the gateway in Java in case this has not been done yet. It assumes a single instance available in Python tied
         to a particular self. Only that instance is allowed to terminate the gateway.
         """          
         # Let the instance that instantiated the connection also terminate it automatically
@@ -160,6 +150,8 @@ class PLANit:
             self._assignment_instance.register_initial_link_segment_cost(initial_cost_wrapper.java)
    
     def run(self):  
+        """Run the traffic assignment
+        """
         self._project_instance.execute_all_traffic_assignments()      
         
     def __getattr__(self, name):
@@ -181,6 +173,3 @@ class PLANit:
         """
         return self._assignment_instance  
     
-    @assignment.setter
-    def assignment(self, assignment):
-        self._assignment_instance = assignment
