@@ -18,6 +18,22 @@ from planit.wrappers import TimePeriodWrapper
 from planit.wrappers import InitialCostWrapper
 from planit.enums import TrafficAssignment
 from planit.enums import OutputFormatter
+#===============================================================================
+# from planit import BaseWrapper 
+# from planit import GatewayUtils
+# from planit import GatewayState
+# from planit import GatewayConfig
+# from planit import PhysicalNetworkWrapper 
+# from planit import DemandsWrapper
+# from planit import AssignmentWrapper
+# from planit import ZoningWrapper
+# from planit import PlanItOutputFormatterWrapper
+# from planit import MemoryOutputFormatterWrapper
+# from planit import TimePeriodWrapper
+# from planit import InitialCostWrapper
+# from planit import TrafficAssignment
+# from planit import OutputFormatter
+#===============================================================================
 from builtins import isinstance
 
 class PLANit:
@@ -44,14 +60,15 @@ class PLANit:
         """Start the gateway to Java 
         """  
         
+        dir_path = os.path.dirname(os.path.realpath(__file__))
         # Bootstrap the java gateway server
         if not GatewayState.gateway_is_running:
             # register dependencies
             dependencySet = {
-                GatewayConfig.JAVA_P4J_JAR_PATH,
-                GatewayConfig.JAVA_PLANIT_WRAPPER_PATH,
-                GatewayConfig.JAVA_PLANIT_JAR_PATH,
-                GatewayConfig.JAVA_PLANIT_IO_JAR_PATH}
+                dir_path + "\\" + GatewayConfig.JAVA_P4J_JAR_PATH,
+                dir_path + "\\" + GatewayConfig.JAVA_PLANIT_WRAPPER_PATH,
+                dir_path + "\\" + GatewayConfig.JAVA_PLANIT_JAR_PATH,
+                dir_path + "\\" + GatewayConfig.JAVA_PLANIT_IO_JAR_PATH}
             dependencySeparator = ';'
             fullString = dependencySeparator.join(dependencySet)
             

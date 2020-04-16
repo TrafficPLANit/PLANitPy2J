@@ -3,7 +3,6 @@ from py4j.java_gateway import get_field
 
 from planit.gateway import GatewayUtils
 from planit.gateway import GatewayState
-
 from planit.enums import OutputType
 from planit.enums import RouteIdType
 from planit.enums import OutputProperty
@@ -85,7 +84,7 @@ class AssignmentWrapper(BaseWrapper):
         else:
             raise Exception('Unrecognized component ' + assignment_component.type + ' cannot be set on assignment instance')
          
-    def activate(self, output_type : OutputType):
+    def activate_output(self, output_type : OutputType):
         """ pass on to Java not as an Enum as Py4J does not seem to properly handle this at this stage
             instead we pass on the enum string which on the Java side is converted into the proper enum instead
             
