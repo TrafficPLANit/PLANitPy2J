@@ -21,11 +21,10 @@ __maintainer__ = "Mark Raadsen"
 __email__ = "mark.raadsen@sydney.edu.au"
 __status__ = "Prototype" 
 
-import os
-this_path = os.path.dirname(os.path.realpath(__file__)) 
-source_path =  this_path + "\\..\\.."
-import sys
-sys.path.append(source_path)
+import os, sys
+this_path = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(this_path + "\\..\\..")
+
 from planit import PLANit
 from planit import TrafficAssignment
 from planit import PhysicalCost
