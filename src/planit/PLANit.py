@@ -1,21 +1,24 @@
-import os
+import os, sys
+this_path = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(this_path + "\\..")
 import subprocess
 import traceback
 from py4j.java_gateway import JavaGateway
-from planit.wrappers import BaseWrapper 
-from planit.gateway import GatewayUtils
-from planit.gateway import GatewayState
-from planit.gateway import GatewayConfig
-from planit.wrappers import PhysicalNetworkWrapper 
-from planit.wrappers import DemandsWrapper
-from planit.wrappers import AssignmentWrapper
-from planit.wrappers import ZoningWrapper
-from planit.wrappers import PlanItOutputFormatterWrapper
-from planit.wrappers import MemoryOutputFormatterWrapper
-from planit.wrappers import TimePeriodWrapper
-from planit.wrappers import InitialCostWrapper
-from planit.enums import TrafficAssignment
-from planit.enums import OutputFormatter
+from planit import GatewayUtils
+from planit import GatewayState
+from planit import GatewayConfig
+from planit import BaseWrapper 
+from planit import PhysicalNetworkWrapper 
+from planit import DemandsWrapper
+from planit import AssignmentWrapper
+from planit import ZoningWrapper
+from planit import PlanItOutputFormatterWrapper
+from planit import MemoryOutputFormatterWrapper
+from planit import TrafficAssignment
+from planit import OutputFormatter
+from planit import InitialCost
+from planit import InitialCostWrapper
+from planit import TimePeriodWrapper
 from builtins import isinstance
 
 class PLANit:
@@ -32,6 +35,8 @@ class PLANit:
         self._zoning_instance = None
         self._demands_instance = None
         self._project_instance = None
+        self._io_output_formatter_instance = None
+        self._memory_output_formatter_instance = None
         
         if not standalone:
             raise Exception('Standalone argument can only be true at this time, server mode not yet supported')  
@@ -83,24 +88,6 @@ class PLANit:
         # the one demands is created and populated
         self._demands_instance = DemandsWrapper(self._project_instance.field("demands").getFirstDemands())
         
-    def set(self, assignment_component):
-        """Set the traffic assignment component
-        :param the traffic  assignment component
-        """
-        if isinstance(assignment_component, TrafficAssignment):
-            assignment_counterpart = self._project_instance.create_and_register_traffic_assignment(assignment_component.value)
-            self._assignment_instance = AssignmentWrapper(assignment_counterpart)
-        elif isinstance(assignment_component, OutputFormatter):
-            if assignment_component == OutputFormatter.PLANIT_IO:
-                xml_output_formatter_counterpart = self._project_instance.create_and_register_output_formatter(assignment_component.value)
-                xml_output_formatter = PlanItOutputFormatterWrapper(xml_output_formatter_counterpart)
-                self._assignment_instance.set(xml_output_formatter)
-            elif assignment_component == OutputFormatter.MEMORY:
-                memory_output_formatter_counterpart =  self._project_instance.create_and_register_output_formatter(assignment_component.value)
-                memory_output_formatter = MemoryOutputFormatterWrapper(memory_output_formatter_counterpart)
-                self._assignment_instance.set(memory_output_formatter)
-
-        
     def __del__(self):
         """Destructor of PLANit object which shuts down the connection to Java
         """
@@ -126,32 +113,52 @@ class PLANit:
                 print ("Terminated PLANitJava interface")   
             except:
                 traceback.print_exc()         
-  
-    def dictionary_register_initial_costs(self, initial_link_segment_locations_per_time_period):
-        for time_period_id in initial_link_segment_locations_per_time_period.keys():
-            initial_costs_file_location = initial_link_segment_locations_per_time_period[time_period_id]
-            initial_cost_counterpart = self._project_instance.create_and_register_initial_link_segment_cost(self._network_instance.java, initial_costs_file_location)
-            initial_cost_wrapper = InitialCostWrapper(initial_cost_counterpart)
-            time_period_counterpart = self._demands_instance.get_time_period_by_id(time_period_id)
-            time_period_wrapper = TimePeriodWrapper(time_period_counterpart)
-            self._assignment_instance.register_initial_link_segment_cost(time_period_wrapper.java, initial_cost_wrapper.java)
-  
-    def default_register_initial_costs(self, initial_costs_file_location1, initial_costs_file_location2, init_costs_file_pos):
-        if initial_costs_file_location1 != None:
-            initial_cost_counterpart = None
-            if initial_costs_file_location2 != None:
-                if init_costs_file_pos == 0:
-                    initial_cost_counterpart = self._project_instance.create_and_register_initial_link_segment_cost(self._network_instance.java, initial_costs_file_location1)
-                else:
-                    initial_cost_counterpart = self._project_instance.create_and_register_initial_link_segment_cost(self._network_instance.java, initial_costs_file_location2)
-            else:
-                initial_cost_counterpart = self._project_instance.create_and_register_initial_link_segment_cost(self._network_instance.java, initial_costs_file_location1)
-            initial_cost_wrapper = InitialCostWrapper(initial_cost_counterpart)
-            self._assignment_instance.register_initial_link_segment_cost(initial_cost_wrapper.java)
-   
-    def run(self):  
-        """Run the traffic assignment
+        
+    def set(self, assignment_component, initial_costs_file_location=None, time_period_id=None):
+        """Set the traffic assignment component
+        :param assignment_component the  assignment component, can be TrafficAssignment or InitialCost
+        :param initial_costs_file_location the location of the initial cost file, if initial costs being set
+        :param time_period_id the id of the time period, if initial costs being set for each time period
         """
+        if isinstance(assignment_component, TrafficAssignment):
+            assignment_counterpart = self._project_instance.create_and_register_traffic_assignment(assignment_component.value)
+            self._assignment_instance = AssignmentWrapper(assignment_counterpart)
+        elif isinstance(assignment_component, InitialCost):
+            if (time_period_id is None):
+                initial_cost_counterpart = self._project_instance.create_and_register_initial_link_segment_cost(self._network_instance.java, initial_costs_file_location)
+                initial_cost_wrapper = InitialCostWrapper(initial_cost_counterpart)
+                self._assignment_instance.register_initial_link_segment_cost(initial_cost_wrapper.java)
+            else:
+                initial_cost_counterpart = self._project_instance.create_and_register_initial_link_segment_cost(self._network_instance.java, initial_costs_file_location)
+                initial_cost_wrapper = InitialCostWrapper(initial_cost_counterpart)
+                time_period_counterpart = self._demands_instance.get_time_period_by_id(time_period_id)
+                time_period_wrapper = TimePeriodWrapper(time_period_counterpart)
+                self._assignment_instance.register_initial_link_segment_cost(time_period_wrapper.java, initial_cost_wrapper.java)
+            
+    def activate(self, formatter_component):
+        """Activate an output formatter
+        :param formatter_component the formatter being set up
+        """
+        if formatter_component == OutputFormatter.PLANIT_IO:
+            io_output_formatter_counterpart = self._project_instance.create_and_register_output_formatter(formatter_component.value)
+            io_output_formatter = PlanItOutputFormatterWrapper(io_output_formatter_counterpart)
+            self._io_output_formatter_instance = io_output_formatter
+        elif formatter_component == OutputFormatter.MEMORY:
+            memory_output_formatter_counterpart =  self._project_instance.create_and_register_output_formatter(formatter_component.value)
+            memory_output_formatter = MemoryOutputFormatterWrapper(memory_output_formatter_counterpart)
+            self._memory_output_formatter_instance = memory_output_formatter
+
+    def run(self):  
+        """Run the traffic assignment.  Register any output formatters which have been set up
+        """
+        if (self._io_output_formatter_instance is not None):
+            project_path_set = self._io_output_formatter_instance.is_xml_directory_set()
+            if (not project_path_set):
+                project_path = os.getcwd()
+                self._io_output_formatter_instance.set_output_directory(project_path)
+            self._assignment_instance.register_output_formatter(self._io_output_formatter_instance.java);
+        if (self._memory_output_formatter_instance is not None):
+            self._assignment_instance.register_output_formatter(self._memory_output_formatter_instance.java);
         self._project_instance.execute_all_traffic_assignments()      
         
     def __getattr__(self, name):
@@ -172,4 +179,35 @@ class PLANit:
         """ access to the assignment builder 
         """
         return self._assignment_instance  
+    
+    @property
+    def project(self):
+        """access to the project
+        """
+        return self._project_instance
+    
+    @property
+    def network(self):
+        """access to the network
+        """
+        return self._network_instance
+    
+    @property
+    def demands(self):
+        """access to the demands
+        """
+        return self._demands_instance
+    
+    @property
+    def io_output_formatter(self):
+        """access to PLANitIO output formatter
+        """
+        return self._io_output_formatter_instance
+    
+    @property
+    def memory_output_formatter(self):
+        """access to memory output formatter
+        """
+        return self._memory_output_formatter_instance
+    
     

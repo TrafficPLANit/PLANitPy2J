@@ -1,4 +1,6 @@
-import os
+import os, sys
+this_path = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(this_path + "\\..")
 import pandas as pd
 from planit import TrafficAssignment
 from planit import PhysicalCost
@@ -10,12 +12,46 @@ from planit import RouteIdType
 from planit import OutputFormatter
 from planit import ODSkimSubOutputType
 from planit import PLANit
+from planit import InitialCost
 from builtins import staticmethod
 
 class Helper:
     
     @staticmethod
-    def run_test(max_iterations, epsilon, description, output_type_configuration_option, initial_costs_file_location1, initial_costs_file_location2, init_costs_file_pos,  initial_link_segment_locations_per_time_period, register_initial_costs_option, project_path=None):
+    def dictionary_register_initial_costs(plan_it, initial_link_segment_locations_per_time_period):
+        """Read in initial cost files for each time period from an input dictionary
+        :param plan_it the PLANit object to be updated with the initial costs
+        :param initial_link_segment_locations_per_time_period dictionary of locations of initial cost files per time period
+        """
+        for time_period_id in initial_link_segment_locations_per_time_period.keys():
+            initial_costs_file_location = initial_link_segment_locations_per_time_period[time_period_id]
+            plan_it.set(InitialCost.LINK_SEGMENT, initial_costs_file_location, time_period_id)
+  
+    @staticmethod
+    def default_register_initial_costs(plan_it, initial_costs_file_location1, initial_costs_file_location2, init_costs_file_pos):
+        """Read in one or two initial cost files which are to be used for all time periods
+        :param plan_it the PLANit object to be updated with the initial costs
+        :param initial_costs_file_location1 location of the first initial cost file (None if initial costs not being used)
+        :param  initial_costs_file_location2 location of the second initial cost file (None if only one or zero initial cost files being used)
+        :param init_costs_file_pos indicates which initial costs file is to be used (if 0 use the first, otherwise use the second) 
+        """      
+        if initial_costs_file_location1 != None:
+            initial_costs_file_location = None
+            if initial_costs_file_location2 != None:
+                if init_costs_file_pos == 0:
+                    initial_costs_file_location =  initial_costs_file_location1
+                else:
+                    initial_costs_file_location =  initial_costs_file_location2
+            else:
+                initial_costs_file_location =  initial_costs_file_location1
+            plan_it.set(InitialCost.LINK_SEGMENT, initial_costs_file_location)
+            
+    @staticmethod
+    def run_test(max_iterations, epsilon, 
+                           description, output_type_configuration_option, initial_costs_file_location1, 
+                           initial_costs_file_location2, init_costs_file_pos,  
+                           initial_link_segment_locations_per_time_period, register_initial_costs_option, 
+                           project_path=None):
         """Top-level method which runs unit tests
         :param max_iterations the maximum number of iterations for the current unit test
         :param epsilon the convergence epsilon for the current unit test
@@ -40,38 +76,36 @@ class Helper:
         plan_it.assignment.set(Smoothing.MSA)
         plan_it.assignment.output_configuration.set_persist_only_final_Iteration(True)
         plan_it.assignment.activate_output(OutputType.LINK)
-        plan_it.assignment.link_output_type_configuration.remove(OutputProperty.TIME_PERIOD_EXTERNAL_ID)
-        plan_it.assignment.link_output_type_configuration.remove(OutputProperty.TIME_PERIOD_ID)
+        plan_it.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_EXTERNAL_ID)
+        plan_it.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_ID)
 
         if output_type_configuration_option == 1:
-            plan_it.assignment.link_output_type_configuration.remove(OutputProperty.MAXIMUM_SPEED)
-            plan_it.assignment.link_output_type_configuration.remove(OutputProperty.TOTAL_COST_TO_END_NODE)
+            plan_it.assignment.link_configuration.remove(OutputProperty.MAXIMUM_SPEED)
+            plan_it.assignment.link_configuration.remove(OutputProperty.TOTAL_COST_TO_END_NODE)
         elif output_type_configuration_option == 2:
-            plan_it.assignment.link_output_type_configuration.remove(OutputProperty.TOTAL_COST_TO_END_NODE)
-            plan_it.assignment.link_output_type_configuration.remove(OutputProperty.DOWNSTREAM_NODE_EXTERNAL_ID)
-            plan_it.assignment.link_output_type_configuration.remove(OutputProperty.UPSTREAM_NODE_EXTERNAL_ID)
+            plan_it.assignment.link_configuration.remove(OutputProperty.TOTAL_COST_TO_END_NODE)
+            plan_it.assignment.link_configuration.remove(OutputProperty.DOWNSTREAM_NODE_EXTERNAL_ID)
+            plan_it.assignment.link_configuration.remove(OutputProperty.UPSTREAM_NODE_EXTERNAL_ID)
 
         plan_it.assignment.activate_output(OutputType.OD)
-        plan_it.assignment.origin_destination_output_type_configuration.deactivate(ODSkimSubOutputType.NONE)
-        plan_it.assignment.origin_destination_output_type_configuration.remove(OutputProperty.TIME_PERIOD_EXTERNAL_ID)
-        plan_it.assignment.origin_destination_output_type_configuration.remove(OutputProperty.RUN_ID)
+        plan_it.assignment.od_configuration.deactivate(ODSkimSubOutputType.NONE)
+        plan_it.assignment.od_configuration.remove(OutputProperty.TIME_PERIOD_EXTERNAL_ID)
+        plan_it.assignment.od_configuration.remove(OutputProperty.RUN_ID)
         plan_it.assignment.activate_output(OutputType.PATH)
-        plan_it.assignment.path_output_type_configuration.set_path_id_type(RouteIdType.NODE_EXTERNAL_ID)
+        plan_it.assignment.path_configuration.set_path_id_type(RouteIdType.NODE_EXTERNAL_ID)
         plan_it.assignment.gap_function.stop_criterion.set_max_iterations(max_iterations)
         plan_it.assignment.gap_function.stop_criterion.set_epsilon(epsilon)
         
-        plan_it.set(OutputFormatter.PLANIT_IO)
-        plan_it.set(OutputFormatter.MEMORY)
-        plan_it.assignment.set_xml_name_root(description)
-                
-        plan_it.assignment.set_csv_name_root(description)
-        
-        plan_it.assignment.set_output_directory(project_path)
+        plan_it.activate(OutputFormatter.PLANIT_IO)
+        plan_it.activate(OutputFormatter.MEMORY)
+        plan_it.io_output_formatter.set_xml_name_root(description)                
+        plan_it.io_output_formatter.set_csv_name_root(description)       
+        plan_it.io_output_formatter.set_output_directory(project_path)
 
         if register_initial_costs_option == 1:
-            plan_it.default_register_initial_costs(initial_costs_file_location1, initial_costs_file_location2, init_costs_file_pos)
+            Helper.default_register_initial_costs(plan_it, initial_costs_file_location1, initial_costs_file_location2, init_costs_file_pos)
         elif register_initial_costs_option == 2:
-            plan_it.dictionary_register_initial_costs(initial_link_segment_locations_per_time_period)
+            Helper.dictionary_register_initial_costs(plan_it, initial_link_segment_locations_per_time_period)
         
         plan_it.run()
     

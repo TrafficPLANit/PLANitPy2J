@@ -8,11 +8,31 @@ from test_utils import Helper
 from planit import OutputType
 
 class TestSuite(unittest.TestCase):
-    
+      
     @classmethod
     def setUpClass(cls):
         cls.test_data_path = this_path  + "\\..\\..\\testcases\\"
     
+    def test_route_choice_2_initial_costs_500_iterations(self):
+        """Unit test for route 2 with initial costs and 500 iterations (corresponds to testRouteChoice2InitialCosts500Iterations() in Java)
+        """
+        project_path = self.test_data_path + "route_choice\\xml\\test2initialCosts500iterations"
+        description = "testRouteChoice2initialCosts"
+        csv_file_name = "Time Period 1_500.csv"
+        od_csv_file_name = "Time Period 1_499.csv"
+        xml_file_name = "Time Period 1.xml"
+        initial_costs_file_location = self.test_data_path + "route_choice\\xml\\test2initialCosts500iterations\\initial_link_segment_costs.csv"
+        max_iterations = 500
+        epsilon = 0.0000000001
+        Helper.run_test(max_iterations, epsilon, description, 1, initial_costs_file_location, None, 0, None, 1, project_path)       
+        Helper.delete_file(OutputType.LINK, description, xml_file_name, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name, project_path))        
+        Helper.delete_file(OutputType.PATH, description, xml_file_name, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name, project_path))        
+        Helper.delete_file(OutputType.OD, description, xml_file_name, project_path)
+        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name, project_path))
+        gc.collect()
+  
     def test_route_choice_2_initial_costs_one_iteration_three_time_periods(self):
         """Unit test for route 2 with three time periods (corresponds to testRouteChoice2InitialCostsOneIterationThreeTimePeriods() in Java)
         """

@@ -10,10 +10,10 @@ from .enums import Smoothing
 from .enums import TrafficAssignment
 from .enums import VirtualCost
 from .enums import ODSkimSubOutputType
+from .enums import InitialCost
 from .gateway import GatewayConfig
 from .gateway import GatewayState
 from .gateway import GatewayUtils
-from .PLANit import PLANit
 from .wrappers import BaseWrapper
 from .wrappers import AssignmentWrapper
 from .wrappers import DemandsWrapper
@@ -36,3 +36,4 @@ from .wrappers import StopCriterionWrapper
 from .wrappers import TimePeriodWrapper
 from .wrappers import VirtualCostWrapper
 from .wrappers import ZoningWrapper
+from .PLANit import PLANit

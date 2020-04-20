@@ -1,13 +1,16 @@
-import os
+import os, sys
+this_path = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(this_path + "\\..")
+
 from py4j.java_gateway import get_field
-from planit.gateway import GatewayUtils
-from planit.gateway import GatewayState
-from planit.enums import OutputType
-from planit.enums import RouteIdType
-from planit.enums import OutputProperty
-from planit.enums import PhysicalCost
-from planit.enums import VirtualCost
-from planit.enums import Smoothing
+from planit import GatewayUtils
+from planit import GatewayState
+from planit import OutputType
+from planit import RouteIdType
+from planit import OutputProperty
+from planit import PhysicalCost
+from planit import VirtualCost
+from planit import Smoothing
 
 class BaseWrapper(object):
     """ Base wrapper class which always holds a java counter part instance and a generic way to pass on method calls to the encapsulated 
@@ -59,8 +62,6 @@ class AssignmentWrapper(BaseWrapper):
         self._physical_cost_instance = None
         self._virtual_cost_instance = None    
         self._smoothing = None
-        self._xml_output_formatter_instance = None
-        self._memory_output_formatter_instance = None
         self._link_output_type_configuration = None
         self._origin_destination_output_type_configuration = None   
         self._path_output_type_configuration = None
@@ -71,18 +72,12 @@ class AssignmentWrapper(BaseWrapper):
             the method calls
         """    
         
-        if isinstance(assignment_component,PhysicalCost):
+        if isinstance(assignment_component, PhysicalCost):
             self._physical_cost_instance = PhysicalCostWrapper(self.create_and_register_physical_cost(assignment_component.value)) 
-        elif isinstance(assignment_component,VirtualCost):
+        elif isinstance(assignment_component, VirtualCost):
             self._virtual_cost_instance = VirtualCostWrapper(self.create_and_register_virtual_cost(assignment_component.value))
-        elif isinstance(assignment_component,Smoothing):
+        elif isinstance(assignment_component, Smoothing):
             self._smoothing_instance = SmoothingWrapper(self.create_and_register_smoothing(assignment_component.value))
-        elif isinstance(assignment_component, PlanItOutputFormatterWrapper):
-            self.register_output_formatter(assignment_component.java)
-            self._xml_output_formatter_instance = assignment_component
-        elif isinstance(assignment_component, MemoryOutputFormatterWrapper):
-            self.register_output_formatter(assignment_component.java)
-            self._memory_output_formatter_instance = assignment_component
         else:
             raise Exception('Unrecognized component ' + assignment_component.type + ' cannot be set on assignment instance')
          
@@ -103,26 +98,6 @@ class AssignmentWrapper(BaseWrapper):
         else:
             raise ValueError("Attempted to activate unknown output type " + output_type.value)
 
-    def set_xml_name_root(self, description):
-        """Set the root name of XML input files
-        :param description root name of XML input files
-        """
-        self._xml_output_formatter_instance.set_xml_name_root(description)
-        
-    def set_csv_name_root(self, description):
-        """Set the root name of CSV output files
-        :param description root name of CSV output files
-        """
-        self._xml_output_formatter_instance.set_csv_name_root(description)
-
-    def set_output_directory(self, project_path=None):
-        """Set the directory for CSV output files
-        :param project_path directory of CSV output files (if omitted, defaults to current run directory)
-        """
-        if project_path == None:
-            project_path = os.getcwd()
-        self._xml_output_formatter_instance.set_output_directory(project_path)
-        
     @property
     def output_configuration(self):
         """Access to current output configuration
@@ -136,34 +111,40 @@ class AssignmentWrapper(BaseWrapper):
         return self._gap_function
     
     @property
-    def link_output_type_configuration(self):
+    def link_configuration(self):
         """Access to current link output type configuration
         """
         return self._link_output_type_configuration
     
     @property
-    def origin_destination_output_type_configuration(self):
+    def od_configuration(self):
         """Access to current origin-destination output type configuration
         """
         return self._origin_destination_output_type_configuration
     
     @property
-    def path_output_type_configuration(self):
+    def path_configuration(self):
         """Access to current path output type configuration
         """
         return self._path_output_type_configuration
            
     @property
-    def xml_output_formatter(self):  
-        """Access to current XML output formatter
+    def physical_cost(self):
+        """Access to the physical cost wrapper
         """
-        return self._xml_output_formatter_instance
-     
+        return self._physical_cost_instance
+    
     @property
-    def memory_output_formatter(self):  
-        """Access to current memory output formatter
+    def virtual_cost(self):
+        """Access to the virtual cost wrapper
         """
-        return self._memory_output_formatter_instance
+        return self._virtual_cost_instance
+    
+    @property
+    def smoothing(self):
+        """Access to the smoothing wrapper
+        """
+        return self._smoothing_instance
     
 class DemandsWrapper(BaseWrapper):
     """ Wrapper around the Java Demands class instance
@@ -211,7 +192,7 @@ class PlanItOutputFormatterWrapper(OutputFormatterWrapper):
     
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
-        
+
 class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
     """ Wrapper around the Java PlanItOutputFormatter class instance
     """
