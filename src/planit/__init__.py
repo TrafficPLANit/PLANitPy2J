@@ -36,4 +36,5 @@ from .wrappers import StopCriterionWrapper
 from .wrappers import TimePeriodWrapper
 from .wrappers import VirtualCostWrapper
 from .wrappers import ZoningWrapper
+from .initial_cost import InitialCost
 from .PLANit import PLANit

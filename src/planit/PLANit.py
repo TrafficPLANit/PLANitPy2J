@@ -17,8 +17,10 @@ from planit import MemoryOutputFormatterWrapper
 from planit import TrafficAssignment
 from planit import OutputFormatter
 from planit import InitialCost
-from planit import InitialCostWrapper
-from planit import TimePeriodWrapper
+#===============================================================================
+# from planit import InitialCostWrapper
+# from planit import TimePeriodWrapper
+#===============================================================================
 from builtins import isinstance
 
 class PLANit:
@@ -37,6 +39,7 @@ class PLANit:
         self._project_instance = None
         self._io_output_formatter_instance = None
         self._memory_output_formatter_instance = None
+        self._initial_cost_instance = None
         
         if not standalone:
             raise Exception('Standalone argument can only be true at this time, server mode not yet supported')  
@@ -114,7 +117,8 @@ class PLANit:
             except:
                 traceback.print_exc()         
         
-    def set(self, assignment_component, initial_costs_file_location=None, time_period_id=None):
+    #def set(self, assignment_component, initial_costs_file_location=None, time_period_id=None):
+    def set(self, assignment_component):
         """Set the traffic assignment component
         :param assignment_component the  assignment component, can be TrafficAssignment or InitialCost
         :param initial_costs_file_location the location of the initial cost file, if initial costs being set
@@ -123,17 +127,7 @@ class PLANit:
         if isinstance(assignment_component, TrafficAssignment):
             assignment_counterpart = self._project_instance.create_and_register_traffic_assignment(assignment_component.value)
             self._assignment_instance = AssignmentWrapper(assignment_counterpart)
-        elif isinstance(assignment_component, InitialCost):
-            if (time_period_id is None):
-                initial_cost_counterpart = self._project_instance.create_and_register_initial_link_segment_cost(self._network_instance.java, initial_costs_file_location)
-                initial_cost_wrapper = InitialCostWrapper(initial_cost_counterpart)
-                self._assignment_instance.register_initial_link_segment_cost(initial_cost_wrapper.java)
-            else:
-                initial_cost_counterpart = self._project_instance.create_and_register_initial_link_segment_cost(self._network_instance.java, initial_costs_file_location)
-                initial_cost_wrapper = InitialCostWrapper(initial_cost_counterpart)
-                time_period_counterpart = self._demands_instance.get_time_period_by_id(time_period_id)
-                time_period_wrapper = TimePeriodWrapper(time_period_counterpart)
-                self._assignment_instance.register_initial_link_segment_cost(time_period_wrapper.java, initial_cost_wrapper.java)
+            self._initial_cost_instance = InitialCost(self._assignment_instance, self._project_instance, self._network_instance, self._demands_instance)
             
     def activate(self, formatter_component):
         """Activate an output formatter
@@ -200,14 +194,21 @@ class PLANit:
     
     @property
     def io_output_formatter(self):
+        #def output(self):
         """access to PLANitIO output formatter
         """
         return self._io_output_formatter_instance
     
     @property
     def memory_output_formatter(self):
+        #def memory
         """access to memory output formatter
         """
         return self._memory_output_formatter_instance
     
+    @property
+    def initial_cost(self):
+        """access to initial cost
+        """
+        return self._initial_cost_instance
     

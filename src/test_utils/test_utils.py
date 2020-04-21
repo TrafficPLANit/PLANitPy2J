@@ -12,7 +12,6 @@ from planit import RouteIdType
 from planit import OutputFormatter
 from planit import ODSkimSubOutputType
 from planit import PLANit
-from planit import InitialCost
 from builtins import staticmethod
 
 class Helper:
@@ -23,9 +22,10 @@ class Helper:
         :param plan_it the PLANit object to be updated with the initial costs
         :param initial_link_segment_locations_per_time_period dictionary of locations of initial cost files per time period
         """
-        for time_period_id in initial_link_segment_locations_per_time_period.keys():
+        time_periods_external_ids = plan_it.project.get_time_period_external_ids()
+        for time_period_id in time_periods_external_ids:
             initial_costs_file_location = initial_link_segment_locations_per_time_period[time_period_id]
-            plan_it.set(InitialCost.LINK_SEGMENT, initial_costs_file_location, time_period_id)
+            plan_it.initial_cost.set(initial_costs_file_location, time_period_id)
   
     @staticmethod
     def default_register_initial_costs(plan_it, initial_costs_file_location1, initial_costs_file_location2, init_costs_file_pos):
@@ -44,7 +44,7 @@ class Helper:
                     initial_costs_file_location =  initial_costs_file_location2
             else:
                 initial_costs_file_location =  initial_costs_file_location1
-            plan_it.set(InitialCost.LINK_SEGMENT, initial_costs_file_location)
+            plan_it.initial_cost.set(initial_costs_file_location)
             
     @staticmethod
     def run_test(max_iterations, epsilon, 
