@@ -114,11 +114,25 @@ class TestSuite(unittest.TestCase):
         Helper.delete_file(OutputType.OD, description, xml_file_name, project_path)
         self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name, project_path))
         gc.collect()
-    
+        
+    def test_explanatory_with_memory_output(self):
+        """Explanatory unit test, which save results to memory only and not to file, to test contents of memory output formatter are correct
+        """
+        print("Running test_explanatory with results only stored in memory")
+        project_path = self.test_data_path + "explanatory\\xml";
+        description = "explanatory";
+        max_iterations = 2
+        epsilon = 0.001
+        plan_it = Helper.run_test(max_iterations, epsilon, description, 1, None, None, 0, None, 1, project_path, True)
+        standard_results__dict = plan_it.project.create_results_for_explanatory_test()
+        passed = plan_it.project.compare_results_to_memory_output_formatter_using_nodes_external_id(plan_it.memory.java, max_iterations, standard_results__dict)
+        self.assertTrue(passed)    
+        gc.collect()
+  
     def test_explanatory(self):
         """Explanatory unit test, which uses the default project path rather than specifying its own (corresponds to testExplanatory() in Java)
         """
-        print("Running test_explanatory")
+        print("Running test_explanatory with default project path")
         description = "explanatory";
         csv_file_name = "Time Period 1_2.csv";
         od_csv_file_name = "Time Period 1_1.csv";

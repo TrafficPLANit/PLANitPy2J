@@ -33,18 +33,19 @@ from planit import Smoothing
 from planit import OutputType
 
 # start the planit journey
-planIt = PLANit(this_path + ".\\input")
+plan_it = PLANit(this_path + ".\\input")
 # choose the assignment
-planIt.set(TrafficAssignment.TRADITIONAL_STATIC)
+plan_it.set(TrafficAssignment.TRADITIONAL_STATIC)
 # ----- BELOW THE DEFAULTS ARE EXPLICITLY SET BUT ARE IN FACT OPTIONAL-------    <---- NOT YET IMPLEMENTED AS DEFAULTS SO CURRENTLY NOT OPTIONAL
-planIt.assignment.set(PhysicalCost.BPR)
-planIt.assignment.set(VirtualCost.FIXED)
-planIt.assignment.set(Smoothing.MSA)
-planIt.assignment.activate_output(OutputType.LINK)
-planIt.assignment.gap_function.stop_criterion.set_max_iterations(500)
-planIt.assignment.gap_function.stop_criterion.set_epsilon(0.001)
-planIt.assignment.output_configuration.set_persist_only_final_Iteration(True)
+plan_it.assignment.set(PhysicalCost.BPR)
+plan_it.assignment.physical_cost.set_default_parameters(0.5, 4.0)
+plan_it.assignment.set(VirtualCost.FIXED)
+plan_it.assignment.set(Smoothing.MSA)
+plan_it.assignment.activate_output(OutputType.LINK)
+plan_it.assignment.gap_function.stop_criterion.set_max_iterations(500)
+plan_it.assignment.gap_function.stop_criterion.set_epsilon(0.001)
+plan_it.assignment.output_configuration.set_persist_only_final_Iteration(True)
 # ----- END DEFAULTS --------------------------------
 
-planIt.run()
+plan_it.run()
 """ Not complete continue here for a full blown example of all properties! """

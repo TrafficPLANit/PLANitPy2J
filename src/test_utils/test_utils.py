@@ -51,7 +51,7 @@ class Helper:
                            description, output_type_configuration_option, initial_costs_file_location1, 
                            initial_costs_file_location2, init_costs_file_pos,  
                            initial_link_segment_locations_per_time_period, register_initial_costs_option, 
-                           project_path=None):
+                           project_path=None, deactivate_file_output=False):
         """Top-level method which runs unit tests
         :param max_iterations the maximum number of iterations for the current unit test
         :param epsilon the convergence epsilon for the current unit test
@@ -63,6 +63,7 @@ class Helper:
         :param initial_link_segment_locations_per_time_period dictionary of initial link cost files per time period, if required
         :param register_initial_costs_option used to specify which method of the selecting initial cost (default or dictionary) is being used
         :param project_path directory of XML input file (if omitted, defaults to None which will make methods use the current directory)
+        :param deactivate_file_output if True, deactivate the file output formatter and store results in memory only
         """
         
         if project_path == None:
@@ -72,6 +73,8 @@ class Helper:
         plan_it.set(TrafficAssignment.TRADITIONAL_STATIC)
         
         plan_it.assignment.set(PhysicalCost.BPR)
+        # TODO : Add a unit test which tests plan_it.assigment.physical_cost.set_default_parameters()
+        # testRouteChoiceCompareWithOmniTRANS5() is a  good one for this
         plan_it.assignment.set(VirtualCost.FIXED)
         plan_it.assignment.set(Smoothing.MSA)
         plan_it.assignment.output_configuration.set_persist_only_final_Iteration(True)
@@ -96,11 +99,14 @@ class Helper:
         plan_it.assignment.gap_function.stop_criterion.set_max_iterations(max_iterations)
         plan_it.assignment.gap_function.stop_criterion.set_epsilon(epsilon)
         
-        plan_it.activate(OutputFormatter.PLANIT_IO)
-        plan_it.activate(OutputFormatter.MEMORY)
-        plan_it.io_output_formatter.set_xml_name_root(description)                
-        plan_it.io_output_formatter.set_csv_name_root(description)       
-        plan_it.io_output_formatter.set_output_directory(project_path)
+        plan_it.activate_formatter(OutputFormatter.MEMORY)
+        if deactivate_file_output:
+            plan_it.deactivate_formatter(OutputFormatter.PLANIT_IO)
+        else:
+            plan_it.output.set_xml_name_root(description)                
+            plan_it.output.set_csv_name_root(description)     
+            if (project_path is not None):  
+                plan_it.output.set_output_directory(project_path)
 
         if register_initial_costs_option == 1:
             Helper.default_register_initial_costs(plan_it, initial_costs_file_location1, initial_costs_file_location2, init_costs_file_pos)
@@ -108,6 +114,7 @@ class Helper:
             Helper.dictionary_register_initial_costs(plan_it, initial_link_segment_locations_per_time_period)
         
         plan_it.run()
+        return plan_it
     
     @staticmethod
     def delete_file(output_type : OutputType, description, file_name, project_path=None):

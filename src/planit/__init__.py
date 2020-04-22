@@ -10,7 +10,6 @@ from .enums import Smoothing
 from .enums import TrafficAssignment
 from .enums import VirtualCost
 from .enums import ODSkimSubOutputType
-from .enums import InitialCost
 from .gateway import GatewayConfig
 from .gateway import GatewayState
 from .gateway import GatewayUtils

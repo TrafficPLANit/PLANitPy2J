@@ -68,16 +68,10 @@ class OutputType(Enum):
     def java_class_name(self) -> str:
         return "org.planit.output.enums.OutputType"   
     
-class InitialCost(Enum):  
-    """Enum for Initial Cost types.  There is only one type, but defining this enum allows the PLANit.set() method to define initial costs
-    """
-    LINK_SEGMENT = "LINK_SEGMENT"
-
 class PhysicalCost(Enum):
     """ Enum for the different physical costs the user can choose, they map to the Java equivalent class name for easy mapping
     """
     BPR = "org.planit.cost.physical.BPRLinkTravelTimeCost"
-    LINK = "org.planit.cost.physical.LinkTravelTimeCost"
 
 class RouteIdType(Enum):
 
@@ -104,6 +98,7 @@ class VirtualCost(Enum):
     """ Enum for the different virtual costs the user can choose, they map to the Java equivalent class name for easy mapping
     """
     FIXED = "org.planit.cost.virtual.FixedConnectoidTravelTimeCost"
+    SPEED = "org.planit.cost.virtual.SpeedConnectiodTravelTimeCost"
     
 class ODSkimSubOutputType(Enum):
     
