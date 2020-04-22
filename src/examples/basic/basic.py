@@ -31,6 +31,7 @@ from planit import PhysicalCost
 from planit import VirtualCost
 from planit import Smoothing
 from planit import OutputType
+from planit import OutputFormatter
 
 # start the planit journey
 plan_it = PLANit(this_path + ".\\input")
@@ -46,6 +47,9 @@ plan_it.assignment.gap_function.stop_criterion.set_max_iterations(500)
 plan_it.assignment.gap_function.stop_criterion.set_epsilon(0.001)
 plan_it.assignment.output_configuration.set_persist_only_final_Iteration(True)
 # ----- END DEFAULTS --------------------------------
+
+#deactivate file output
+plan_it.deactivate_formatter(OutputFormatter.PLANIT_IO)
 
 plan_it.run()
 """ Not complete continue here for a full blown example of all properties! """

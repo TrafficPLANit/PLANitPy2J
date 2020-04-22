@@ -18,7 +18,7 @@ from .wrappers import AssignmentWrapper
 from .wrappers import DemandsWrapper
 from .wrappers import GapFunctionWrapper
 from .wrappers import ModeWrapper
-from .wrappers import  OutputConfigurationWrapper
+from .wrappers import OutputConfigurationWrapper
 from .wrappers import OutputFormatterWrapper
 from .wrappers import PlanItOutputFormatterWrapper
 from .wrappers import MemoryOutputFormatterWrapper
