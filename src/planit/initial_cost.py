@@ -33,6 +33,6 @@ class InitialCost:
         else:
             initial_cost_counterpart = self._project_instance.create_and_register_initial_link_segment_cost(self._network_instance.java, initial_costs_file_location)
             initial_cost_wrapper = InitialCostWrapper(initial_cost_counterpart)
-            time_period_counterpart = self._demands_instance.get_time_period_by_id(time_period_external_id)
+            time_period_counterpart = self._project_instance.get_time_period_by_external_id(time_period_external_id)
             time_period_wrapper = TimePeriodWrapper(time_period_counterpart)
             self._assignment_instance.register_initial_link_segment_cost(time_period_wrapper.java, initial_cost_wrapper.java)

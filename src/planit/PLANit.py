@@ -17,10 +17,6 @@ from planit import MemoryOutputFormatterWrapper
 from planit import TrafficAssignment
 from planit import OutputFormatter
 from planit import InitialCost
-#===============================================================================
-# from planit import InitialCostWrapper
-# from planit import TimePeriodWrapper
-#===============================================================================
 from builtins import isinstance
 
 class PLANit:

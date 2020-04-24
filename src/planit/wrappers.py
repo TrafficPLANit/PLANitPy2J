@@ -325,4 +325,16 @@ class ZoningWrapper(BaseWrapper):
     
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
+        
+class LinkSegmentExpectedResultsDtoWrapper(BaseWrapper):
+    """ Wrapper around the Java Link Segment Expected Results Dto class instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+        
+class MemoryOutputIteratorWrapper(BaseWrapper):
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
                 
