@@ -49,7 +49,7 @@ plan_it.assignment.output_configuration.set_persist_only_final_Iteration(True)
 # ----- END DEFAULTS --------------------------------
 
 #deactivate file output
-plan_it.deactivate_formatter(OutputFormatter.PLANIT_IO)
+plan_it.deactivate(OutputFormatter.PLANIT_IO)
 
 plan_it.run()
 """ Not complete continue here for a full blown example of all properties! """

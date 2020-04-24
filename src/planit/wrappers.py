@@ -192,6 +192,10 @@ class PlanItOutputFormatterWrapper(OutputFormatterWrapper):
     
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
+        # Initialize the output project path to the current run directory
+        # Modellers may overwrite this default later
+        project_path = os.getcwd()
+        self.set_output_directory(project_path)
 
 class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
     """ Wrapper around the Java PlanItOutputFormatter class instance

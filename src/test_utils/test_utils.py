@@ -23,9 +23,9 @@ class Helper:
         :param initial_link_segment_locations_per_time_period dictionary of locations of initial cost files per time period
         """
         time_periods_external_ids = plan_it.project.get_time_period_external_ids()
-        for time_period_id in time_periods_external_ids:
-            initial_costs_file_location = initial_link_segment_locations_per_time_period[time_period_id]
-            plan_it.initial_cost.set(initial_costs_file_location, time_period_id)
+        for time_period_external_id in time_periods_external_ids:
+            initial_costs_file_location = initial_link_segment_locations_per_time_period[time_period_external_id]
+            plan_it.initial_cost.set(initial_costs_file_location, time_period_external_id)
   
     @staticmethod
     def default_register_initial_costs(plan_it, initial_costs_file_location1, initial_costs_file_location2, init_costs_file_pos):
@@ -52,7 +52,7 @@ class Helper:
                            initial_costs_file_location2, init_costs_file_pos,  
                            initial_link_segment_locations_per_time_period, register_initial_costs_option, 
                            project_path=None, deactivate_file_output=False):
-        """Top-level method which runs unit tests
+        """Top-level method which runs unit testsX
         :param max_iterations the maximum number of iterations for the current unit test
         :param epsilon the convergence epsilon for the current unit test
         :param description the name to be used to identify input and output files
@@ -73,7 +73,7 @@ class Helper:
         plan_it.set(TrafficAssignment.TRADITIONAL_STATIC)
         
         plan_it.assignment.set(PhysicalCost.BPR)
-        # TODO : Add a unit test which tests plan_it.assigment.physical_cost.set_default_parameters()
+        # TODO : Add a unit test which testsX plan_it.assigment.physical_cost.set_default_parameters()
         # testRouteChoiceCompareWithOmniTRANS5() is a  good one for this
         plan_it.assignment.set(VirtualCost.FIXED)
         plan_it.assignment.set(Smoothing.MSA)
@@ -99,9 +99,9 @@ class Helper:
         plan_it.assignment.gap_function.stop_criterion.set_max_iterations(max_iterations)
         plan_it.assignment.gap_function.stop_criterion.set_epsilon(epsilon)
         
-        plan_it.activate_formatter(OutputFormatter.MEMORY)
+        plan_it.activate(OutputFormatter.MEMORY)
         if deactivate_file_output:
-            plan_it.deactivate_formatter(OutputFormatter.PLANIT_IO)
+            plan_it.deactivate(OutputFormatter.PLANIT_IO)
         else:
             plan_it.output.set_xml_name_root(description)                
             plan_it.output.set_csv_name_root(description)     

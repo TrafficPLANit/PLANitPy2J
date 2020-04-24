@@ -117,20 +117,19 @@ class PLANit:
             except:
                 traceback.print_exc()         
         
-    #def set(self, assignment_component, initial_costs_file_location=None, time_period_id=None):
     def set(self, assignment_component):
         """Set the traffic assignment component
         :param assignment_component the  assignment component, can be TrafficAssignment or InitialCost
-        :param initial_costs_file_location the location of the initial cost file, if initial costs being set
-        :param time_period_id the id of the time period, if initial costs being set for each time period
         """
         if isinstance(assignment_component, TrafficAssignment):
             assignment_counterpart = self._project_instance.create_and_register_traffic_assignment(assignment_component.value)
             self._assignment_instance = AssignmentWrapper(assignment_counterpart)
             self._initial_cost_instance = InitialCost(self._assignment_instance, self._project_instance, self._network_instance, self._demands_instance)
-            self.activate_formatter(OutputFormatter.PLANIT_IO)
+            # Default activation of PLANIT_IO output formatter done here
+            # It cannot be done in the __init__ method since the formatter must be registered on the traffic assignment component
+            self.activate(OutputFormatter.PLANIT_IO)
             
-    def activate_formatter(self, formatter_component):
+    def activate(self, formatter_component):
         """Activate an output formatter
         :param formatter_component the formatter being set up
         """
@@ -138,10 +137,6 @@ class PLANit:
             io_output_formatter_counterpart = self._project_instance.create_and_register_output_formatter(formatter_component.value)
             io_output_formatter = PlanItOutputFormatterWrapper(io_output_formatter_counterpart)
             self._io_output_formatter_instance = io_output_formatter
-            project_path_set = self._io_output_formatter_instance.is_xml_directory_set()
-            if (not project_path_set):
-                project_path = os.getcwd()
-                self._io_output_formatter_instance.set_output_directory(project_path)
             self._assignment_instance.register_output_formatter(self._io_output_formatter_instance.java);           
                         
         elif formatter_component == OutputFormatter.MEMORY:
@@ -150,7 +145,7 @@ class PLANit:
             self._memory_output_formatter_instance = memory_output_formatter            
             self._assignment_instance.register_output_formatter(self._memory_output_formatter_instance.java);
             
-    def deactivate_formatter(self, formatter_component):
+    def deactivate(self, formatter_component):
         """Deactivate an output formatter which has previously been activated
         :param formatter_component the formatter which has previously been activated
         """
