@@ -137,7 +137,7 @@ class PLANit:
                         
         elif formatter_component == OutputFormatter.MEMORY:
             memory_output_formatter_counterpart =  self._project_instance.create_and_register_output_formatter(formatter_component.value)
-            memory_output_formatter = MemoryOutputFormatterWrapper(memory_output_formatter_counterpart)
+            memory_output_formatter = MemoryOutputFormatterWrapper(memory_output_formatter_counterpart, self.project)
             self._memory_output_formatter_instance = memory_output_formatter            
             self._assignment_instance.register_output_formatter(self._memory_output_formatter_instance.java);
             

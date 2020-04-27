@@ -17,7 +17,6 @@ class TestSuite(unittest.TestCase):
       
     @classmethod
     def setUpClass(cls):
-        #cls.test_data_path = this_path  + "\\..\\..\\testcases\\"
         cls.test_data_path = this_path+ "\\"
     
     def test_route_choice_2_initial_costs_500_iterations(self):
@@ -123,37 +122,28 @@ class TestSuite(unittest.TestCase):
         gc.collect()
         
     def test_explanatory_with_memory_output(self):
-        """Explanatory unit test, which save results to memory only and not to file, to test contents of memory output formatter are correct
+        """Explanatory unit test, which saves results to memory only and not to file, to test contents of memory output formatter are correct
         """
         print("Running test_explanatory with results only stored in memory")
         description = "explanatory";
         max_iterations = 2
         epsilon = 0.001
         plan_it = Helper.run_test(max_iterations, epsilon, description, 1, None, None, 0, None, 1, None, True)
-        memory_output_formatter = plan_it.memory
-        mode_counterpart = plan_it.project.get_mode_by_external_id(1)
-        mode = ModeWrapper(mode_counterpart)
-        time_period_counterpart =  plan_it.project.get_time_period_by_external_id(0)
-        time_period = TimePeriodWrapper(time_period_counterpart)
-        output_type_link_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(OutputType.LINK.java_class_name(), OutputType.LINK.value)
-        memory_output_iterator_counterpart = memory_output_formatter.get_iterator(mode.java, time_period.java, max_iterations, output_type_link_instance)
-        memory_output_iterator = MemoryOutputIteratorWrapper(memory_output_iterator_counterpart)
+
+        mode_external_id = 1
+        time_period_external_id = 0
+        
+        flow_position = plan_it.memory.get_position_of_output_value_property(mode_external_id, time_period_external_id, max_iterations, OutputType.LINK, OutputProperty.FLOW)
+        cost_position = plan_it.memory.get_position_of_output_value_property(mode_external_id, time_period_external_id, max_iterations, OutputType.LINK, OutputProperty.LINK_COST)
+        length_position = plan_it.memory.get_position_of_output_value_property(mode_external_id, time_period_external_id, max_iterations, OutputType.LINK, OutputProperty.LENGTH)
+        speed_position = plan_it.memory.get_position_of_output_value_property(mode_external_id, time_period_external_id, max_iterations, OutputType.LINK, OutputProperty.CALCULATED_SPEED)
+        capacity_position = plan_it.memory.get_position_of_output_value_property(mode_external_id, time_period_external_id, max_iterations, OutputType.LINK, OutputProperty.CAPACITY_PER_LANE)
+        number_of_lanes_position = plan_it.memory.get_position_of_output_value_property(mode_external_id, time_period_external_id, max_iterations, OutputType.LINK, OutputProperty.NUMBER_OF_LANES)
+        
+        memory_output_iterator = plan_it.memory.iterator(mode_external_id, time_period_external_id, max_iterations, OutputType.LINK)
         while memory_output_iterator.has_next():
             keys = memory_output_iterator.get_keys()
             values = memory_output_iterator.get_values()
-            output_property_flow_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(OutputProperty.FLOW.java_class_name(), OutputProperty.FLOW.value)
-            output_property_cost_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(OutputProperty.LINK_COST.java_class_name(), OutputProperty.LINK_COST.value) 
-            output_property_length_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(OutputProperty.LENGTH.java_class_name(), OutputProperty.LENGTH.value) 
-            output_property_speed_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(OutputProperty.CALCULATED_SPEED.java_class_name(), OutputProperty.CALCULATED_SPEED.value) 
-            output_property_capacity_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(OutputProperty.CAPACITY_PER_LANE.java_class_name(), OutputProperty.CAPACITY_PER_LANE.value) 
-            output_property_number_of_lanes_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(OutputProperty.NUMBER_OF_LANES.java_class_name(), OutputProperty.NUMBER_OF_LANES.value) 
-     
-            flow_position = memory_output_formatter.get_position_of_output_value_property(mode.java, time_period.java, max_iterations, output_type_link_instance, output_property_flow_instance)
-            cost_position = memory_output_formatter.get_position_of_output_value_property(mode.java, time_period.java, max_iterations, output_type_link_instance, output_property_cost_instance)
-            length_position = memory_output_formatter.get_position_of_output_value_property(mode.java, time_period.java, max_iterations, output_type_link_instance, output_property_length_instance)
-            speed_position = memory_output_formatter.get_position_of_output_value_property(mode.java, time_period.java, max_iterations, output_type_link_instance, output_property_speed_instance)
-            capacity_position = memory_output_formatter.get_position_of_output_value_property(mode.java, time_period.java, max_iterations, output_type_link_instance, output_property_capacity_instance)
-            number_of_lanes_position = memory_output_formatter.get_position_of_output_value_property(mode.java, time_period.java, max_iterations, output_type_link_instance, output_property_number_of_lanes_instance)
             self.assertEquals(values[flow_position], 1)
             self.assertTrue(math.isclose(values[cost_position], 10, rel_tol=0.001))
             self.assertEquals(values[length_position], 10)
