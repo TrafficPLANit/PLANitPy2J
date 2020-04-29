@@ -10,11 +10,13 @@ from planit import TimePeriodWrapper
 
 class InitialCost:
     
+    #def __init__(self, assignment, project, network, demands):
     def __init__(self, assignment, project, network, demands):
         """Initializer for the InitialCosts class
         :param assignment the traffic assignment being used
         :param project the project being used
         :param network the network being used
+        :param demands the demands object being used
         """
         self._assignment_instance = assignment
         self._project_instance = project
@@ -33,6 +35,6 @@ class InitialCost:
         else:
             initial_cost_counterpart = self._project_instance.create_and_register_initial_link_segment_cost(self._network_instance.java, initial_costs_file_location)
             initial_cost_wrapper = InitialCostWrapper(initial_cost_counterpart)
-            time_period_counterpart = self._project_instance.get_time_period_by_external_id(time_period_external_id)
-            time_period_wrapper = TimePeriodWrapper(time_period_counterpart)
-            self._assignment_instance.register_initial_link_segment_cost(time_period_wrapper.java, initial_cost_wrapper.java)
+            time_period_counterpart =  self._demands_instance.get_time_period_by_external_id(time_period_external_id)
+            time_period = TimePeriodWrapper(time_period_counterpart)           
+            self._assignment_instance.register_initial_link_segment_cost(time_period.java, initial_cost_wrapper.java)

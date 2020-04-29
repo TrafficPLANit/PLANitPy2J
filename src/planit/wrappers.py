@@ -83,8 +83,7 @@ class AssignmentWrapper(BaseWrapper):
          
     def activate_output(self, output_type : OutputType):
         """ pass on to Java not as an Enum as Py4J does not seem to properly handle this at this stage
-            instead we pass on the enum string which on the Java side is converted into the proper enum instead
-            
+             instead we pass on the enum string which on the Java side is converted into the proper enum instead           
             :param output_type Python enum of available output types
         """ 
         # collect an enum instance by collecting the <package>.<class_name> string from the Output type enum
@@ -152,7 +151,7 @@ class DemandsWrapper(BaseWrapper):
     
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)    
-
+        
 class GapFunctionWrapper(BaseWrapper):
     """ Wrapper around the Java GapFunction class instance
     """
@@ -201,15 +200,16 @@ class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
     """ Wrapper around the Java PlanItOutputFormatter class instance
     """
     
-    def __init__(self, java_counterpart, project_instance):
+    def __init__(self, java_counterpart, demands_instance, network_instance):
         """
         :param self this object
         :param java_counterpart Java counterpart for MemoryOutputFormatter object
         :param project_instance the instance of the project being run
         """
         super().__init__(java_counterpart)
-        self._project_instance = project_instance
-        
+        self._demands_instance = demands_instance
+        self._network_instance = network_instance
+                   
     def iterator(self, mode_external_id, time_period_external_id, no_iterations, output_type):
         """Return the  wrapper for MemoryOutputIterator object for this MemoryOutputFormatter
         :param mode_external_id the external Id of the current mode
@@ -218,12 +218,10 @@ class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
         :param output_type the output type for the current output
         :return the wrapper for the memory output iterator
         """
-        #time_period_counterpart =  project_instance.get_time_period_by_external_id(time_period_external_id)
-        time_period_counterpart =  self._project_instance.get_time_period_by_external_id(time_period_external_id)
-        time_period = TimePeriodWrapper(time_period_counterpart)
-        #mode_counterpart = project_instance.get_mode_by_external_id( mode_external_id)
-        mode_counterpart = self._project_instance.get_mode_by_external_id( mode_external_id)
-        mode = ModeWrapper(mode_counterpart)
+        time_period_counterpart =  self._demands_instance.get_time_period_by_external_id(time_period_external_id)
+        time_period = TimePeriodWrapper(time_period_counterpart)        
+        mode_counterpart = self._network_instance.get_mode_by_external_id(mode_external_id)
+        mode = ModeWrapper(mode_counterpart)       
         output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_type.java_class_name(), output_type.value)
         memory_output_iterator_counterpart = self._java_counterpart.getIterator(mode.java, time_period.java, no_iterations, output_type_instance)
         memory_output_iterator = MemoryOutputIteratorWrapper(memory_output_iterator_counterpart)
@@ -238,11 +236,9 @@ class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
         :param output_property the specified output property
         :result the position in the results array of the specified property
         """
-        #time_period_counterpart =  project_instance.get_time_period_by_external_id(time_period_external_id)
-        time_period_counterpart =  self._project_instance.get_time_period_by_external_id(time_period_external_id)
-        time_period = TimePeriodWrapper(time_period_counterpart)
-        #mode_counterpart = project_instance.get_mode_by_external_id( mode_external_id)
-        mode_counterpart = self._project_instance.get_mode_by_external_id( mode_external_id)
+        time_period_counterpart =  self._demands_instance.get_time_period_by_external_id(time_period_external_id)
+        time_period = TimePeriodWrapper(time_period_counterpart)        
+        mode_counterpart = self._network_instance.get_mode_by_external_id(mode_external_id)
         mode = ModeWrapper(mode_counterpart)
         output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_type.java_class_name(), output_type.value)
         output_property_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_property.java_class_name(), output_property.value)
@@ -328,6 +324,12 @@ class PhysicalNetworkWrapper(BaseWrapper):
     
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
+        
+    #===========================================================================
+    # def get_mode_by_external_id(self, external_id):
+    #     modes_instance = self._java_counterpart.modes
+    #     return modes_instance.getModeByExternalId(external_id)
+    #===========================================================================
         
 class PlanItInputBuilderWrapper(BaseWrapper):
     """ Wrapper around the Java InputBuilderListener class instance

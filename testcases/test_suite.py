@@ -5,7 +5,7 @@ sys.path.append(this_path + "\\..\\src\\")
 import gc
 import unittest
 import math
-from test_utils import Helper
+from test_utils import PlanItHelper
 from planit import OutputType
 from planit import OutputProperty
 from planit import ModeWrapper
@@ -30,13 +30,13 @@ class TestSuite(unittest.TestCase):
         initial_costs_file_location = self.test_data_path + "route_choice\\xml\\test2initialCosts500iterations\\initial_link_segment_costs.csv"
         max_iterations = 500
         epsilon = 0.0000000001
-        Helper.run_test(max_iterations, epsilon, description, 1, initial_costs_file_location, None, 0, None, 1, project_path)       
-        Helper.delete_file(OutputType.LINK, description, xml_file_name, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name, project_path))        
-        Helper.delete_file(OutputType.PATH, description, xml_file_name, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name, project_path))        
-        Helper.delete_file(OutputType.OD, description, xml_file_name, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name, project_path))
+        PlanItHelper.run_test(max_iterations, epsilon, description, 1, initial_costs_file_location, None, 0, None, 1, project_path)       
+        PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name, project_path))        
+        PlanItHelper.delete_file(OutputType.PATH, description, xml_file_name, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name, project_path))        
+        PlanItHelper.delete_file(OutputType.OD, description, xml_file_name, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name, project_path))
         gc.collect()
   
     def test_route_choice_2_initial_costs_one_iteration_three_time_periods(self):
@@ -60,25 +60,25 @@ class TestSuite(unittest.TestCase):
         initial_link_segment_locations_per_time_period[1] = self.test_data_path + "route_choice\\xml\\test2initialCostsOneIterationThreeTimePeriods\\initial_link_segment_costs_time_period_2.csv"
         initial_link_segment_locations_per_time_period[2] = self.test_data_path + "route_choice\\xml\\test2initialCostsOneIterationThreeTimePeriods\\initial_link_segment_costs_time_period_3.csv"
         epsilon = 0.001
-        Helper.run_test(max_iterations, epsilon, description, 1, None, None, 0, initial_link_segment_locations_per_time_period, 2, project_path)
-        Helper.delete_file(OutputType.LINK, description, xml_file_name1, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name1, project_path))
-        Helper.delete_file(OutputType.LINK, description, xml_file_name2, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name2, project_path))
-        Helper.delete_file(OutputType.LINK, description, xml_file_name3, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name3, project_path))
-        Helper.delete_file(OutputType.PATH, description, xml_file_name1, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name1, project_path))
-        Helper.delete_file(OutputType.PATH, description, xml_file_name2, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name2, project_path))
-        Helper.delete_file(OutputType.PATH, description, xml_file_name3, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name3, project_path))
-        Helper.delete_file(OutputType.OD, description, xml_file_name1, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name1, project_path))
-        Helper.delete_file(OutputType.OD, description, xml_file_name2, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name2, project_path))
-        Helper.delete_file(OutputType.OD, description, xml_file_name3, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name3, project_path))
+        PlanItHelper.run_test(max_iterations, epsilon, description, 1, None, None, 0, initial_link_segment_locations_per_time_period, 2, project_path)
+        PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name1, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name1, project_path))
+        PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name2, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name2, project_path))
+        PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name3, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name3, project_path))
+        PlanItHelper.delete_file(OutputType.PATH, description, xml_file_name1, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name1, project_path))
+        PlanItHelper.delete_file(OutputType.PATH, description, xml_file_name2, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name2, project_path))
+        PlanItHelper.delete_file(OutputType.PATH, description, xml_file_name3, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name3, project_path))
+        PlanItHelper.delete_file(OutputType.OD, description, xml_file_name1, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name1, project_path))
+        PlanItHelper.delete_file(OutputType.OD, description, xml_file_name2, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name2, project_path))
+        PlanItHelper.delete_file(OutputType.OD, description, xml_file_name3, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name3, project_path))
         gc.collect()
 
     def test_basic_shortest_path_algorithm_a_to_c(self):
@@ -92,13 +92,13 @@ class TestSuite(unittest.TestCase):
         xml_file_name = "Time Period 1.xml";
         max_iterations = 500
         epsilon = 0.001
-        Helper.run_test(max_iterations, epsilon, description, 1, None, None, 0, None, 1, project_path)
-        Helper.delete_file(OutputType.LINK, description, xml_file_name, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name, project_path))
-        Helper.delete_file(OutputType.PATH, description, xml_file_name, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name, project_path))
-        Helper.delete_file(OutputType.OD, description, xml_file_name, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name, project_path))
+        PlanItHelper.run_test(max_iterations, epsilon, description, 1, None, None, 0, None, 1, project_path)
+        PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name, project_path))
+        PlanItHelper.delete_file(OutputType.PATH, description, xml_file_name, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name, project_path))
+        PlanItHelper.delete_file(OutputType.OD, description, xml_file_name, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name, project_path))
         gc.collect()
         
     def test_basic_shortest_path_algorithm_a_to_d(self):
@@ -112,13 +112,13 @@ class TestSuite(unittest.TestCase):
         xml_file_name = "Time Period 1.xml";
         max_iterations = 500
         epsilon = 0.001
-        Helper.run_test(max_iterations, epsilon, description, 1, None, None, 0, None, 1, project_path)
-        Helper.delete_file(OutputType.LINK, description, xml_file_name, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name, project_path))
-        Helper.delete_file(OutputType.PATH, description, xml_file_name, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name, project_path))
-        Helper.delete_file(OutputType.OD, description, xml_file_name, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name, project_path))
+        PlanItHelper.run_test(max_iterations, epsilon, description, 1, None, None, 0, None, 1, project_path)
+        PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name, project_path))
+        PlanItHelper.delete_file(OutputType.PATH, description, xml_file_name, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name, project_path))
+        PlanItHelper.delete_file(OutputType.OD, description, xml_file_name, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name, project_path))
         gc.collect()
         
     def test_explanatory_with_memory_output(self):
@@ -128,7 +128,7 @@ class TestSuite(unittest.TestCase):
         description = "explanatory";
         max_iterations = 2
         epsilon = 0.001
-        plan_it = Helper.run_test(max_iterations, epsilon, description, 1, None, None, 0, None, 1, None, True)
+        plan_it = PlanItHelper.run_test(max_iterations, epsilon, description, 1, None, None, 0, None, 1, None, True)
 
         mode_external_id = 1
         time_period_external_id = 0
@@ -162,13 +162,13 @@ class TestSuite(unittest.TestCase):
         xml_file_name = "Time Period 1.xml";
         max_iterations = 500
         epsilon = 0.001
-        Helper.run_test(max_iterations, epsilon, description, 1, None, None, 0, None, 1)
-        Helper.delete_file(OutputType.LINK, description, xml_file_name)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name))
-        Helper.delete_file(OutputType.PATH, description, xml_file_name)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name))
-        Helper.delete_file(OutputType.OD, description, xml_file_name)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name))
+        PlanItHelper.run_test(max_iterations, epsilon, description, 1, None, None, 0, None, 1)
+        PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name))
+        PlanItHelper.delete_file(OutputType.PATH, description, xml_file_name)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name))
+        PlanItHelper.delete_file(OutputType.OD, description, xml_file_name)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name))
         gc.collect()
     
     def test_basic_three_time_periods(self):
@@ -188,25 +188,25 @@ class TestSuite(unittest.TestCase):
         xml_file_name3 = "Time Period 3.xml"
         max_iterations = 500
         epsilon = 0.001
-        Helper.run_test(max_iterations, epsilon, description, 1, None, None, 0, None, 1, project_path)
-        Helper.delete_file(OutputType.LINK, description, xml_file_name1, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name1, project_path))
-        Helper.delete_file(OutputType.LINK, description, xml_file_name2, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name2, project_path))
-        Helper.delete_file(OutputType.LINK, description, xml_file_name3, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name3, project_path))
-        Helper.delete_file(OutputType.PATH, description, xml_file_name1, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name1, project_path))
-        Helper.delete_file(OutputType.PATH, description, xml_file_name2, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name2, project_path))
-        Helper.delete_file(OutputType.PATH, description, xml_file_name3, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name3, project_path))
-        Helper.delete_file(OutputType.OD, description, xml_file_name1, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name1, project_path))
-        Helper.delete_file(OutputType.OD, description, xml_file_name2, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name2, project_path))
-        Helper.delete_file(OutputType.OD, description, xml_file_name3, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name3, project_path))
+        PlanItHelper.run_test(max_iterations, epsilon, description, 1, None, None, 0, None, 1, project_path)
+        PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name1, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name1, project_path))
+        PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name2, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name2, project_path))
+        PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name3, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name3, project_path))
+        PlanItHelper.delete_file(OutputType.PATH, description, xml_file_name1, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name1, project_path))
+        PlanItHelper.delete_file(OutputType.PATH, description, xml_file_name2, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name2, project_path))
+        PlanItHelper.delete_file(OutputType.PATH, description, xml_file_name3, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name3, project_path))
+        PlanItHelper.delete_file(OutputType.OD, description, xml_file_name1, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name1, project_path))
+        PlanItHelper.delete_file(OutputType.OD, description, xml_file_name2, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name2, project_path))
+        PlanItHelper.delete_file(OutputType.OD, description, xml_file_name3, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name3, project_path))
         gc.collect()
         
     def test_route_choice_compare_with_OmniTRANS4_using_two_time_periods(self):
@@ -223,19 +223,19 @@ class TestSuite(unittest.TestCase):
         xml_file_name2 = "Time Period 2.xml"
         max_iterations = 500
         epsilon = 0.0
-        Helper.run_test(max_iterations, epsilon, description, 1, None, None, 0, None, 1, project_path)
-        Helper.delete_file(OutputType.LINK, description, xml_file_name1, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name1, project_path))
-        Helper.delete_file(OutputType.LINK, description, xml_file_name2, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name2, project_path))
-        Helper.delete_file(OutputType.PATH, description, xml_file_name1, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name1, project_path))
-        Helper.delete_file(OutputType.PATH, description, xml_file_name2, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name2, project_path))
-        Helper.delete_file(OutputType.OD, description, xml_file_name1, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name1, project_path))
-        Helper.delete_file(OutputType.OD, description, xml_file_name2, project_path)
-        self.assertTrue(Helper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name2, project_path))
+        PlanItHelper.run_test(max_iterations, epsilon, description, 1, None, None, 0, None, 1, project_path)
+        PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name1, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name1, project_path))
+        PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name2, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name2, project_path))
+        PlanItHelper.delete_file(OutputType.PATH, description, xml_file_name1, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name1, project_path))
+        PlanItHelper.delete_file(OutputType.PATH, description, xml_file_name2, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name2, project_path))
+        PlanItHelper.delete_file(OutputType.OD, description, xml_file_name1, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name1, project_path))
+        PlanItHelper.delete_file(OutputType.OD, description, xml_file_name2, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name2, project_path))
         gc.collect()
         
 if __name__ == '__main__':

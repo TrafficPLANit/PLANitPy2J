@@ -11,10 +11,11 @@ from planit import OutputProperty
 from planit import RouteIdType
 from planit import OutputFormatter
 from planit import ODSkimSubOutputType
+from planit import TimePeriodWrapper
 from planit import PLANit
 from builtins import staticmethod
 
-class Helper:
+class PlanItHelper:
     
     @staticmethod
     def dictionary_register_initial_costs(plan_it, initial_link_segment_locations_per_time_period):
@@ -22,8 +23,10 @@ class Helper:
         :param plan_it the PLANit object to be updated with the initial costs
         :param initial_link_segment_locations_per_time_period dictionary of locations of initial cost files per time period
         """
-        time_periods_external_ids = plan_it.project.get_time_period_external_ids()
-        for time_period_external_id in time_periods_external_ids:
+        time_period_counterparts = plan_it.demands.get_registered_time_periods()
+        for time_period_counterpart in time_period_counterparts:
+            time_period = TimePeriodWrapper(time_period_counterpart)
+            time_period_external_id = time_period.get_external_id()
             initial_costs_file_location = initial_link_segment_locations_per_time_period[time_period_external_id]
             plan_it.initial_cost.set(initial_costs_file_location, time_period_external_id)
   
@@ -109,9 +112,9 @@ class Helper:
                 plan_it.output.set_output_directory(project_path)
 
         if register_initial_costs_option == 1:
-            Helper.default_register_initial_costs(plan_it, initial_costs_file_location1, initial_costs_file_location2, init_costs_file_pos)
+            PlanItHelper.default_register_initial_costs(plan_it, initial_costs_file_location1, initial_costs_file_location2, init_costs_file_pos)
         elif register_initial_costs_option == 2:
-            Helper.dictionary_register_initial_costs(plan_it, initial_link_segment_locations_per_time_period)
+            PlanItHelper.dictionary_register_initial_costs(plan_it, initial_link_segment_locations_per_time_period)
         
         plan_it.run()
         return plan_it
@@ -125,7 +128,7 @@ class Helper:
         """
         if project_path == None:
             project_path = os.getcwd()
-        full_file_name = Helper.create_full_file_name(output_type, project_path, description, file_name)
+        full_file_name = PlanItHelper.create_full_file_name(output_type, project_path, description, file_name)
         os.remove(full_file_name)
         
     @staticmethod
@@ -199,9 +202,9 @@ class Helper:
         """
         if project_path == None:
             project_path = os.getcwd()
-        full_file_name = Helper.create_full_file_name(output_type, project_path, description, file_name)
-        short_file_name = Helper.create_short_file_name(output_type, project_path, file_name)
-        comparison_result = Helper.compare_csv_files(short_file_name, full_file_name)
+        full_file_name = PlanItHelper.create_full_file_name(output_type, project_path, description, file_name)
+        short_file_name = PlanItHelper.create_short_file_name(output_type, project_path, file_name)
+        comparison_result = PlanItHelper.compare_csv_files(short_file_name, full_file_name)
         if (comparison_result):
             os.remove(full_file_name)
         return comparison_result

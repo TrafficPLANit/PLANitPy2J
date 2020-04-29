@@ -137,7 +137,7 @@ class PLANit:
                         
         elif formatter_component == OutputFormatter.MEMORY:
             memory_output_formatter_counterpart =  self._project_instance.create_and_register_output_formatter(formatter_component.value)
-            memory_output_formatter = MemoryOutputFormatterWrapper(memory_output_formatter_counterpart, self.project)
+            memory_output_formatter = MemoryOutputFormatterWrapper(memory_output_formatter_counterpart, self._demands_instance, self._network_instance)
             self._memory_output_formatter_instance = memory_output_formatter            
             self._assignment_instance.register_output_formatter(self._memory_output_formatter_instance.java);
             
@@ -173,12 +173,6 @@ class PLANit:
         """ access to the assignment builder 
         """
         return self._assignment_instance  
-    
-    @property
-    def project(self):
-        """access to the project
-        """
-        return self._project_instance
     
     @property
     def network(self):
