@@ -10,7 +10,6 @@ from planit import TimePeriodWrapper
 
 class InitialCost:
     
-    #def __init__(self, assignment, project, network, demands):
     def __init__(self, assignment, project, network, demands):
         """Initializer for the InitialCosts class
         :param assignment the traffic assignment being used

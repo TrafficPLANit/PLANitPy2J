@@ -228,12 +228,12 @@ class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
         return memory_output_iterator
    
     def get_position_of_output_value_property(self, mode_external_id, time_period_external_id, no_iterations, output_type, output_property):
-        """Returns the position in the results array of the specified output property
+        """Returns the position in the results array of the specified output value property
         :param mode_external_id the external Id of the current mode
         :param time_period_external_id the external Id of the current time period
         :param no_iterations the iteration the output iterator applies to
         :param output_type the output type for the current output
-        :param output_property the specified output property
+        :param output_property the specified output value property
         :result the position in the results array of the specified property
         """
         time_period_counterpart =  self._demands_instance.get_time_period_by_external_id(time_period_external_id)
@@ -243,6 +243,24 @@ class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
         output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_type.java_class_name(), output_type.value)
         output_property_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_property.java_class_name(), output_property.value)
         position = self._java_counterpart.getPositionOfOutputValueProperty(mode.java, time_period.java, no_iterations, output_type_instance, output_property_instance)
+        return position
+    
+    def get_position_of_output_key_property(self, mode_external_id, time_period_external_id, no_iterations, output_type, output_property):
+        """Returns the position in the results array of the specified output key property
+        :param mode_external_id the external Id of the current mode
+        :param time_period_external_id the external Id of the current time period
+        :param no_iterations the iteration the output iterator applies to
+        :param output_type the output type for the current output
+        :param output_property the specified output property
+        :result the position in the results array of the specified key property
+        """
+        time_period_counterpart =  self._demands_instance.get_time_period_by_external_id(time_period_external_id)
+        time_period = TimePeriodWrapper(time_period_counterpart)        
+        mode_counterpart = self._network_instance.get_mode_by_external_id(mode_external_id)
+        mode = ModeWrapper(mode_counterpart)
+        output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_type.java_class_name(), output_type.value)
+        output_property_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_property.java_class_name(), output_property.value)
+        position = self._java_counterpart.getPositionOfOutputKeyProperty(mode.java, time_period.java, no_iterations, output_type_instance, output_property_instance)
         return position
         
 class OutputTypeConfigurationWrapper(BaseWrapper): 

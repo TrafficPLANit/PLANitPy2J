@@ -30,6 +30,5 @@ class GatewayUtils(object):
             having to call Java functions as Java functions but one can call them as Python functions which are dynamically changed to their
             Java counterparts
             """
-            s.replace(">",".")
             return re.sub(r'(?!^)_([a-zA-Z])', lambda m: m.group(1).upper(), s) 
 

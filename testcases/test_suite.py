@@ -140,15 +140,45 @@ class TestSuite(unittest.TestCase):
         capacity_position = plan_it.memory.get_position_of_output_value_property(mode_external_id, time_period_external_id, max_iterations, OutputType.LINK, OutputProperty.CAPACITY_PER_LANE)
         number_of_lanes_position = plan_it.memory.get_position_of_output_value_property(mode_external_id, time_period_external_id, max_iterations, OutputType.LINK, OutputProperty.NUMBER_OF_LANES)
         
-        memory_output_iterator = plan_it.memory.iterator(mode_external_id, time_period_external_id, max_iterations, OutputType.LINK)
-        while memory_output_iterator.has_next():
-            keys = memory_output_iterator.get_keys()
-            values = memory_output_iterator.get_values()
+        memory_output_iterator_link = plan_it.memory.iterator(mode_external_id, time_period_external_id, max_iterations, OutputType.LINK)
+        while memory_output_iterator_link.has_next():
+            keys = memory_output_iterator_link.get_keys()
+            values = memory_output_iterator_link.get_values()
             self.assertEquals(values[flow_position], 1)
             self.assertTrue(math.isclose(values[cost_position], 10, rel_tol=0.001))
             self.assertEquals(values[length_position], 10)
             self.assertEquals(values[capacity_position], 2000)
             self.assertEquals(values[number_of_lanes_position], 1)
+            
+        path_position = plan_it.memory.get_position_of_output_value_property(mode_external_id, time_period_external_id, max_iterations, OutputType.PATH, OutputProperty.PATH)
+        key1_position = plan_it.memory.get_position_of_output_key_property(mode_external_id, time_period_external_id, max_iterations, OutputType.PATH, OutputProperty.ORIGIN_ZONE_EXTERNAL_ID)
+        key2_position = plan_it.memory.get_position_of_output_key_property(mode_external_id, time_period_external_id, max_iterations, OutputType.PATH, OutputProperty.DESTINATION_ZONE_EXTERNAL_ID)
+        memory_output_iterator_path = plan_it.memory.iterator(mode_external_id, time_period_external_id, max_iterations, OutputType.PATH)
+        while memory_output_iterator_path.has_next():
+            keys = memory_output_iterator_path.get_keys()
+            self.assertTrue(keys[key1_position] in [1,2])
+            self.assertTrue(keys[key2_position] in [1,2])
+            values = memory_output_iterator_path.get_values()
+            value = values[path_position]
+            if ((keys[key1_position] == 1) and (keys[key2_position] == 2)):
+                self.assertEquals(value,"[1,2]")
+            else:
+                self.assertEquals(value, "")
+                
+        od_position = plan_it.memory.get_position_of_output_value_property(mode_external_id, time_period_external_id, max_iterations-1, OutputType.OD, OutputProperty.OD_COST)
+        key1_position = plan_it.memory.get_position_of_output_key_property(mode_external_id, time_period_external_id, max_iterations-1, OutputType.OD, OutputProperty.ORIGIN_ZONE_EXTERNAL_ID)
+        key2_position = plan_it.memory.get_position_of_output_key_property(mode_external_id, time_period_external_id, max_iterations-1, OutputType.OD, OutputProperty.DESTINATION_ZONE_EXTERNAL_ID)
+        memory_output_iterator_od = plan_it.memory.iterator(mode_external_id, time_period_external_id, max_iterations, OutputType.PATH)
+        while memory_output_iterator_od.has_next():
+            keys = memory_output_iterator_path.get_keys()
+            self.assertTrue(keys[key1_position] in [1,2])
+            self.assertTrue(keys[key2_position] in [1,2])
+            values = memory_output_iterator_path.get_values()
+            value = values[path_position]
+            if ((keys[key1_position] == 1) and (keys[key2_position] == 2)):
+                self.assertEquals(value,10)
+            else:
+                self.assertEquals(value, "")
        
         gc.collect()
  
