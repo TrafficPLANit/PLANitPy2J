@@ -7,6 +7,7 @@ this_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(this_path + "\\..")
 from planit import InitialCostWrapper
 from planit import TimePeriodWrapper
+from planit import TimePeriodsWrapper
 
 class InitialCost:
     
@@ -34,6 +35,8 @@ class InitialCost:
         else:
             initial_cost_counterpart = self._project_instance.create_and_register_initial_link_segment_cost(self._network_instance.java, initial_costs_file_location)
             initial_cost_wrapper = InitialCostWrapper(initial_cost_counterpart)
-            time_period_counterpart =  self._demands_instance.get_time_period_by_external_id(time_period_external_id)
+            time_periods_counterpart = self._demands_instance.get_time_periods()
+            time_periods = TimePeriodsWrapper(time_periods_counterpart)
+            time_period_counterpart = time_periods.get_time_period_by_external_id(time_period_external_id);
             time_period = TimePeriodWrapper(time_period_counterpart)           
             self._assignment_instance.register_initial_link_segment_cost(time_period.java, initial_cost_wrapper.java)

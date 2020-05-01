@@ -50,7 +50,6 @@ class BaseWrapper(object):
         """
         return get_field(self.java, fieldName)
 
-
 class AssignmentWrapper(BaseWrapper):
     """ Wrapper around the Java traffic assignment builder class instance
     """
@@ -164,13 +163,41 @@ class GapFunctionWrapper(BaseWrapper):
     def stop_criterion(self):
         return self._stop_criterion
 
-class ModeWrapper(BaseWrapper):
-    """ Wrapper around the Java physical cost class instance
+class InitialCostWrapper(BaseWrapper):
+    """ Wrapper around the Java initial cost class instance
     """
     
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
- 
+    
+class LinkSegmentExpectedResultsDtoWrapper(BaseWrapper):
+    """ Wrapper around the Java Link Segment Expected Results Dto class instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)               
+
+class MemoryOutputIteratorWrapper(BaseWrapper):
+    """Wrapper class aroung MemoryOutputIterator class
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+       
+class ModeWrapper(BaseWrapper):
+    """ Wrapper around the Java mode class instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+class ModesWrapper(BaseWrapper):
+    """ Wrapper around the Java modes class instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
 class OutputConfigurationWrapper(BaseWrapper):
     """ Wrapper around the Java output configuration class instance
     """
@@ -185,84 +212,6 @@ class OutputFormatterWrapper(BaseWrapper):
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
 
-class PlanItOutputFormatterWrapper(OutputFormatterWrapper):
-    """ Wrapper around the Java PlanItOutputFormatter class instance
-    """
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-        # Initialize the output project path to the current run directory
-        # Modellers may overwrite this default later
-        project_path = os.getcwd()
-        self.set_output_directory(project_path)
-
-class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
-    """ Wrapper around the Java PlanItOutputFormatter class instance
-    """
-    
-    def __init__(self, java_counterpart, demands_instance, network_instance):
-        """
-        :param self this object
-        :param java_counterpart Java counterpart for MemoryOutputFormatter object
-        :param project_instance the instance of the project being run
-        """
-        super().__init__(java_counterpart)
-        self._demands_instance = demands_instance
-        self._network_instance = network_instance
-                   
-    def iterator(self, mode_external_id, time_period_external_id, no_iterations, output_type):
-        """Return the  wrapper for MemoryOutputIterator object for this MemoryOutputFormatter
-        :param mode_external_id the external Id of the current mode
-        :param time_period_external_id the external Id of the current time period
-        :param no_iterations the iteration the output iterator applies to
-        :param output_type the output type for the current output
-        :return the wrapper for the memory output iterator
-        """
-        time_period_counterpart =  self._demands_instance.get_time_period_by_external_id(time_period_external_id)
-        time_period = TimePeriodWrapper(time_period_counterpart)        
-        mode_counterpart = self._network_instance.get_mode_by_external_id(mode_external_id)
-        mode = ModeWrapper(mode_counterpart)       
-        output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_type.java_class_name(), output_type.value)
-        memory_output_iterator_counterpart = self._java_counterpart.getIterator(mode.java, time_period.java, no_iterations, output_type_instance)
-        memory_output_iterator = MemoryOutputIteratorWrapper(memory_output_iterator_counterpart)
-        return memory_output_iterator
-   
-    def get_position_of_output_value_property(self, mode_external_id, time_period_external_id, no_iterations, output_type, output_property):
-        """Returns the position in the results array of the specified output value property
-        :param mode_external_id the external Id of the current mode
-        :param time_period_external_id the external Id of the current time period
-        :param no_iterations the iteration the output iterator applies to
-        :param output_type the output type for the current output
-        :param output_property the specified output value property
-        :result the position in the results array of the specified property
-        """
-        time_period_counterpart =  self._demands_instance.get_time_period_by_external_id(time_period_external_id)
-        time_period = TimePeriodWrapper(time_period_counterpart)        
-        mode_counterpart = self._network_instance.get_mode_by_external_id(mode_external_id)
-        mode = ModeWrapper(mode_counterpart)
-        output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_type.java_class_name(), output_type.value)
-        output_property_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_property.java_class_name(), output_property.value)
-        position = self._java_counterpart.getPositionOfOutputValueProperty(mode.java, time_period.java, no_iterations, output_type_instance, output_property_instance)
-        return position
-    
-    def get_position_of_output_key_property(self, mode_external_id, time_period_external_id, no_iterations, output_type, output_property):
-        """Returns the position in the results array of the specified output key property
-        :param mode_external_id the external Id of the current mode
-        :param time_period_external_id the external Id of the current time period
-        :param no_iterations the iteration the output iterator applies to
-        :param output_type the output type for the current output
-        :param output_property the specified output property
-        :result the position in the results array of the specified key property
-        """
-        time_period_counterpart =  self._demands_instance.get_time_period_by_external_id(time_period_external_id)
-        time_period = TimePeriodWrapper(time_period_counterpart)        
-        mode_counterpart = self._network_instance.get_mode_by_external_id(mode_external_id)
-        mode = ModeWrapper(mode_counterpart)
-        output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_type.java_class_name(), output_type.value)
-        output_property_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_property.java_class_name(), output_property.value)
-        position = self._java_counterpart.getPositionOfOutputKeyProperty(mode.java, time_period.java, no_iterations, output_type_instance, output_property_instance)
-        return position
-        
 class OutputTypeConfigurationWrapper(BaseWrapper): 
     """ Wrapper around the Java link output type configuration class instance
     """
@@ -285,13 +234,148 @@ class OutputTypeConfigurationWrapper(BaseWrapper):
     def remove_all_properties(self):
         self._java_counterpart.removeAllProperties()
 
+class PhysicalCostWrapper(BaseWrapper):
+    """ Wrapper around the Java physical cost class instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+  
+class PhysicalNetworkWrapper(BaseWrapper):
+    """ Wrapper around the Java physical network class instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+  
+class SmoothingWrapper(BaseWrapper):
+    """ Wrapper around the Java Smoothing class instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+        
+class StopCriterionWrapper(BaseWrapper):
+    """ Wrapper around the Java StopCriterion class instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+    
+class TimePeriodWrapper(BaseWrapper):
+    """ Wrapper around the Java time period class instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+class TimePeriodsWrapper(BaseWrapper):
+    """ Wrapper around the Java time periods class instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+class VirtualCostWrapper(BaseWrapper):
+    """ Wrapper around the Java assignment class instance
+    """    
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+class ZoningWrapper(BaseWrapper):
+    """ Wrapper around the Java Zoning class instance
+    """    
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+ 
 class LinkOutputTypeConfigurationWrapper(OutputTypeConfigurationWrapper):
     """ Wrapper around the Java link output type configuration class instance
     """
      
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
-        
+                                
+class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
+    """ Wrapper around the Java PlanItOutputFormatter class instance
+    """
+    
+    def __init__(self, java_counterpart, demands_instance, network_instance):
+        """
+        :param self this object
+        :param java_counterpart Java counterpart for MemoryOutputFormatter object
+        :param project_instance the instance of the project being run
+        """
+        super().__init__(java_counterpart)
+        self._demands_instance = demands_instance
+        self._network_instance = network_instance
+                   
+    def iterator(self, mode_external_id, time_period_external_id, no_iterations, output_type):
+        """Return the  wrapper for MemoryOutputIterator object for this MemoryOutputFormatter
+        :param mode_external_id the external Id of the current mode
+        :param time_period_external_id the external Id of the current time period
+        :param no_iterations the iteration the output iterator applies to
+        :param output_type the output type for the current output
+        :return the wrapper for the memory output iterator
+        """
+        time_periods_counterpart = self._demands_instance.get_time_periods()
+        time_periods = TimePeriodsWrapper(time_periods_counterpart)
+        time_period_counterpart = time_periods.get_time_period_by_external_id(time_period_external_id);
+        time_period = TimePeriodWrapper(time_period_counterpart)        
+        modes_counterpart = self._network_instance.get_modes()
+        modes = ModesWrapper(modes_counterpart)
+        mode_counterpart = modes.get_mode_by_external_id(mode_external_id)
+        mode = ModeWrapper(mode_counterpart)       
+        output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_type.java_class_name(), output_type.value)
+        memory_output_iterator_counterpart = self._java_counterpart.getIterator(mode.java, time_period.java, no_iterations, output_type_instance)
+        memory_output_iterator = MemoryOutputIteratorWrapper(memory_output_iterator_counterpart)
+        return memory_output_iterator
+   
+    def get_position_of_output_value_property(self, mode_external_id, time_period_external_id, no_iterations, output_type, output_property):
+        """Returns the position in the results array of the specified output value property
+        :param mode_external_id the external Id of the current mode
+        :param time_period_external_id the external Id of the current time period
+        :param no_iterations the iteration the output iterator applies to
+        :param output_type the output type for the current output
+        :param output_property the specified output value property
+        :result the position in the results array of the specified property
+        """
+        time_periods_counterpart = self._demands_instance.get_time_periods()
+        time_periods = TimePeriodsWrapper(time_periods_counterpart)
+        time_period_counterpart = time_periods.get_time_period_by_external_id(time_period_external_id);
+        time_period = TimePeriodWrapper(time_period_counterpart)        
+        modes_counterpart = self._network_instance.get_modes()
+        modes = ModesWrapper(modes_counterpart)
+        mode_counterpart = modes.get_mode_by_external_id(mode_external_id)
+        mode = ModeWrapper(mode_counterpart)
+        output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_type.java_class_name(), output_type.value)
+        output_property_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_property.java_class_name(), output_property.value)
+        position = self._java_counterpart.getPositionOfOutputValueProperty(mode.java, time_period.java, no_iterations, output_type_instance, output_property_instance)
+        return position
+    
+    def get_position_of_output_key_property(self, mode_external_id, time_period_external_id, no_iterations, output_type, output_property):
+        """Returns the position in the results array of the specified output key property
+        :param mode_external_id the external Id of the current mode
+        :param time_period_external_id the external Id of the current time period
+        :param no_iterations the iteration the output iterator applies to
+        :param output_type the output type for the current output
+        :param output_property the specified output property
+        :result the position in the results array of the specified key property
+        """
+        time_periods_counterpart = self._demands_instance.get_time_periods()
+        time_periods = TimePeriodsWrapper(time_periods_counterpart)
+        time_period_counterpart = time_periods.get_time_period_by_external_id(time_period_external_id);
+        time_period = TimePeriodWrapper(time_period_counterpart)        
+        modes_counterpart = self._network_instance.get_modes()
+        modes = ModesWrapper(modes_counterpart)
+        mode_counterpart = modes.get_mode_by_external_id(mode_external_id)
+        mode = ModeWrapper(mode_counterpart)
+        output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_type.java_class_name(), output_type.value)
+        output_property_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_property.java_class_name(), output_property.value)
+        position = self._java_counterpart.getPositionOfOutputKeyProperty(mode.java, time_period.java, no_iterations, output_type_instance, output_property_instance)
+        return position
+ 
 class OriginDestinationOutputTypeConfigurationWrapper(OutputTypeConfigurationWrapper):
     """ Wrapper around the Java origin-destination output type configuration class instance
     """
@@ -322,85 +406,21 @@ class PathOutputTypeConfigurationWrapper(OutputTypeConfigurationWrapper):
         route_id_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(route_id_type.java_class_name(), route_id_type.value)
         self._java_counterpart.setPathIdType(route_id_type_instance)
         
-class PhysicalCostWrapper(BaseWrapper):
-    """ Wrapper around the Java physical cost class instance
-    """
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-        
-class InitialCostWrapper(BaseWrapper):
-    """ Wrapper around the Java initial cost class instance
-    """
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-        
-class PhysicalNetworkWrapper(BaseWrapper):
-    """ Wrapper around the Java physical network class instance
-    """
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-        
-    #===========================================================================
-    # def get_mode_by_external_id(self, external_id):
-    #     modes_instance = self._java_counterpart.modes
-    #     return modes_instance.getModeByExternalId(external_id)
-    #===========================================================================
-        
 class PlanItInputBuilderWrapper(BaseWrapper):
     """ Wrapper around the Java InputBuilderListener class instance
     """
     
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)    
+       
+class PlanItOutputFormatterWrapper(OutputFormatterWrapper):
+    """ Wrapper around the Java PlanItOutputFormatter class instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+        # Initialize the output project path to the current run directory
+        # Modellers may overwrite this default later
+        project_path = os.getcwd()
+        self.set_output_directory(project_path)
 
-class SmoothingWrapper(BaseWrapper):
-    """ Wrapper around the Java Smoothing class instance
-    """
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-        
-class StopCriterionWrapper(BaseWrapper):
-    """ Wrapper around the Java StopCriterion class instance
-    """
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-    
-class TimePeriodWrapper(BaseWrapper):
-    """ Wrapper around the Java physical cost class instance
-    """
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-
-class VirtualCostWrapper(BaseWrapper):
-    """ Wrapper around the Java assignment class instance
-    """    
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-
-class ZoningWrapper(BaseWrapper):
-    """ Wrapper around the Java Zoning class instance
-    """    
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-        
-class MemoryOutputIteratorWrapper(BaseWrapper):
-    """Wrapper class aroung MemoryOutputIterator class
-    """
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-
-class LinkSegmentExpectedResultsDtoWrapper(BaseWrapper):
-    """ Wrapper around the Java Link Segment Expected Results Dto class instance
-    """
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)               

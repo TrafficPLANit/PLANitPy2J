@@ -35,6 +35,8 @@ from .wrappers import StopCriterionWrapper
 from .wrappers import TimePeriodWrapper
 from .wrappers import VirtualCostWrapper
 from .wrappers import ZoningWrapper
+from .wrappers import TimePeriodsWrapper
+from .wrappers import ModesWrapper
 from .wrappers import LinkSegmentExpectedResultsDtoWrapper
 from .wrappers import MemoryOutputIteratorWrapper
 from .initial_cost import InitialCost
