@@ -150,7 +150,7 @@ class TestSuite(unittest.TestCase):
             self.assertEquals(values[capacity_position], 2000)
             self.assertEquals(values[number_of_lanes_position], 1)
             
-        path_position = plan_it.memory.get_position_of_output_value_property(mode_external_id, time_period_external_id, max_iterations, OutputType.PATH, OutputProperty.PATH)
+        path_position = plan_it.memory.get_position_of_output_value_property(mode_external_id, time_period_external_id, max_iterations, OutputType.PATH, OutputProperty.PATH_STRING)
         key1_position = plan_it.memory.get_position_of_output_key_property(mode_external_id, time_period_external_id, max_iterations, OutputType.PATH, OutputProperty.ORIGIN_ZONE_EXTERNAL_ID)
         key2_position = plan_it.memory.get_position_of_output_key_property(mode_external_id, time_period_external_id, max_iterations, OutputType.PATH, OutputProperty.DESTINATION_ZONE_EXTERNAL_ID)
         memory_output_iterator_path = plan_it.memory.iterator(mode_external_id, time_period_external_id, max_iterations, OutputType.PATH)
