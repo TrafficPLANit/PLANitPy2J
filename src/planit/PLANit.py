@@ -86,6 +86,8 @@ class PLANit:
         self._zoning_instance = ZoningWrapper(self._project_instance.field("zonings").getFirstZoning())
         # the one demands is created and populated
         self._demands_instance = DemandsWrapper(self._project_instance.field("demands").getFirstDemands())
+        self.activate(OutputFormatter.PLANIT_IO)
+        self.deactivate(OutputFormatter.MEMORY)
         
     def __del__(self):
         """Destructor of PLANit object which shuts down the connection to Java
@@ -123,36 +125,43 @@ class PLANit:
             self._initial_cost_instance = InitialCost(self._assignment_instance, self._project_instance, self._network_instance, self._demands_instance)
             # Default activation of PLANIT_IO output formatter done here
             # It cannot be done in the __init__ method since the formatter must be registered on the traffic assignment component
-            self.activate(OutputFormatter.PLANIT_IO)
+            if (self._activate_planitio_formatter):
+                self.activate(OutputFormatter.PLANIT_IO)
+            if (self._activate_memory_output_formatter):
+                self.activate(OutputFormatter.MEMORY)
             
     def activate(self, formatter_component):
         """Activate an output formatter
         :param formatter_component the formatter being set up
         """
         if formatter_component == OutputFormatter.PLANIT_IO:
+            self._activate_planitio_output_formatter = True
             io_output_formatter_counterpart = self._project_instance.create_and_register_output_formatter(formatter_component.value)
             io_output_formatter = PlanItOutputFormatterWrapper(io_output_formatter_counterpart)
             self._io_output_formatter_instance = io_output_formatter
-            self._assignment_instance.register_output_formatter(self._io_output_formatter_instance.java);           
                         
         elif formatter_component == OutputFormatter.MEMORY:
+            self._activate_memory_output_formatter = True
             memory_output_formatter_counterpart =  self._project_instance.create_and_register_output_formatter(formatter_component.value)
             memory_output_formatter = MemoryOutputFormatterWrapper(memory_output_formatter_counterpart, self._demands_instance, self._network_instance)
             self._memory_output_formatter_instance = memory_output_formatter            
-            self._assignment_instance.register_output_formatter(self._memory_output_formatter_instance.java);
             
     def deactivate(self, formatter_component):
         """Deactivate an output formatter which has previously been activated
         :param formatter_component the formatter which has previously been activated
         """
         if formatter_component == OutputFormatter.PLANIT_IO:
-            self._assignment_instance.unregister_output_formatter(self._io_output_formatter_instance.java)
+            self._activate_planitio_output_formatter = False
         elif formatter_component == OutputFormatter.MEMORY:
-            self._assignment_instance.unregister_output_formatter(self._memory_output_formatter_instance.java)
+            self._activate_memory_output_formatter = False
         
     def run(self):  
         """Run the traffic assignment.  Register any output formatters which have been set up
         """
+        if (self._activate_planitio_output_formatter):
+            self._assignment_instance.register_output_formatter(self._io_output_formatter_instance.java);  
+        if (self._activate_memory_output_formatter):      
+            self._assignment_instance.register_output_formatter(self._memory_output_formatter_instance.java)
         self._project_instance.execute_all_traffic_assignments()      
         
     def __getattr__(self, name):
