@@ -67,8 +67,8 @@ class AssignmentWrapper(BaseWrapper):
      
     def set(self, assignment_component):
         """ Configure an assignment component on this assignment instance. Note that all these go via the traffic assignment builder in Java
-            although we hide that on the Python side to not over-complicate things for the average user. Hence, the use of the self._builder in
-            the method calls
+            although we hide that on the Python side to not over-complicate things for the average user. We accept PhysicalCost, VirtualCost and 
+            Smoothing choices at this point
         """    
         
         if isinstance(assignment_component, PhysicalCost):
@@ -81,27 +81,24 @@ class AssignmentWrapper(BaseWrapper):
             raise Exception('Unrecognized component ' + assignment_component.type + ' cannot be set on assignment instance')
          
     def activate_output(self, output_type : OutputType):
-        """ pass on to Java not as an Enum as Py4J does not seem to properly handle this at this stage
-             instead we pass on the enum string which on the Java side is converted into the proper enum instead           
+        """ Activate different output types on the assignment. 
+            Pass on to Java not as an Enum as Py4J does not seem to properly handle this at this stage
+            instead we pass on the enum string which on the Java side is converted into the proper enum instead           
             :param output_type Python enum of available output types
         """ 
         # collect an enum instance by collecting the <package>.<class_name> string from the Output type enum
         output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_type.java_class_name(), output_type.value)
-        if output_type.value == "LINK":
-            self._link_output_type_configuration = LinkOutputTypeConfigurationWrapper(self._java_counterpart.activateOutput(output_type_instance))
-        elif output_type.value == "OD":
-            self._origin_destination_output_type_configuration = OriginDestinationOutputTypeConfigurationWrapper(self._java_counterpart.activateOutput(output_type_instance))
-        elif output_type.value == 'PATH':
-            self._path_output_type_configuration = PathOutputTypeConfigurationWrapper(self._java_counterpart.activateOutput(output_type_instance))
-        else:
-            raise ValueError("Attempted to activate unknown output type " + output_type.value)
-
-    @property
-    def output_configuration(self):
-        """Access to current output configuration
-        """
-        return self._output_configuration
-    
+        if not self.is_output_type_active(output_type_instance):
+            if output_type.value == "LINK":
+                self._link_output_type_configuration = LinkOutputTypeConfigurationWrapper(self.activate_output(output_type_instance))
+            elif output_type.value == "OD":
+                self._origin_destination_output_type_configuration = OriginDestinationOutputTypeConfigurationWrapper(self.activate_output(output_type_instance))
+            elif output_type.value == 'PATH':
+                self._path_output_type_configuration = PathOutputTypeConfigurationWrapper(self.activate_output(output_type_instance))
+            else:
+                raise ValueError("Attempted to activate unknown output type " + output_type.value)     
+        
+   
     @property
     def gap_function(self):
         """Access to current gap function
@@ -110,20 +107,29 @@ class AssignmentWrapper(BaseWrapper):
     
     @property
     def link_configuration(self):
-        """Access to current link output type configuration
+        """Access to current link output type configuration, if not activated, it is activated so it can be configured
         """
+        activate_output(OutputType.LINK)
         return self._link_output_type_configuration
     
     @property
     def od_configuration(self):
-        """Access to current origin-destination output type configuration
+        """Access to current origin-destination output type configuration, if not activated, it is activated so it can be configured
         """
+        activate_output(OutputType.OD)
         return self._origin_destination_output_type_configuration
     
     @property
-    def path_configuration(self):
-        """Access to current path output type configuration
+    def output_configuration(self):
+        """Access to current output configuration
         """
+        return self._output_configuration    
+    
+    @property
+    def path_configuration(self):
+        """Access to current path output type configuration, if not activated, it is activated so it can be configured
+        """
+        activate_output(OutputType.PATH)
         return self._path_output_type_configuration
            
     @property
@@ -133,16 +139,17 @@ class AssignmentWrapper(BaseWrapper):
         return self._physical_cost_instance
     
     @property
+    def smoothing(self):
+        """Access to the smoothing wrapper
+        """
+        return self._smoothing_instance    
+    
+    @property
     def virtual_cost(self):
         """Access to the virtual cost wrapper
         """
         return self._virtual_cost_instance
     
-    @property
-    def smoothing(self):
-        """Access to the smoothing wrapper
-        """
-        return self._smoothing_instance
     
 class DemandsWrapper(BaseWrapper):
     """ Wrapper around the Java Demands class instance
