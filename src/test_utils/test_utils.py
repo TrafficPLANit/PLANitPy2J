@@ -73,8 +73,9 @@ class PlanItHelper:
             plan_it = PLANit()
         else:
             plan_it = PLANit(project_path)
+            
         plan_it.set(TrafficAssignment.TRADITIONAL_STATIC)
-        
+         
         plan_it.assignment.set(PhysicalCost.BPR)
         # TODO : Add a unit test which testsX plan_it.assigment.physical_cost.set_default_parameters()
         # testRouteChoiceCompareWithOmniTRANS5() is a  good one for this
@@ -84,7 +85,7 @@ class PlanItHelper:
         plan_it.assignment.activate_output(OutputType.LINK)
         plan_it.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_EXTERNAL_ID)
         plan_it.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_ID)
-
+  
         if output_type_configuration_option == 1:
             plan_it.assignment.link_configuration.remove(OutputProperty.MAXIMUM_SPEED)
             plan_it.assignment.link_configuration.remove(OutputProperty.TOTAL_COST_TO_END_NODE)
@@ -92,7 +93,7 @@ class PlanItHelper:
             plan_it.assignment.link_configuration.remove(OutputProperty.TOTAL_COST_TO_END_NODE)
             plan_it.assignment.link_configuration.remove(OutputProperty.DOWNSTREAM_NODE_EXTERNAL_ID)
             plan_it.assignment.link_configuration.remove(OutputProperty.UPSTREAM_NODE_EXTERNAL_ID)
-
+  
         plan_it.assignment.activate_output(OutputType.OD)
         plan_it.assignment.od_configuration.deactivate(ODSkimSubOutputType.NONE)
         plan_it.assignment.od_configuration.remove(OutputProperty.TIME_PERIOD_EXTERNAL_ID)
@@ -101,7 +102,7 @@ class PlanItHelper:
         plan_it.assignment.path_configuration.set_path_id_type(RouteIdType.NODE_EXTERNAL_ID)
         plan_it.assignment.gap_function.stop_criterion.set_max_iterations(max_iterations)
         plan_it.assignment.gap_function.stop_criterion.set_epsilon(epsilon)
-        
+         
         plan_it.activate(OutputFormatter.MEMORY)
         if deactivate_file_output:
             plan_it.deactivate(OutputFormatter.PLANIT_IO)
@@ -110,7 +111,7 @@ class PlanItHelper:
             plan_it.output.set_csv_name_root(description)     
             if (project_path is not None):  
                 plan_it.output.set_output_directory(project_path)
-
+ 
         if register_initial_costs_option == 1:
             PlanItHelper.default_register_initial_costs(plan_it, initial_costs_file_location1, initial_costs_file_location2, init_costs_file_pos)
         elif register_initial_costs_option == 2:
