@@ -115,7 +115,7 @@ class PLANit:
         
     def set(self, assignment_component):
         """Set the traffic assignment component
-        :param assignment_component the  assignment component, can be TrafficAssignment or InitialCost
+        :param assignment_component the  assignment component
         """
         if isinstance(assignment_component, TrafficAssignment):
             assignment_counterpart = self._project_instance.create_and_register_traffic_assignment(assignment_component.value)
