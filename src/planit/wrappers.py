@@ -190,133 +190,22 @@ class InitialCostWrapper(BaseWrapper):
     
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
-    
-class LinkSegmentExpectedResultsDtoWrapper(BaseWrapper):
-    """ Wrapper around the Java Link Segment Expected Results Dto class instance
-    """
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)               
-
-class MemoryOutputIteratorWrapper(BaseWrapper):
-    """Wrapper class aroung MemoryOutputIterator class
-    """
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-       
-class ModeWrapper(BaseWrapper):
-    """ Wrapper around the Java mode class instance
-    """
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-
-class ModesWrapper(BaseWrapper):
-    """ Wrapper around the Java modes class instance
-    """
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-
-class OutputConfigurationWrapper(BaseWrapper):
-    """ Wrapper around the Java output configuration class instance
-    """
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
- 
-class OutputFormatterWrapper(BaseWrapper):
-    """ Wrapper around the Java OutputFormatter wrapper class instance
-    """
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-
-class OutputTypeConfigurationWrapper(BaseWrapper): 
-    """ Wrapper around the Java link output type configuration class instance
-    """
-     
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
         
-    def add(self, output_property : OutputProperty):
-        """Add an output type property to the current output type configuration
-        """
-        output_property_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_property.java_class_name(), output_property.value)
-        self._java_counterpart.addProperty(output_property_instance)
-        
-    def remove(self, output_property : OutputProperty):
-        """Remove an output type property from the current output type configuration
-        """
-        output_property_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_property.java_class_name(), output_property.value)
-        return self._java_counterpart.removeProperty(output_property_instance)
-        
-    def remove_all_properties(self):
-        self._java_counterpart.removeAllProperties()
-
-class PhysicalCostWrapper(BaseWrapper):
-    """ Wrapper around the Java physical cost class instance
-    """
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-  
-class PhysicalNetworkWrapper(BaseWrapper):
-    """ Wrapper around the Java physical network class instance
-    """
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-  
-class SmoothingWrapper(BaseWrapper):
-    """ Wrapper around the Java Smoothing class instance
-    """
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-        
-class StopCriterionWrapper(BaseWrapper):
-    """ Wrapper around the Java StopCriterion class instance
-    """
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-    
-class TimePeriodWrapper(BaseWrapper):
-    """ Wrapper around the Java time period class instance
-    """
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-
-class TimePeriodsWrapper(BaseWrapper):
-    """ Wrapper around the Java time periods class instance
-    """
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-
-class VirtualCostWrapper(BaseWrapper):
-    """ Wrapper around the Java assignment class instance
-    """    
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-
-class ZoningWrapper(BaseWrapper):
-    """ Wrapper around the Java Zoning class instance
-    """    
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
- 
 class LinkOutputTypeConfigurationWrapper(OutputTypeConfigurationWrapper):
     """ Wrapper around the Java link output type configuration class instance
     """
      
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
+    
+class LinkSegmentExpectedResultsDtoWrapper(BaseWrapper):
+    """ Wrapper around the Java Link Segment Expected Results Dto class instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)           
+
+
                                 
 class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
     """ Wrapper around the Java PlanItOutputFormatter class instance
@@ -397,6 +286,27 @@ class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
         position = self._java_counterpart.getPositionOfOutputKeyProperty(mode.java, time_period.java, no_iterations, output_type_instance, output_property_instance)
         return position
  
+class MemoryOutputIteratorWrapper(BaseWrapper):
+    """Wrapper class aroung MemoryOutputIterator class
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+       
+class ModeWrapper(BaseWrapper):
+    """ Wrapper around the Java mode class instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+class ModesWrapper(BaseWrapper):
+    """ Wrapper around the Java modes class instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+        
 class OriginDestinationOutputTypeConfigurationWrapper(OutputTypeConfigurationWrapper):
     """ Wrapper around the Java origin-destination output type configuration class instance
     """
@@ -414,7 +324,43 @@ class OriginDestinationOutputTypeConfigurationWrapper(OutputTypeConfigurationWra
         """Deactivate an OD skim output type
         """
         od_skim_sub_output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(od_skim_sub_output_type.java_class_name(), od_skim_sub_output_type.value)
-        self._java_counterpart.deactivateOdSkimOutputType(od_skim_sub_output_type_instance)
+        self._java_counterpart.deactivateOdSkimOutputType(od_skim_sub_output_type_instance)         
+
+class OutputConfigurationWrapper(BaseWrapper):
+    """ Wrapper around the Java output configuration class instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+ 
+class OutputFormatterWrapper(BaseWrapper):
+    """ Wrapper around the Java OutputFormatter wrapper class instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+class OutputTypeConfigurationWrapper(BaseWrapper): 
+    """ Wrapper around the Java link output type configuration class instance
+    """
+     
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+        
+    def add(self, output_property : OutputProperty):
+        """Add an output type property to the current output type configuration
+        """
+        output_property_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_property.java_class_name(), output_property.value)
+        self._java_counterpart.addProperty(output_property_instance)
+        
+    def remove(self, output_property : OutputProperty):
+        """Remove an output type property from the current output type configuration
+        """
+        output_property_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_property.java_class_name(), output_property.value)
+        return self._java_counterpart.removeProperty(output_property_instance)
+        
+    def remove_all_properties(self):
+        self._java_counterpart.removeAllProperties()
         
 class PathOutputTypeConfigurationWrapper(OutputTypeConfigurationWrapper):
     """ Wrapper around the Java path output type configuration class instance
@@ -426,6 +372,20 @@ class PathOutputTypeConfigurationWrapper(OutputTypeConfigurationWrapper):
     def set_path_id_type(self,  route_id_type : RouteIdType):
         route_id_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(route_id_type.java_class_name(), route_id_type.value)
         self._java_counterpart.setPathIdType(route_id_type_instance)
+        
+class PhysicalCostWrapper(BaseWrapper):
+    """ Wrapper around the Java physical cost class instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+  
+class PhysicalNetworkWrapper(BaseWrapper):
+    """ Wrapper around the Java physical network class instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
         
 class PlanItInputBuilderWrapper(BaseWrapper):
     """ Wrapper around the Java InputBuilderListener class instance
@@ -443,5 +403,47 @@ class PlanItOutputFormatterWrapper(OutputFormatterWrapper):
         # Initialize the output project path to the current run directory
         # Modellers may overwrite this default later
         project_path = os.getcwd()
-        self.set_output_directory(project_path)
+        self.set_output_directory(project_path)        
+  
+class SmoothingWrapper(BaseWrapper):
+    """ Wrapper around the Java Smoothing class instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+        
+class StopCriterionWrapper(BaseWrapper):
+    """ Wrapper around the Java StopCriterion class instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+    
+class TimePeriodWrapper(BaseWrapper):
+    """ Wrapper around the Java time period class instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
 
+class TimePeriodsWrapper(BaseWrapper):
+    """ Wrapper around the Java time periods class instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+class VirtualCostWrapper(BaseWrapper):
+    """ Wrapper around the Java assignment class instance
+    """    
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+class ZoningWrapper(BaseWrapper):
+    """ Wrapper around the Java Zoning class instance
+    """    
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+ 
