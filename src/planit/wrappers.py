@@ -90,15 +90,29 @@ class AssignmentWrapper(BaseWrapper):
         output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_type.java_class_name(), output_type.value)
         if not self.is_output_type_active(output_type_instance):
             if output_type.value == "LINK":
-                self._link_output_type_configuration = LinkOutputTypeConfigurationWrapper(self.activate_output(output_type_instance))
+                self._link_output_type_configuration = LinkOutputTypeConfigurationWrapper(self._java_counterpart.activateOutput(output_type_instance))
             elif output_type.value == "OD":
-                self._origin_destination_output_type_configuration = OriginDestinationOutputTypeConfigurationWrapper(self.activate_output(output_type_instance))
+                self._origin_destination_output_type_configuration = OriginDestinationOutputTypeConfigurationWrapper(self._java_counterpart.activateOutput(output_type_instance))
             elif output_type.value == 'PATH':
-                self._path_output_type_configuration = PathOutputTypeConfigurationWrapper(self.activate_output(output_type_instance))
+                self._path_output_type_configuration = PathOutputTypeConfigurationWrapper(self._java_counterpart.activateOutput(output_type_instance))
+            else:
+                raise ValueError("Attempted to deactivate unknown output type " + output_type.value)     
+    
+    def deactivate_output(self, output_type: OutputType):   
+        """Deactivate specified output type on the assignment
+        :param output_type Output type to be deactivated
+        """ 
+        output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_type.java_class_name(), output_type.value)
+        if self.is_output_type_active(output_type_instance):
+            if output_type.value == "LINK":
+                self._link_output_type_configuration = LinkOutputTypeConfigurationWrapper(self._java_counterpart.deactivateOutput(output_type_instance))
+            elif output_type.value == "OD":
+                self._origin_destination_output_type_configuration = OriginDestinationOutputTypeConfigurationWrapper(self._java_counterpart.deactivateOutput(output_type_instance))
+            elif output_type.value == 'PATH':
+                self._path_output_type_configuration = PathOutputTypeConfigurationWrapper(self._java_counterpart.deactivateOutput(output_type_instance))
             else:
                 raise ValueError("Attempted to activate unknown output type " + output_type.value)     
-        
-   
+  
     @property
     def gap_function(self):
         """Access to current gap function
@@ -109,14 +123,14 @@ class AssignmentWrapper(BaseWrapper):
     def link_configuration(self):
         """Access to current link output type configuration, if not activated, it is activated so it can be configured
         """
-        activate_output(OutputType.LINK)
+        self.activate_output(OutputType.LINK)
         return self._link_output_type_configuration
     
     @property
     def od_configuration(self):
         """Access to current origin-destination output type configuration, if not activated, it is activated so it can be configured
         """
-        activate_output(OutputType.OD)
+        self.activate_output(OutputType.OD)
         return self._origin_destination_output_type_configuration
     
     @property
@@ -129,7 +143,7 @@ class AssignmentWrapper(BaseWrapper):
     def path_configuration(self):
         """Access to current path output type configuration, if not activated, it is activated so it can be configured
         """
-        activate_output(OutputType.PATH)
+        self.activate_output(OutputType.PATH)
         return self._path_output_type_configuration
            
     @property

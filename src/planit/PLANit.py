@@ -23,8 +23,8 @@ class PLANit:
             
     def __init__(self, project_path=None, standalone=True):
         """Constructor of PLANit python wrapper which acts as an interface to the underlying PLANit Java code
-        :param project_path: the path location of the XML input file(s) to be used by PLANitIO
-        :param standalone: when true this PLANit instance bootstraps a java gateway and closes it upon completion of the scripts when false <to be implemented>
+        :param project_path the path location of the XML input file(s) to be used by PLANitIO
+        :param standalone when true this PLANit instance bootstraps a java gateway and closes it upon completion of the scripts when false <to be implemented>
         """  
         # explicitly set uninitialized member variables to None
         self._assignment_instance = None

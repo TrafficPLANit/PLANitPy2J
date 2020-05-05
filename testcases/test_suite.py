@@ -201,6 +201,27 @@ class TestSuite(unittest.TestCase):
         self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name))
         gc.collect()
     
+    def test_explanatory_without_activating_outputs(self):
+        """Explanatory unit test, which does not activate the output type configurations directly, but relies on the code to do this automatically (corresponds to testExplanatory() in Java)
+            Includes test that OD csv output file has not been created, since this OutputType.OD was deactivated
+        """
+        print("Running test_explanatory with default project path")
+        description = "explanatory";
+        csv_file_name = "Time Period 1_2.csv";
+        od_csv_file_name = "Time Period 1_1.csv";
+        xml_file_name = "Time Period 1.xml";
+        max_iterations = 500
+        epsilon = 0.001
+        PlanItHelper.run_test_without_activating_outputs(max_iterations, epsilon, description, 1, None, None, 0, None, 1)
+        PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name))
+        PlanItHelper.delete_file(OutputType.PATH, description, xml_file_name)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name))
+        project_path = os.getcwd()
+        od_file_name = PlanItHelper.create_full_file_name(OutputType.OD, project_path, description,  od_csv_file_name)
+        self.assertFalse(os.path.exists(od_file_name))
+        gc.collect()
+   
     def test_basic_three_time_periods(self):
         """Unit test 1 using basic network three time periods (corresponds to testBasicThreeTimePeriods() in Java)
         """

@@ -55,7 +55,7 @@ class PlanItHelper:
                            initial_costs_file_location2, init_costs_file_pos,  
                            initial_link_segment_locations_per_time_period, register_initial_costs_option, 
                            project_path=None, deactivate_file_output=False):
-        """Top-level method which runs unit testsX
+        """Top-level method which runs unit tests
         :param max_iterations the maximum number of iterations for the current unit test
         :param epsilon the convergence epsilon for the current unit test
         :param description the name to be used to identify input and output files
@@ -119,6 +119,75 @@ class PlanItHelper:
         
         plan_it.run()
         return plan_it
+ 
+    @staticmethod
+    def run_test_without_activating_outputs(max_iterations, epsilon, 
+                           description, output_type_configuration_option, initial_costs_file_location1, 
+                           initial_costs_file_location2, init_costs_file_pos,  
+                           initial_link_segment_locations_per_time_period, register_initial_costs_option, 
+                           project_path=None, deactivate_file_output=False):
+        """Top-level method which runs unit tests without activating output configurations (these should come on automatically)
+        :param max_iterations the maximum number of iterations for the current unit test
+        :param epsilon the convergence epsilon for the current unit test
+        :param description the name to be used to identify input and output files
+        :param output_type_configuration_option used to specify which properties to remove from link output type configuration
+        :param initial_costs_file_location1 location of first initial costs file, if used (None if not required)
+        :param initial_costs_file_location2 location of second initial costs file, if used (None if not required)
+        :param init_costs_file_pos position of which initial costs file is being used, if required
+        :param initial_link_segment_locations_per_time_period dictionary of initial link cost files per time period, if required
+        :param register_initial_costs_option used to specify which method of the selecting initial cost (default or dictionary) is being used
+        :param project_path directory of XML input file (if omitted, defaults to None which will make methods use the current directory)
+        :param deactivate_file_output if True, deactivate the file output formatter and store results in memory only
+        """
+        
+        if project_path == None:
+            plan_it = PLANit()
+        else:
+            plan_it = PLANit(project_path)
+            
+        plan_it.set(TrafficAssignment.TRADITIONAL_STATIC)
+         
+        plan_it.assignment.set(PhysicalCost.BPR)
+        # TODO : Add a unit test which testsX plan_it.assigment.physical_cost.set_default_parameters()
+        # testRouteChoiceCompareWithOmniTRANS5() is a  good one for this
+        plan_it.assignment.set(VirtualCost.FIXED)
+        plan_it.assignment.set(Smoothing.MSA)
+        plan_it.assignment.output_configuration.set_persist_only_final_Iteration(True)
+        plan_it.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_EXTERNAL_ID)
+        plan_it.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_ID)
+  
+        if output_type_configuration_option == 1:
+            plan_it.assignment.link_configuration.remove(OutputProperty.MAXIMUM_SPEED)
+            plan_it.assignment.link_configuration.remove(OutputProperty.TOTAL_COST_TO_END_NODE)
+        elif output_type_configuration_option == 2:
+            plan_it.assignment.link_configuration.remove(OutputProperty.TOTAL_COST_TO_END_NODE)
+            plan_it.assignment.link_configuration.remove(OutputProperty.DOWNSTREAM_NODE_EXTERNAL_ID)
+            plan_it.assignment.link_configuration.remove(OutputProperty.UPSTREAM_NODE_EXTERNAL_ID)
+  
+        #Note that OutputType.OD is deactivated, check later that no OD output file is created
+        plan_it.assignment.deactivate_output(OutputType.OD)
+        
+        plan_it.assignment.path_configuration.set_path_id_type(RouteIdType.NODE_EXTERNAL_ID)
+        plan_it.assignment.gap_function.stop_criterion.set_max_iterations(max_iterations)
+        plan_it.assignment.gap_function.stop_criterion.set_epsilon(epsilon)
+         
+        plan_it.activate(OutputFormatter.MEMORY)
+        if deactivate_file_output:
+            plan_it.deactivate(OutputFormatter.PLANIT_IO)
+        else:
+            plan_it.output.set_xml_name_root(description)                
+            plan_it.output.set_csv_name_root(description)     
+            if (project_path is not None):  
+                plan_it.output.set_output_directory(project_path)
+ 
+        if register_initial_costs_option == 1:
+            PlanItHelper.default_register_initial_costs(plan_it, initial_costs_file_location1, initial_costs_file_location2, init_costs_file_pos)
+        elif register_initial_costs_option == 2:
+            PlanItHelper.dictionary_register_initial_costs(plan_it, initial_link_segment_locations_per_time_period)
+        
+        plan_it.run()
+        return plan_it
+
     
     @staticmethod
     def delete_file(output_type : OutputType, description, file_name, project_path=None):
