@@ -40,6 +40,7 @@ class OutputProperty(Enum):
     CAPACITY_PER_LANE = "CAPACITY_PER_LANE"                         # INPUT
     DOWNSTREAM_NODE_LOCATION = "DOWNSTREAM_NODE_LOCATION"           # INPUT
     LENGTH = "LENGTH"                                               # INPUT
+    LINK_TYPE = "LINK_TYPE"                                         # INPUT    
     MAXIMUM_SPEED = "MAXIMUM_SPEED"                                 # INPUT
     NUMBER_OF_LANES = "NUMBER_OF_LANES"                             # INPUT
     UPSTREAM_NODE_LOCATION = "UPSTREAM_NODE_LOCATION"               # INPUT        
@@ -48,7 +49,6 @@ class OutputProperty(Enum):
     DENSITY = "DENSITY"                                             # OUTPUT        
     FLOW = "FLOW"                                                   # OUTPUT
     LINK_COST = "LINK_COST"                                         # OUTPUT
-    LINK_TYPE = "LINK_TYPE"                                         # OUTPUT
     OD_COST = "OD_COST"                                             # OUTPUT
     TOTAL_COST_TO_END_NODE = "TOTAL_COST_TO_END_NODE"               # OUTPUT
     PATH_STRING = "PATH_STRING"                                     # OUTPUT
