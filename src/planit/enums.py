@@ -19,38 +19,41 @@ class OutputProperty(Enum):
     """ Enum for the different output properties the user can configure in the output files 
         Equivalent of Java enumeration org.planit.output.property.OutputProperty
     """
-    DENSITY = "DENSITY"
-    LINK_SEGMENT_ID = "LINK_SEGMENT_ID"
-    LINK_SEGMENT_EXTERNAL_ID = "LINK_SEGMENT_EXTERNAL_ID"
-    MODE_ID = "MODE_ID"
-    MODE_EXTERNAL_ID = "MODE_EXTERNAL_ID"
-    MAXIMUM_SPEED = "MAXIMUM_SPEED"
-    CALCULATED_SPEED = "CALCULATED_SPEED"
-    FLOW = "FLOW"
-    LENGTH = "LENGTH"
-    UPSTREAM_NODE_ID = "UPSTREAM_NODE_ID"
-    UPSTREAM_NODE_EXTERNAL_ID = "UPSTREAM_NODE_EXTERNAL_ID"
-    DOWNSTREAM_NODE_ID = "DOWNSTREAM_NODE_ID"
-    DOWNSTREAM_NODE_EXTERNAL_ID = "DOWNSTREAM_NODE_EXTERNAL_ID"
-    CAPACITY_PER_LANE = "CAPACITY_PER_LANE"
-    NUMBER_OF_LANES = "NUMBER_OF_LANES"
-    LINK_COST = "LINK_COST"
-    OD_COST = "OD_COST"
-    DOWNSTREAM_NODE_LOCATION = "DOWNSTREAM_NODE_LOCATION"
-    UPSTREAM_NODE_LOCATION = "UPSTREAM_NODE_LOCATION"
-    ITERATION_INDEX = "ITERATION_INDEX" 
-    ORIGIN_ZONE_ID = "ORIGIN_ZONE_ID"
-    ORIGIN_ZONE_EXTERNAL_ID = "ORIGIN_ZONE_EXTERNAL_ID"
-    DESTINATION_ZONE_ID = "DESTINATION_ZONE_ID"
-    DESTINATION_ZONE_EXTERNAL_ID = "DESTINATION_ZONE_EXTERNAL_ID"
-    TIME_PERIOD_ID = "TIME_PERIOD_ID"
-    TIME_PERIOD_EXTERNAL_ID = "TIME_PERIOD_EXTERNAL_ID"
-    RUN_ID = "RUN_ID"
-    TOTAL_COST_TO_END_NODE = "TOTAL_COST_TO_END_NODE" 
-    PATH_STRING = "PATH_STRING"
-    VC_RATIO = "VC_RATIO"
-    COST_TIMES_FLOW = "COST_TIMES_FLOW"
-    LINK_TYPE = "LINK_TYPE"
+    
+    # alphabetical order by priority type (ID, INPUT, OUTPUT
+    DESTINATION_ZONE_ID = "DESTINATION_ZONE_ID"                     # ID
+    DESTINATION_ZONE_EXTERNAL_ID = "DESTINATION_ZONE_EXTERNAL_ID"   # ID
+    DOWNSTREAM_NODE_ID = "DOWNSTREAM_NODE_ID"                       # ID
+    DOWNSTREAM_NODE_EXTERNAL_ID = "DOWNSTREAM_NODE_EXTERNAL_ID"     # ID
+    ITERATION_INDEX = "ITERATION_INDEX"                             # ID
+    LINK_SEGMENT_ID = "LINK_SEGMENT_ID"                             # ID
+    LINK_SEGMENT_EXTERNAL_ID = "LINK_SEGMENT_EXTERNAL_ID"           # ID
+    MODE_ID = "MODE_ID"                                             # ID
+    MODE_EXTERNAL_ID = "MODE_EXTERNAL_ID"                           # ID
+    ORIGIN_ZONE_ID = "ORIGIN_ZONE_ID"                               # ID
+    ORIGIN_ZONE_EXTERNAL_ID = "ORIGIN_ZONE_EXTERNAL_ID"             # ID
+    RUN_ID = "RUN_ID"                                               # ID
+    TIME_PERIOD_ID = "TIME_PERIOD_ID"                               # ID
+    TIME_PERIOD_EXTERNAL_ID = "TIME_PERIOD_EXTERNAL_ID"             # ID
+    UPSTREAM_NODE_ID = "UPSTREAM_NODE_ID"                           # ID
+    UPSTREAM_NODE_EXTERNAL_ID = "UPSTREAM_NODE_EXTERNAL_ID"         # ID
+    CAPACITY_PER_LANE = "CAPACITY_PER_LANE"                         # INPUT
+    DOWNSTREAM_NODE_LOCATION = "DOWNSTREAM_NODE_LOCATION"           # INPUT
+    LENGTH = "LENGTH"                                               # INPUT
+    MAXIMUM_SPEED = "MAXIMUM_SPEED"                                 # INPUT
+    NUMBER_OF_LANES = "NUMBER_OF_LANES"                             # INPUT
+    UPSTREAM_NODE_LOCATION = "UPSTREAM_NODE_LOCATION"               # INPUT        
+    CALCULATED_SPEED = "CALCULATED_SPEED"                           # OUTPUT
+    COST_TIMES_FLOW = "COST_TIMES_FLOW"                             # OUTPUT
+    DENSITY = "DENSITY"                                             # OUTPUT        
+    FLOW = "FLOW"                                                   # OUTPUT
+    LINK_COST = "LINK_COST"                                         # OUTPUT
+    LINK_TYPE = "LINK_TYPE"                                         # OUTPUT
+    OD_COST = "OD_COST"                                             # OUTPUT
+    TOTAL_COST_TO_END_NODE = "TOTAL_COST_TO_END_NODE"               # OUTPUT
+    PATH_STRING = "PATH_STRING"                                     # OUTPUT
+    VC_RATIO = "VC_RATIO"                                           # OUTPUT
+        
     
     def java_class_name(self) -> str:
         return "org.planit.output.property.OutputProperty"     
