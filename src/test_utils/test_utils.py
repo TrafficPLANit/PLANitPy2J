@@ -89,7 +89,6 @@ class PlanItHelper:
         if output_type_configuration_option == 1:
             plan_it.assignment.link_configuration.remove(OutputProperty.MAXIMUM_SPEED)
         elif output_type_configuration_option == 2:
-            plan_it.assignment.link_configuration.remove(OutputProperty.TOTAL_COST_TO_END_NODE)
             plan_it.assignment.link_configuration.remove(OutputProperty.DOWNSTREAM_NODE_EXTERNAL_ID)
             plan_it.assignment.link_configuration.remove(OutputProperty.UPSTREAM_NODE_EXTERNAL_ID)
   
@@ -158,7 +157,6 @@ class PlanItHelper:
         if output_type_configuration_option == 1:
             plan_it.assignment.link_configuration.remove(OutputProperty.MAXIMUM_SPEED)
         elif output_type_configuration_option == 2:
-            plan_it.assignment.link_configuration.remove(OutputProperty.TOTAL_COST_TO_END_NODE)
             plan_it.assignment.link_configuration.remove(OutputProperty.DOWNSTREAM_NODE_EXTERNAL_ID)
             plan_it.assignment.link_configuration.remove(OutputProperty.UPSTREAM_NODE_EXTERNAL_ID)
   
