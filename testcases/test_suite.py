@@ -212,7 +212,12 @@ class TestSuite(unittest.TestCase):
         xml_file_name = "Time Period 1.xml";
         max_iterations = 500
         epsilon = 0.001
-        PlanItHelper.run_test_without_activating_outputs(max_iterations, epsilon, description, 1, None, None, 0, None, 1)
+        plan_it = PlanItHelper.run_test_without_activating_outputs(max_iterations, epsilon, description, 1, None, None, 0, None, 1)
+        output_type = OutputType.OD
+        output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_type.java_class_name(), output_type.value)
+        self.assertTrue(plan_it.assignment.is_output_type_active(output_type_instance))
+        plan_it.assignment.deactivate_output(OutputType.OD)
+        self.assertFalse(plan_it.assignment.is_output_type_active(output_type_instance))
         PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name)
         self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name))
         PlanItHelper.delete_file(OutputType.PATH, description, xml_file_name)

@@ -165,6 +165,7 @@ class PlanItHelper:
             plan_it.assignment.link_configuration.remove(OutputProperty.UPSTREAM_NODE_EXTERNAL_ID)
   
         #Note that OutputType.OD is deactivated, check later that no OD output file is created
+        plan_it.assignment.activate_output(OutputType.OD)
         plan_it.assignment.deactivate_output(OutputType.OD)
         
         plan_it.assignment.path_configuration.set_path_id_type(RouteIdType.NODE_EXTERNAL_ID)
@@ -186,6 +187,7 @@ class PlanItHelper:
             PlanItHelper.dictionary_register_initial_costs(plan_it, initial_link_segment_locations_per_time_period)
         
         plan_it.run()
+        plan_it.assignment.activate_output(OutputType.OD)
         return plan_it
 
     

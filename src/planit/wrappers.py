@@ -255,17 +255,6 @@ class OutputTypeConfigurationWrapper(BaseWrapper):
     def remove_all_properties(self):
         self._java_counterpart.removeAllProperties()
         
-class PathOutputTypeConfigurationWrapper(OutputTypeConfigurationWrapper):
-    """ Wrapper around the Java path output type configuration class instance
-    """
-     
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-        
-    def set_path_id_type(self,  route_id_type : RouteIdType):
-        route_id_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(route_id_type.java_class_name(), route_id_type.value)
-        self._java_counterpart.setPathIdType(route_id_type_instance)
-        
 class PhysicalCostWrapper(BaseWrapper):
     """ Wrapper around the Java physical cost class instance
     """
@@ -286,17 +275,6 @@ class PlanItInputBuilderWrapper(BaseWrapper):
     
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)    
-       
-class PlanItOutputFormatterWrapper(OutputFormatterWrapper):
-    """ Wrapper around the Java PlanItOutputFormatter class instance
-    """
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-        # Initialize the output project path to the current run directory
-        # Modellers may overwrite this default later
-        project_path = os.getcwd()
-        self.set_output_directory(project_path)        
   
 class SmoothingWrapper(BaseWrapper):
     """ Wrapper around the Java Smoothing class instance
@@ -337,13 +315,6 @@ class ZoningWrapper(BaseWrapper):
     """ Wrapper around the Java Zoning class instance
     """    
     
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-              
-class LinkOutputTypeConfigurationWrapper(OutputTypeConfigurationWrapper):
-    """ Wrapper around the Java link output type configuration class instance
-    """
-     
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
     
@@ -426,6 +397,24 @@ class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
         position = self._java_counterpart.getPositionOfOutputKeyProperty(mode.java, time_period.java, no_iterations, output_type_instance, output_property_instance)
         return position
         
+class PlanItOutputFormatterWrapper(OutputFormatterWrapper):
+    """ Wrapper around the Java PlanItOutputFormatter class instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+        # Initialize the output project path to the current run directory
+        # Modellers may overwrite this default later
+        project_path = os.getcwd()
+        self.set_output_directory(project_path)        
+              
+class LinkOutputTypeConfigurationWrapper(OutputTypeConfigurationWrapper):
+    """ Wrapper around the Java link output type configuration class instance
+    """
+     
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+       
 class OriginDestinationOutputTypeConfigurationWrapper(OutputTypeConfigurationWrapper):
     """ Wrapper around the Java origin-destination output type configuration class instance
     """
@@ -444,3 +433,14 @@ class OriginDestinationOutputTypeConfigurationWrapper(OutputTypeConfigurationWra
         """
         od_skim_sub_output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(od_skim_sub_output_type.java_class_name(), od_skim_sub_output_type.value)
         self._java_counterpart.deactivateOdSkimOutputType(od_skim_sub_output_type_instance)         
+        
+class PathOutputTypeConfigurationWrapper(OutputTypeConfigurationWrapper):
+    """ Wrapper around the Java path output type configuration class instance
+    """
+     
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+        
+    def set_path_id_type(self,  route_id_type : RouteIdType):
+        route_id_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(route_id_type.java_class_name(), route_id_type.value)
+        self._java_counterpart.setPathIdType(route_id_type_instance)
