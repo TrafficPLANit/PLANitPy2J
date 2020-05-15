@@ -142,6 +142,7 @@ class TestSuite(unittest.TestCase):
         
         memory_output_iterator_link = plan_it.memory.iterator(mode_external_id, time_period_external_id, max_iterations, OutputType.LINK)
         while memory_output_iterator_link.has_next():
+            memory_output_iterator_link.next()
             keys = memory_output_iterator_link.get_keys()
             values = memory_output_iterator_link.get_values()
             self.assertEquals(values[flow_position], 1)
@@ -155,6 +156,7 @@ class TestSuite(unittest.TestCase):
         key2_position = plan_it.memory.get_position_of_output_key_property(mode_external_id, time_period_external_id, max_iterations, OutputType.PATH, OutputProperty.DESTINATION_ZONE_EXTERNAL_ID)
         memory_output_iterator_path = plan_it.memory.iterator(mode_external_id, time_period_external_id, max_iterations, OutputType.PATH)
         while memory_output_iterator_path.has_next():
+            memory_output_iterator_path.next()
             keys = memory_output_iterator_path.get_keys()
             self.assertTrue(keys[key1_position] in [1,2])
             self.assertTrue(keys[key2_position] in [1,2])
@@ -170,6 +172,7 @@ class TestSuite(unittest.TestCase):
         key2_position = plan_it.memory.get_position_of_output_key_property(mode_external_id, time_period_external_id, max_iterations-1, OutputType.OD, OutputProperty.DESTINATION_ZONE_EXTERNAL_ID)
         memory_output_iterator_od = plan_it.memory.iterator(mode_external_id, time_period_external_id, max_iterations, OutputType.PATH)
         while memory_output_iterator_od.has_next():
+            memory_output_iterator_od.next()
             keys = memory_output_iterator_path.get_keys()
             self.assertTrue(keys[key1_position] in [1,2])
             self.assertTrue(keys[key2_position] in [1,2])
