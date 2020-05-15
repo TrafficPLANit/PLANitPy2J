@@ -199,7 +199,7 @@ class LinkSegmentExpectedResultsDtoWrapper(BaseWrapper):
         super().__init__(java_counterpart)      
  
 class MemoryOutputIteratorWrapper(BaseWrapper):
-    """Wrapper class aroung MemoryOutputIterator class
+    """Wrapper class around MemoryOutputIterator class
     """
     
     def __init__(self, java_counterpart):
