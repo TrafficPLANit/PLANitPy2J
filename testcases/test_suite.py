@@ -167,6 +167,7 @@ class TestSuite(unittest.TestCase):
             else:
                 self.assertEquals(value, "")
                 
+                
         od_position = plan_it.memory.get_position_of_output_value_property(mode_external_id, time_period_external_id, max_iterations-1, OutputType.OD, OutputProperty.OD_COST)
         key1_position = plan_it.memory.get_position_of_output_key_property(mode_external_id, time_period_external_id, max_iterations-1, OutputType.OD, OutputProperty.ORIGIN_ZONE_EXTERNAL_ID)
         key2_position = plan_it.memory.get_position_of_output_key_property(mode_external_id, time_period_external_id, max_iterations-1, OutputType.OD, OutputProperty.DESTINATION_ZONE_EXTERNAL_ID)
