@@ -11,44 +11,11 @@ from planit import OutputProperty
 from planit import RouteIdType
 from planit import OutputFormatter
 from planit import ODSkimSubOutputType
-from planit import TimePeriodWrapper
 from planit import PLANit
 from builtins import staticmethod
 
 class PlanItHelper:
     
-    @staticmethod
-    def dictionary_register_initial_costs(plan_it, initial_link_segment_locations_per_time_period):
-        """Read in initial cost files for each time period from an input dictionary
-        :param plan_it the PLANit object to be updated with the initial costs
-        :param initial_link_segment_locations_per_time_period dictionary of locations of initial cost files per time period
-        """
-        time_period_counterparts = plan_it.demands.get_registered_time_periods()
-        for time_period_counterpart in time_period_counterparts:
-            time_period = TimePeriodWrapper(time_period_counterpart)
-            time_period_external_id = time_period.get_external_id()
-            initial_costs_file_location = initial_link_segment_locations_per_time_period[time_period_external_id]
-            plan_it.initial_cost.set(initial_costs_file_location, time_period_external_id)
-  
-    @staticmethod
-    def default_register_initial_costs(plan_it, initial_costs_file_location1, initial_costs_file_location2, init_costs_file_pos):
-        """Read in one or two initial cost files which are to be used for all time periods
-        :param plan_it the PLANit object to be updated with the initial costs
-        :param initial_costs_file_location1 location of the first initial cost file (None if initial costs not being used)
-        :param  initial_costs_file_location2 location of the second initial cost file (None if only one or zero initial cost files being used)
-        :param init_costs_file_pos indicates which initial costs file is to be used (if 0 use the first, otherwise use the second) 
-        """      
-        if initial_costs_file_location1 != None:
-            initial_costs_file_location = None
-            if initial_costs_file_location2 != None:
-                if init_costs_file_pos == 0:
-                    initial_costs_file_location =  initial_costs_file_location1
-                else:
-                    initial_costs_file_location =  initial_costs_file_location2
-            else:
-                initial_costs_file_location =  initial_costs_file_location1
-            plan_it.initial_cost.set(initial_costs_file_location)
-            
     @staticmethod
     def run_test(max_iterations, epsilon, 
                            description, output_type_configuration_option, initial_costs_file_location1, 
@@ -67,8 +34,7 @@ class PlanItHelper:
         :param register_initial_costs_option used to specify which method of the selecting initial cost (default or dictionary) is being used
         :param project_path directory of XML input file (if omitted, defaults to None which will make methods use the current directory)
         :param deactivate_file_output if True, deactivate the file output formatter and store results in memory only
-        """
-        
+        """        
         if project_path == None:
             plan_it = PLANit()
         else:
@@ -111,11 +77,11 @@ class PlanItHelper:
                 plan_it.output.set_output_directory(project_path)
  
         if register_initial_costs_option == 1:
-            PlanItHelper.default_register_initial_costs(plan_it, initial_costs_file_location1, initial_costs_file_location2, init_costs_file_pos)
+            plan_it.run(1, initial_costs_file_location1=initial_costs_file_location1, initial_costs_file_location2=initial_costs_file_location2, init_costs_file_pos=init_costs_file_pos)
         elif register_initial_costs_option == 2:
-            PlanItHelper.dictionary_register_initial_costs(plan_it, initial_link_segment_locations_per_time_period)
-        
-        plan_it.run()
+            plan_it.run(2,  initial_link_segment_locations_per_time_period=initial_link_segment_locations_per_time_period)
+        else :
+            plan_it.run()
         return plan_it
  
     @staticmethod
@@ -178,11 +144,11 @@ class PlanItHelper:
                 plan_it.output.set_output_directory(project_path)
  
         if register_initial_costs_option == 1:
-            PlanItHelper.default_register_initial_costs(plan_it, initial_costs_file_location1, initial_costs_file_location2, init_costs_file_pos)
+            plan_it.run(1, initial_costs_file_location1=initial_costs_file_location1, initial_costs_file_location2=initial_costs_file_location2, init_costs_file_pos=init_costs_file_pos)
         elif register_initial_costs_option == 2:
-            PlanItHelper.dictionary_register_initial_costs(plan_it, initial_link_segment_locations_per_time_period)
-        
-        plan_it.run()
+            plan_it.run(2,  initial_link_segment_locations_per_time_period=initial_link_segment_locations_per_time_period)
+        else :
+            plan_it.run()
         plan_it.assignment.activate_output(OutputType.OD)
         return plan_it
 
