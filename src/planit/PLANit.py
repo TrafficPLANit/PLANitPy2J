@@ -16,6 +16,8 @@ from planit import PlanItOutputFormatterWrapper
 from planit import MemoryOutputFormatterWrapper
 from planit import TrafficAssignment
 from planit import OutputFormatter
+from planit import InitialCostWrapper
+from planit import TimePeriodWrapper
 from planit import InitialCost
 from builtins import isinstance
 
@@ -87,9 +89,9 @@ class PLANit:
         # the one zoning is created and populated
         self._zoning_instance = ZoningWrapper(self._project_instance.field("zonings").getFirstZoning())
         # the one demands is created and populated
-        self._demands_instance = DemandsWrapper(self._project_instance.field("demands").getFirstDemands())
+        self._demands_instance = DemandsWrapper(self._project_instance.field("demands").getFirstDemands())      
+        self._initial_cost_instance = InitialCost()
         
-        self._initial_cost_instance = InitialCost(self._network_instance, self._demands_instance)
         #PLANIT_IO output formatter is activated by default, MemoryOutputFormatter is off by default
         self.activate(OutputFormatter.PLANIT_IO)
         self.deactivate(OutputFormatter.MEMORY)
@@ -119,6 +121,40 @@ class PLANit:
                 print ("Terminated PLANitJava interface")   
             except:
                 traceback.print_exc()         
+        
+    def __register_initial_costs__(self):   
+        """Register the initial costs on the assignment
+        """
+        time_periods_external_id_set = self._initial_cost_instance.get_time_periods_external_id_set()
+        
+        if self._initial_cost_instance.get_default_initial_cost_file_location() != None:
+            default_initial_cost_counterpart = self._project_instance.create_and_register_initial_link_segment_cost(self._network_instance.java, self._initial_cost_instance.get_default_initial_cost_file_location())
+            default_initial_cost_wrapper = InitialCostWrapper(default_initial_cost_counterpart)
+            self._assignment_instance.register_initial_link_segment_cost(default_initial_cost_wrapper.java)
+            
+        if len(time_periods_external_id_set) > 0:
+            time_period_counterparts = self._demands_instance.get_registered_time_periods()
+            for time_period_counterpart in time_period_counterparts:
+                time_period = TimePeriodWrapper(time_period_counterpart)
+                time_period_external_id = time_period.get_external_id()
+                if (time_period_external_id in time_periods_external_id_set):
+                    initial_cost_file_location = self._initial_cost_instance.get_initial_cost_file_location_by_time_period_external_id(time_period_external_id)
+                    initial_cost_counterpart = self._project_instance.create_and_register_initial_link_segment_cost(self._network_instance.java, initial_cost_file_location, time_period_counterpart)
+                    initial_cost_wrapper = InitialCostWrapper(initial_cost_counterpart)
+                    self._assignment_instance.register_initial_link_segment_cost(time_period.java, initial_cost_wrapper.java)       
+                    
+    def __getattr__(self, name):
+        """ all methods invoked on the PLANit Java gateway wrapper as passed on to it without the user seeing the actual gateway. This is to be
+        replaced by a more intricate interface which exposes only the properties users are allowed to configure to create a PLANit instance
+        """        
+        def method(*args): #collects the arguments of the function 'name' (wrapper function within getattr)                
+            if GatewayState.gateway_is_running:
+                java_name = GatewayUtils.to_camelcase(name)
+                # pass all calls on to the underlying PLANit project java class which is obtained via the entry_point.getProject call
+                return getattr(GatewayState.planit_project, java_name)(*args) # invoke without arguments
+            else:
+                raise Exception('PLANit java interface not available')      
+        return method
         
     def set(self, assignment_component):
         """Set the traffic assignment component
@@ -166,21 +202,9 @@ class PLANit:
             self._assignment_instance.register_output_formatter(self._io_output_formatter_instance.java);  
         if (self._activate_memory_output_formatter):      
             self._assignment_instance.register_output_formatter(self._memory_output_formatter_instance.java)
-        self._initial_cost_instance.register_costs(self._project_instance, self._assignment_instance)
-        self._project_instance.execute_all_traffic_assignments()      
-        
-    def __getattr__(self, name):
-        """ all methods invoked on the PLANit Java gateway wrapper as passed on to it without the user seeing the actual gateway. This is to be
-        replaced by a more intricate interface which exposes only the properties users are allowed to configure to create a PLANit instance
-        """        
-        def method(*args): #collects the arguments of the function 'name' (wrapper function within getattr)                
-            if GatewayState.gateway_is_running:
-                java_name = GatewayUtils.to_camelcase(name)
-                # pass all calls on to the underlying PLANit project java class which is obtained via the entry_point.getProject call
-                return getattr(GatewayState.planit_project, java_name)(*args) # invoke without arguments
-            else:
-                raise Exception('PLANit java interface not available')      
-        return method
+        #self._initial_cost_instance.register_costs(self._project_instance, self._assignment_instance)
+        self.__register_initial_costs__()
+        self._project_instance.execute_all_traffic_assignments()   
                                         
     @property
     def assignment(self):
