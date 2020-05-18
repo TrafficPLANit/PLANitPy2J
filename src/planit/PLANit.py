@@ -127,8 +127,6 @@ class PLANit:
         if isinstance(assignment_component, TrafficAssignment):
             assignment_counterpart = self._project_instance.create_and_register_traffic_assignment(assignment_component.value)
             self._assignment_instance = AssignmentWrapper(assignment_counterpart)
-            #self._initial_cost_instance = InitialCost(self._assignment_instance, self._project_instance, self._network_instance, self._demands_instance)
-            #self._initial_cost_instance = InitialCost(self._network_instance, self._demands_instance)
             
     def activate(self, formatter_component):
         """Activate an output formatter
@@ -159,13 +157,8 @@ class PLANit:
             self._activate_memory_output_formatter = False
             self._memory_output_formatter_instance = None
         
-    def run(self, register_initial_costs_option=0, initial_costs_file_location1=None,  initial_costs_file_location2=None, init_costs_file_pos=0, initial_link_segment_locations_per_time_period=None):  
+    def run(self):
         """Run the traffic assignment.  Register any output formatters which have been set up
-        :param register_initial_costs_option method of registering initial costs (0 if no initial costs being registered)
-        :param initial_costs_file_location1 location of first initial costs file (if using default method of registering initial costs)
-        :param initial_costs_file_location2 location of second initial costs file (if using default method of registering initial costs)
-        :param initial_costs_file_pos initial costs file position (if using default method of registering initial costs)
-        :param initial_link_segment_locations_per_time_period dictionary of initial cost file locations per time period (if using dictionary method of registering initial costs)
         """
         if (self._assignment_instance == None):
             raise Exception("Called plan_it.run() with no Traffic Assignment set")
@@ -173,10 +166,7 @@ class PLANit:
             self._assignment_instance.register_output_formatter(self._io_output_formatter_instance.java);  
         if (self._activate_memory_output_formatter):      
             self._assignment_instance.register_output_formatter(self._memory_output_formatter_instance.java)
-        if register_initial_costs_option == 1:
-            self._initial_cost_instance.default_register_initial_costs(self._project_instance, self._assignment_instance, initial_costs_file_location1, initial_costs_file_location2, init_costs_file_pos)
-        elif register_initial_costs_option == 2:
-            self._initial_cost_instance.dictionary_register_initial_costs(self._project_instance, self._assignment_instance, initial_link_segment_locations_per_time_period)
+        self._initial_cost_instance.register_costs(self._project_instance, self._assignment_instance)
         self._project_instance.execute_all_traffic_assignments()      
         
     def __getattr__(self, name):

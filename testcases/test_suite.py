@@ -12,6 +12,7 @@ from planit import ModeWrapper
 from planit import TimePeriodWrapper
 from planit import MemoryOutputIteratorWrapper
 from planit import GatewayState
+from planit import PLANit
 
 class TestSuite(unittest.TestCase):
       
@@ -23,14 +24,15 @@ class TestSuite(unittest.TestCase):
         """Unit test for route 2 with initial costs and 500 iterations (corresponds to testRouteChoice2InitialCosts500Iterations() in Java)
         """
         project_path = self.test_data_path + "route_choice\\xml\\test2initialCosts500iterations"
+        plan_it = PLANit(project_path)
         description = "testRouteChoice2initialCosts"
         csv_file_name = "Time Period 1_500.csv"
         od_csv_file_name = "Time Period 1_499.csv"
         xml_file_name = "Time Period 1.xml"
-        initial_costs_file_location = self.test_data_path + "route_choice\\xml\\test2initialCosts500iterations\\initial_link_segment_costs.csv"
+        plan_it.initial_cost.set(self.test_data_path + "route_choice\\xml\\test2initialCosts500iterations\\initial_link_segment_costs.csv")
         max_iterations = 500
         epsilon = 0.0000000001
-        PlanItHelper.run_test(max_iterations, epsilon, description, 1, initial_costs_file_location, None, 0, None, 1, project_path)       
+        PlanItHelper.run_test(plan_it, max_iterations, epsilon, description, 1, project_path)
         PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name, project_path)
         self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name, project_path))        
         PlanItHelper.delete_file(OutputType.PATH, description, xml_file_name, project_path)
@@ -44,6 +46,7 @@ class TestSuite(unittest.TestCase):
         """
         print("Running test_route_choice_2_initial_costs_one_iteration_three_time_periods")
         project_path = self.test_data_path + "route_choice\\xml\\test2initialCostsOneIterationThreeTimePeriods"
+        plan_it = PLANit(project_path)
         description = "test2initialCostsOneIterationThreeTimePeriods"
         csv_file_name1 = "Time Period 1_1.csv"
         od_csv_file_name1 = "Time Period 1_0.csv"
@@ -55,12 +58,11 @@ class TestSuite(unittest.TestCase):
         xml_file_name2 = "Time Period 2.xml"
         xml_file_name3 = "Time Period 3.xml"
         max_iterations = 1
-        initial_link_segment_locations_per_time_period = {}
-        initial_link_segment_locations_per_time_period[0] = self.test_data_path + "route_choice\\xml\\test2initialCostsOneIterationThreeTimePeriods\\initial_link_segment_costs_time_period_1.csv"
-        initial_link_segment_locations_per_time_period[1] = self.test_data_path + "route_choice\\xml\\test2initialCostsOneIterationThreeTimePeriods\\initial_link_segment_costs_time_period_2.csv"
-        initial_link_segment_locations_per_time_period[2] = self.test_data_path + "route_choice\\xml\\test2initialCostsOneIterationThreeTimePeriods\\initial_link_segment_costs_time_period_3.csv"
+        plan_it.initial_cost.set(self.test_data_path + "route_choice\\xml\\test2initialCostsOneIterationThreeTimePeriods\\initial_link_segment_costs_time_period_1.csv", 0)
+        plan_it.initial_cost.set(self.test_data_path + "route_choice\\xml\\test2initialCostsOneIterationThreeTimePeriods\\initial_link_segment_costs_time_period_2.csv", 1)
+        plan_it.initial_cost.set(self.test_data_path + "route_choice\\xml\\test2initialCostsOneIterationThreeTimePeriods\\initial_link_segment_costs_time_period_3.csv", 2)
         epsilon = 0.001
-        PlanItHelper.run_test(max_iterations, epsilon, description, 1, None, None, 0, initial_link_segment_locations_per_time_period, 2, project_path)
+        PlanItHelper.run_test(plan_it, max_iterations, epsilon, description, 1, project_path)
         PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name1, project_path)
         self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name1, project_path))
         PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name2, project_path)
@@ -86,13 +88,14 @@ class TestSuite(unittest.TestCase):
         """
         print("Running test_basic_shortest_path_algorithm_a_to_c")
         project_path = self.test_data_path + "basic\\xml\\test2";
+        plan_it = PLANit(project_path)
         description = "testBasic2";
         csv_file_name = "Time Period 1_2.csv";
         od_csv_file_name = "Time Period 1_1.csv";
         xml_file_name = "Time Period 1.xml";
         max_iterations = 500
         epsilon = 0.001
-        PlanItHelper.run_test(max_iterations, epsilon, description, 1, None, None, 0, None, 1, project_path)
+        PlanItHelper.run_test(plan_it, max_iterations, epsilon, description, 1, project_path)
         PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name, project_path)
         self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name, project_path))
         PlanItHelper.delete_file(OutputType.PATH, description, xml_file_name, project_path)
@@ -106,13 +109,14 @@ class TestSuite(unittest.TestCase):
         """
         print("Running test_basic_shortes_path_algorithm_a_to_d")
         project_path = self.test_data_path + "basic\\xml\\test3";
+        plan_it = PLANit(project_path)
         description = "testBasic3";
         csv_file_name = "Time Period 1_2.csv";
         od_csv_file_name = "Time Period 1_1.csv";
         xml_file_name = "Time Period 1.xml";
         max_iterations = 500
         epsilon = 0.001
-        PlanItHelper.run_test(max_iterations, epsilon, description, 1, None, None, 0, None, 1, project_path)
+        PlanItHelper.run_test(plan_it, max_iterations, epsilon, description, 1, project_path)
         PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name, project_path)
         self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name, project_path))
         PlanItHelper.delete_file(OutputType.PATH, description, xml_file_name, project_path)
@@ -128,7 +132,8 @@ class TestSuite(unittest.TestCase):
         description = "explanatory";
         max_iterations = 2
         epsilon = 0.001
-        plan_it = PlanItHelper.run_test(max_iterations, epsilon, description, 1, None, None, 0, None, 1, None, True)
+        plan_it = PLANit()
+        plan_it = PlanItHelper.run_test(plan_it, max_iterations, epsilon, description, 1, deactivate_file_output=True)
 
         mode_external_id = 1
         time_period_external_id = 0
@@ -196,7 +201,8 @@ class TestSuite(unittest.TestCase):
         xml_file_name = "Time Period 1.xml";
         max_iterations = 500
         epsilon = 0.001
-        PlanItHelper.run_test(max_iterations, epsilon, description, 1, None, None, 0, None, 1)
+        plan_it = PLANit()
+        PlanItHelper.run_test(plan_it, max_iterations, epsilon, description, 1)
         PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name)
         self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name))
         PlanItHelper.delete_file(OutputType.PATH, description, xml_file_name)
@@ -216,7 +222,8 @@ class TestSuite(unittest.TestCase):
         xml_file_name = "Time Period 1.xml";
         max_iterations = 500
         epsilon = 0.001
-        plan_it = PlanItHelper.run_test_without_activating_outputs(max_iterations, epsilon, description, 1, None, None, 0, None, 1)
+        plan_it = PLANit()
+        plan_it = PlanItHelper.run_test_without_activating_outputs(plan_it, max_iterations, epsilon, description, 1)
         output_type = OutputType.OD
         output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_type.java_class_name(), output_type.value)
         self.assertTrue(plan_it.assignment.is_output_type_active(output_type_instance))
@@ -236,6 +243,7 @@ class TestSuite(unittest.TestCase):
         """
         print("Running test_basic_three_time_periods")
         project_path = self.test_data_path + "basic\\xml\\test13"
+        plan_it = PLANit(project_path)
         description = "testBasic13"
         csv_file_name1 = "Time Period 1_2.csv"
         csv_file_name2 = "Time Period 2_2.csv"
@@ -248,7 +256,7 @@ class TestSuite(unittest.TestCase):
         xml_file_name3 = "Time Period 3.xml"
         max_iterations = 500
         epsilon = 0.001
-        PlanItHelper.run_test(max_iterations, epsilon, description, 1, None, None, 0, None, 1, project_path)
+        PlanItHelper.run_test(plan_it, max_iterations, epsilon, description, 1, project_path)
         PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name1, project_path)
         self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name1, project_path))
         PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name2, project_path)
@@ -274,6 +282,7 @@ class TestSuite(unittest.TestCase):
         """
         print("Running test_route_choice_compare_with_OmniTRANS4_using_two_time_periods")
         project_path = self.test_data_path + "route_choice\\xml\\test42"
+        plan_it = PLANit(project_path)
         description = "testRouteChoice42"
         csv_file_name1 = "Time Period 1_500.csv"
         od_csv_file_name1 = "Time Period 1_499.csv"
@@ -283,7 +292,7 @@ class TestSuite(unittest.TestCase):
         xml_file_name2 = "Time Period 2.xml"
         max_iterations = 500
         epsilon = 0.0
-        PlanItHelper.run_test(max_iterations, epsilon, description, 1, None, None, 0, None, 1, project_path)
+        PlanItHelper.run_test(plan_it, max_iterations, epsilon, description, 1, project_path)
         PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name1, project_path)
         self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name1, project_path))
         PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name2, project_path)

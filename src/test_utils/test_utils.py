@@ -11,35 +11,21 @@ from planit import OutputProperty
 from planit import RouteIdType
 from planit import OutputFormatter
 from planit import ODSkimSubOutputType
-from planit import PLANit
 from builtins import staticmethod
 
 class PlanItHelper:
     
     @staticmethod
-    def run_test(max_iterations, epsilon, 
-                           description, output_type_configuration_option, initial_costs_file_location1, 
-                           initial_costs_file_location2, init_costs_file_pos,  
-                           initial_link_segment_locations_per_time_period, register_initial_costs_option, 
-                           project_path=None, deactivate_file_output=False):
+    def run_test(plan_it, max_iterations, epsilon, description, output_type_configuration_option, project_path=None, deactivate_file_output=False):
         """Top-level method which runs unit tests
+        :param plan_it PLANit object (with any required initial costs already defined
         :param max_iterations the maximum number of iterations for the current unit test
         :param epsilon the convergence epsilon for the current unit test
         :param description the name to be used to identify input and output files
         :param output_type_configuration_option used to specify which properties to remove from link output type configuration
-        :param initial_costs_file_location1 location of first initial costs file, if used (None if not required)
-        :param initial_costs_file_location2 location of second initial costs file, if used (None if not required)
-        :param init_costs_file_pos position of which initial costs file is being used, if required
-        :param initial_link_segment_locations_per_time_period dictionary of initial link cost files per time period, if required
-        :param register_initial_costs_option used to specify which method of the selecting initial cost (default or dictionary) is being used
         :param project_path directory of XML input file (if omitted, defaults to None which will make methods use the current directory)
         :param deactivate_file_output if True, deactivate the file output formatter and store results in memory only
         """        
-        if project_path == None:
-            plan_it = PLANit()
-        else:
-            plan_it = PLANit(project_path)
-            
         plan_it.set(TrafficAssignment.TRADITIONAL_STATIC)
          
         plan_it.assignment.set(PhysicalCost.BPR)
@@ -75,40 +61,21 @@ class PlanItHelper:
             plan_it.output.set_csv_name_root(description)     
             if (project_path is not None):  
                 plan_it.output.set_output_directory(project_path)
- 
-        if register_initial_costs_option == 1:
-            plan_it.run(1, initial_costs_file_location1=initial_costs_file_location1, initial_costs_file_location2=initial_costs_file_location2, init_costs_file_pos=init_costs_file_pos)
-        elif register_initial_costs_option == 2:
-            plan_it.run(2,  initial_link_segment_locations_per_time_period=initial_link_segment_locations_per_time_period)
-        else :
-            plan_it.run()
+        plan_it.run()
         return plan_it
  
     @staticmethod
-    def run_test_without_activating_outputs(max_iterations, epsilon, 
-                           description, output_type_configuration_option, initial_costs_file_location1, 
-                           initial_costs_file_location2, init_costs_file_pos,  
-                           initial_link_segment_locations_per_time_period, register_initial_costs_option, 
-                           project_path=None, deactivate_file_output=False):
+    def run_test_without_activating_outputs(plan_it, max_iterations, epsilon, description, output_type_configuration_option, project_path=None, deactivate_file_output=False):
         """Top-level method which runs unit tests without activating output configurations (these should come on automatically)
+        :param plan_it PLANit object (with any initial costs already defined)
         :param max_iterations the maximum number of iterations for the current unit test
         :param epsilon the convergence epsilon for the current unit test
         :param description the name to be used to identify input and output files
         :param output_type_configuration_option used to specify which properties to remove from link output type configuration
-        :param initial_costs_file_location1 location of first initial costs file, if used (None if not required)
-        :param initial_costs_file_location2 location of second initial costs file, if used (None if not required)
-        :param init_costs_file_pos position of which initial costs file is being used, if required
-        :param initial_link_segment_locations_per_time_period dictionary of initial link cost files per time period, if required
-        :param register_initial_costs_option used to specify which method of the selecting initial cost (default or dictionary) is being used
         :param project_path directory of XML input file (if omitted, defaults to None which will make methods use the current directory)
         :param deactivate_file_output if True, deactivate the file output formatter and store results in memory only
         """
         
-        if project_path == None:
-            plan_it = PLANit()
-        else:
-            plan_it = PLANit(project_path)
-            
         plan_it.set(TrafficAssignment.TRADITIONAL_STATIC)
          
         plan_it.assignment.set(PhysicalCost.BPR)
@@ -143,12 +110,7 @@ class PlanItHelper:
             if (project_path is not None):  
                 plan_it.output.set_output_directory(project_path)
  
-        if register_initial_costs_option == 1:
-            plan_it.run(1, initial_costs_file_location1=initial_costs_file_location1, initial_costs_file_location2=initial_costs_file_location2, init_costs_file_pos=init_costs_file_pos)
-        elif register_initial_costs_option == 2:
-            plan_it.run(2,  initial_link_segment_locations_per_time_period=initial_link_segment_locations_per_time_period)
-        else :
-            plan_it.run()
+        plan_it.run()
         plan_it.assignment.activate_output(OutputType.OD)
         return plan_it
 
