@@ -54,7 +54,7 @@ class AssignmentWrapper(BaseWrapper):
     """ Wrapper around the Java traffic assignment builder class instance
     """
     
-    def __init__(self, java_counterpart):
+    def __init__(self, java_counterpart, network_instance):
         super().__init__(java_counterpart)
         self._output_configuration = OutputConfigurationWrapper(self.get_output_configuration()) # collect the output configuration from Java
         self._gap_function = GapFunctionWrapper(self.get_gap_function()) # collect the gap function from Java
@@ -64,6 +64,7 @@ class AssignmentWrapper(BaseWrapper):
         self._link_output_type_configuration = None
         self._origin_destination_output_type_configuration = None   
         self._path_output_type_configuration = None
+        self._network_instance = network_instance
      
     def set(self, assignment_component):
         """ Configure an assignment component on this assignment instance. Note that all these go via the traffic assignment builder in Java
@@ -72,7 +73,10 @@ class AssignmentWrapper(BaseWrapper):
         """    
         
         if isinstance(assignment_component, PhysicalCost):
-            self._physical_cost_instance = PhysicalCostWrapper(self.create_and_register_physical_cost(assignment_component.value)) 
+            if (assignment_component == PhysicalCost.BPR):
+                self._physical_cost_instance = BPRCostWrapper(self.create_and_register_physical_cost(assignment_component.value), self._network_instance) 
+            else:
+                raise Exception('Unrecognized link cost function ' + assignment_component.type + ' cannot be set on assignment instance')
         elif isinstance(assignment_component, VirtualCost):
             self._virtual_cost_instance = VirtualCostWrapper(self.create_and_register_virtual_cost(assignment_component.value))
         elif isinstance(assignment_component, Smoothing):
@@ -317,6 +321,28 @@ class ZoningWrapper(BaseWrapper):
     
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
+        
+class BPRCostWrapper(PhysicalCostWrapper):
+    """Wrapper around the BPRLinkTravelTimeCost instance
+    """
+    
+    def __init__(self, java_counterpart, network_instance):
+        super().__init__(java_counterpart)
+        self._network_instance = network_instance
+        
+    def set_default_parameters(self, alpha, beta, mode_external_id=None):
+        """Set the default BPR functions parameters 
+        :param alpha value of alpha parameter
+        :param beta value of beta parameter
+        :param mode_external_id if included, default parameters only apply to this mode
+        """
+        if (mode_external_id == None):
+            self._java_counterpart.setDefaultParameters(alpha, beta)
+        else:
+            modes_counterpart = self._network_instance.get_modes()
+            modes = ModesWrapper(modes_counterpart)
+            mode_counterpart = modes.get_mode_by_external_id(mode_external_id)
+            self._java_counterpart.setDefaultParameters(mode_counterpart, alpha, beta)
     
 class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
     """ Wrapper around the Java PlanItOutputFormatter class instance

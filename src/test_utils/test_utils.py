@@ -26,9 +26,9 @@ class PlanItHelper:
         :param project_path directory of XML input file (if omitted, defaults to None which will make methods use the current directory)
         :param deactivate_file_output if True, deactivate the file output formatter and store results in memory only
         """        
-        plan_it.set(TrafficAssignment.TRADITIONAL_STATIC)
-         
+        plan_it.set(TrafficAssignment.TRADITIONAL_STATIC)         
         plan_it.assignment.set(PhysicalCost.BPR)
+        #plan_it.assignment.physical_cost.set_default_parameters(0.5, 4.0, 1)
         # TODO : Add a unit test which testsX plan_it.assigment.physical_cost.set_default_parameters()
         # testRouteChoiceCompareWithOmniTRANS5() is a  good one for this
         plan_it.assignment.set(VirtualCost.FIXED)

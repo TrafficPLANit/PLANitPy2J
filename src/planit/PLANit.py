@@ -162,7 +162,7 @@ class PLANit:
         """
         if isinstance(assignment_component, TrafficAssignment):
             assignment_counterpart = self._project_instance.create_and_register_traffic_assignment(assignment_component.value)
-            self._assignment_instance = AssignmentWrapper(assignment_counterpart)
+            self._assignment_instance = AssignmentWrapper(assignment_counterpart, self._network_instance)
             
     def activate(self, formatter_component):
         """Activate an output formatter
@@ -202,7 +202,6 @@ class PLANit:
             self._assignment_instance.register_output_formatter(self._io_output_formatter_instance.java);  
         if (self._activate_memory_output_formatter):      
             self._assignment_instance.register_output_formatter(self._memory_output_formatter_instance.java)
-        #self._initial_cost_instance.register_costs(self._project_instance, self._assignment_instance)
         self.__register_initial_costs__()
         self._project_instance.execute_all_traffic_assignments()   
                                         
