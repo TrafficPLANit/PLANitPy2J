@@ -195,10 +195,31 @@ class InitialCostWrapper(BaseWrapper):
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
         
-class LinkSegmentExpectedResultsDtoWrapper(BaseWrapper):
-    """ Wrapper around the Java Link Segment Expected Results Dto class instance
+class LinkSegmentsWrapper(BaseWrapper):
+    """ Wrapper around the Java LinkSegments class
     """
     
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+        
+class LinkSegmentExpectedResultsDtoWrapper(BaseWrapper):
+    """ Wrapper around the Java Link Segment Expected Results DTO class instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+class MacroscopicLinkSegmentWrapper(BaseWrapper):
+    """ Wrapper around the MacroscopicLinkSegmentType class instance
+    """
+     
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)      
+ 
+class MacroscopicLinkSegmentTypeWrapper(BaseWrapper):
+    """ Wrapper around the MacroscopicLinkSegmentType class instance
+    """
+     
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)      
  
@@ -329,21 +350,33 @@ class BPRCostWrapper(PhysicalCostWrapper):
     def __init__(self, java_counterpart, network_instance):
         super().__init__(java_counterpart)
         self._network_instance = network_instance
+        modes_counterpart = self._network_instance.get_modes()
+        self._modes_instance = ModesWrapper(modes_counterpart)
+        link_segments_counterpart = self._network_instance.get_link_segments()
+        link_segments_instance = LinkSegmentsWrapper(link_segments_counterpart)
+        self._macroscopic_link_segment_counterpart_list = link_segments_instance.to_list()
         
-    def set_default_parameters(self, alpha, beta, mode_external_id=None):
+    def set_default_parameters(self, alpha, beta, mode_external_id=None, link_segment_type_external_id=None):
         """Set the default BPR functions parameters 
         :param alpha value of alpha parameter
         :param beta value of beta parameter
         :param mode_external_id if included, default parameters only apply to this mode
+        :param link_segment_type_external_id if included, default parameters apply to this link segment type and mode
         """
         if (mode_external_id == None):
             self._java_counterpart.setDefaultParameters(alpha, beta)
         else:
-            modes_counterpart = self._network_instance.get_modes()
-            modes = ModesWrapper(modes_counterpart)
-            mode_counterpart = modes.get_mode_by_external_id(mode_external_id)
-            self._java_counterpart.setDefaultParameters(mode_counterpart, alpha, beta)
-    
+            mode_counterpart = self._modes_instance.get_mode_by_external_id(mode_external_id)
+            if (link_segment_type_external_id == None):
+                self._java_counterpart.setDefaultParameters(mode_counterpart, alpha, beta)
+            else:
+                for macroscopic_link_segment_counterpart in self._macroscopic_link_segment_counterpart_list:
+                    macroscopic_link_segment_instance = MacroscopicLinkSegmentWrapper(macroscopic_link_segment_counterpart)
+                    macroscopic_link_segment_type_counterpart = macroscopic_link_segment_instance.get_link_segment_type()
+                    macroscopic_link_segment_type_instance = MacroscopicLinkSegmentTypeWrapper(macroscopic_link_segment_type_counterpart)
+                    if (macroscopic_link_segment_type_instance.get_external_id() == link_segment_type_external_id):
+                        self.set_parameters(macroscopic_link_segment_counterpart, mode_counterpart, alpha, beta)
+
 class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
     """ Wrapper around the Java PlanItOutputFormatter class instance
     """
