@@ -58,9 +58,9 @@ class AssignmentWrapper(BaseWrapper):
         super().__init__(java_counterpart)
         self._output_configuration = OutputConfigurationWrapper(self.get_output_configuration()) # collect the output configuration from Java
         self._gap_function = GapFunctionWrapper(self.get_gap_function()) # collect the gap function from Java
-        self._physical_cost_instance = None
-        self._virtual_cost_instance = None    
-        self._smoothing = None
+        self._physical_cost_instance = self.get_physical_cost()
+        self._virtual_cost_instance = self.get_virtual_cost()    
+        self._smoothing = self.get_smoothing()
         self._link_output_type_configuration = None
         self._origin_destination_output_type_configuration = None   
         self._path_output_type_configuration = None
