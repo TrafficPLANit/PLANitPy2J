@@ -114,6 +114,10 @@ class PLANit:
                 if (GatewayState.planit_java_process.poll() != None):
                     os.kill(GatewayState.planit_java_process.pid, 0)
                     GatewayState.planit_java_process.kill()
+                # Wait for zombie process to provide post-mortem information. 
+                # Only after this call the subprocess will be gone and we will not receive warnings
+                # that it is still alive regardless of the fact we killed it
+                GatewayState.planit_java_process.wait()
                 GatewayState.gateway_is_running = False
                 GatewayState.python_2_java_gateway = None
                 print ("Forced kill of PLANitJava interface")
