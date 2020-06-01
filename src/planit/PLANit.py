@@ -23,7 +23,7 @@ from builtins import isinstance
 
 class PLANit:
             
-    def __init__(self, project_path=None, standalone=True):
+    def __init__(self, project_path=None, debug_info=False, standalone=True):
         """Constructor of PLANit python wrapper which acts as an interface to the underlying PLANit Java code
         :param project_path the path location of the XML input file(s) to be used by PLANitIO
         :param standalone when true this PLANit instance bootstraps a java gateway and closes it upon completion of the scripts when false <to be implemented>
@@ -40,6 +40,8 @@ class PLANit:
         self._initial_cost_instance = None
         self._activate_planitio_output_formatter = False
         self._activate_memory_output_formatter = False
+        
+        self._debug_info = debug_info
         
         if not standalone:
             raise Exception('Standalone argument can only be true at this time, server mode not yet supported')  
@@ -71,7 +73,7 @@ class PLANit:
             GatewayState.gateway_is_running = True            
                 
             #TODO: Note we are not waiting for it to setup properly --> possibly considering some mechanism to wait for this to ensure proper connection!
-            print('Java interface running with PID: '+ str(GatewayState.planit_java_process.pid))            
+            if self._debug_info: print('Java interface running with PID: '+ str(GatewayState.planit_java_process.pid))
         else:
             raise Exception('PLANit java interface already running, only a single instance allowed at this point')
     
@@ -120,9 +122,9 @@ class PLANit:
                 GatewayState.planit_java_process.wait()
                 GatewayState.gateway_is_running = False
                 GatewayState.python_2_java_gateway = None
-                print ("Forced kill of PLANitJava interface")
+                if self._debug_info: print ("Forced kill of PLANitJava interface")
             except OSError:
-                print ("Terminated PLANitJava interface")   
+                if self._debug_info: print ("Terminated PLANitJava interface")   
             except:
                 traceback.print_exc()         
         
