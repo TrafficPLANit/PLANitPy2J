@@ -93,8 +93,8 @@ class PLANit:
         self._initial_cost_instance = InitialCost()
         
         #PLANIT_IO output formatter is activated by default, MemoryOutputFormatter is off by default
-        self.activate(OutputFormatter.PLANIT_IO)
-        self.deactivate(OutputFormatter.MEMORY)
+        self._io_output_formatter_instance = PlanItOutputFormatterWrapper(self._project_instance.getDefaultOutputFormatter())
+        self._activate_planitio_output_formatter = True
         
     def __del__(self):
         """Destructor of PLANit object which shuts down the connection to Java
@@ -203,7 +203,7 @@ class PLANit:
         if (self._assignment_instance == None):
             raise Exception("Called plan_it.run() with no Traffic Assignment set")
         if (self._activate_planitio_output_formatter):
-            self._assignment_instance.register_output_formatter(self._io_output_formatter_instance.java);  
+            self._assignment_instance.register_output_formatter(self._io_output_formatter_instance.java); 
         if (self._activate_memory_output_formatter):      
             self._assignment_instance.register_output_formatter(self._memory_output_formatter_instance.java)
         self.__register_initial_costs__()
