@@ -62,10 +62,15 @@ class AssignmentWrapper(BaseWrapper):
         self._physical_cost_instance = BPRCostWrapper(self.get_physical_cost(), self._network_instance) 
         self._virtual_cost_instance = VirtualCostWrapper(self.get_virtual_cost()) 
         self._smoothing = SmoothingWrapper(self.get_smoothing())
-        self._link_output_type_configuration = None
-        self._origin_destination_output_type_configuration = None   
-        self._path_output_type_configuration = None
-      
+        
+        # initialise in case they have defaults available
+        self._link_output_type_configuration = LinkOutputTypeConfigurationWrapper(self._output_configuration.get_output_type_configuration(self.__create_java_output_type(OutputType.LINK)))
+        self._origin_destination_output_type_configuration = OriginDestinationOutputTypeConfigurationWrapper(self._output_configuration.get_output_type_configuration(self.__create_java_output_type(OutputType.OD)))   
+        self._path_output_type_configuration = PathOutputTypeConfigurationWrapper(self._output_configuration.get_output_type_configuration(self.__create_java_output_type(OutputType.PATH)))
+    def __create_java_output_type(self, output_type):
+        """ create an output type enum suitable to pass to java 
+        """   
+        return GatewayState.python_2_java_gateway.entry_point.createEnum(output_type.java_class_name(), output_type.value)
     def set(self, assignment_component):
         """ Configure an assignment component on this assignment instance. Note that all these go via the traffic assignment builder in Java
             although we hide that on the Python side to not over-complicate things for the average user. We accept PhysicalCost, VirtualCost and 
@@ -91,7 +96,7 @@ class AssignmentWrapper(BaseWrapper):
             :param output_type Python enum of available output types
         """ 
         # collect an enum instance by collecting the <package>.<class_name> string from the Output type enum
-        output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_type.java_class_name(), output_type.value)
+        output_type_instance = self.__create_java_output_type(output_type)
         if not self.is_output_type_active(output_type_instance):
             if output_type.value == "LINK":
                 self._link_output_type_configuration = LinkOutputTypeConfigurationWrapper(self._java_counterpart.activateOutput(output_type_instance))
@@ -106,7 +111,7 @@ class AssignmentWrapper(BaseWrapper):
         """Deactivate specified output type on the assignment
         :param output_type Output type to be deactivated
         """ 
-        output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_type.java_class_name(), output_type.value)
+        output_type_instance = self.__create_java_output_type(output_type)
         if self.is_output_type_active(output_type_instance):
             if output_type.value == "LINK":
                 self._link_output_type_configuration = LinkOutputTypeConfigurationWrapper(self._java_counterpart.deactivateOutput(output_type_instance))
