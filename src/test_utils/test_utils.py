@@ -27,13 +27,12 @@ class PlanItHelper:
         :param deactivate_file_output if True, deactivate the file output formatter and store results in memory only
         """        
         plan_it.set(TrafficAssignment.TRADITIONAL_STATIC)         
-        plan_it.assignment.set(PhysicalCost.BPR)
         plan_it.assignment.physical_cost.set_default_parameters(0.8, 4.5, 2, 1)
 
         # TODO : Add a unit test which testsX plan_it.assigment.physical_cost.set_default_parameters()
         # testRouteChoiceCompareWithOmniTRANS5() is a  good one for this
-        plan_it.assignment.set(VirtualCost.FIXED)
-        plan_it.assignment.set(Smoothing.MSA)
+        #plan_it.assignment.set(VirtualCost.FIXED)
+        #plan_it.assignment.set(Smoothing.MSA)
         plan_it.assignment.output_configuration.set_persist_only_final_Iteration(True)
         plan_it.assignment.activate_output(OutputType.LINK)
         plan_it.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_EXTERNAL_ID)
@@ -79,12 +78,8 @@ class PlanItHelper:
         :param deactivate_file_output if True, deactivate the file output formatter and store results in memory only
         """        
         plan_it.set(TrafficAssignment.TRADITIONAL_STATIC)         
-        plan_it.assignment.set(PhysicalCost.BPR)
-        #plan_it.assignment.physical_cost.set_default_parameters(0.5, 4.0, 1)
         # TODO : Add a unit test which testsX plan_it.assigment.physical_cost.set_default_parameters()
         # testRouteChoiceCompareWithOmniTRANS5() is a  good one for this
-        plan_it.assignment.set(VirtualCost.FIXED)
-        plan_it.assignment.set(Smoothing.MSA)
         plan_it.assignment.output_configuration.set_persist_only_final_Iteration(True)
         plan_it.assignment.activate_output(OutputType.LINK)
         plan_it.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_EXTERNAL_ID)
@@ -130,11 +125,8 @@ class PlanItHelper:
         
         plan_it.set(TrafficAssignment.TRADITIONAL_STATIC)
          
-        plan_it.assignment.set(PhysicalCost.BPR)
-        # TODO : Add a unit test which testsX plan_it.assigment.physical_cost.set_default_parameters()
+         # TODO : Add a unit test which testsX plan_it.assigment.physical_cost.set_default_parameters()
         # testRouteChoiceCompareWithOmniTRANS5() is a  good one for this
-        plan_it.assignment.set(VirtualCost.FIXED)
-        plan_it.assignment.set(Smoothing.MSA)
         plan_it.assignment.output_configuration.set_persist_only_final_Iteration(True)
         plan_it.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_EXTERNAL_ID)
         plan_it.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_ID)

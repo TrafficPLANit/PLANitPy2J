@@ -28,7 +28,7 @@ from .wrappers import OriginDestinationOutputTypeConfigurationWrapper
 from .wrappers import PathOutputTypeConfigurationWrapper
 from .wrappers import PhysicalCostWrapper
 from .wrappers import InitialCostWrapper
-from .wrappers import PhysicalNetworkWrapper
+from .wrappers import MacroscopicNetworkWrapper
 from .wrappers import PlanItInputBuilderWrapper
 from .wrappers import SmoothingWrapper
 from .wrappers import StopCriterionWrapper

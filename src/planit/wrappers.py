@@ -58,14 +58,14 @@ class AssignmentWrapper(BaseWrapper):
         super().__init__(java_counterpart)
         self._output_configuration = OutputConfigurationWrapper(self.get_output_configuration()) # collect the output configuration from Java
         self._gap_function = GapFunctionWrapper(self.get_gap_function()) # collect the gap function from Java
-        self._physical_cost_instance = self.get_physical_cost()
-        self._virtual_cost_instance = self.get_virtual_cost()    
-        self._smoothing = self.get_smoothing()
+        self._network_instance = network_instance
+        self._physical_cost_instance = BPRCostWrapper(self.get_physical_cost(), self._network_instance) 
+        self._virtual_cost_instance = VirtualCostWrapper(self.get_virtual_cost()) 
+        self._smoothing = SmoothingWrapper(self.get_smoothing())
         self._link_output_type_configuration = None
         self._origin_destination_output_type_configuration = None   
         self._path_output_type_configuration = None
-        self._network_instance = network_instance
-     
+      
     def set(self, assignment_component):
         """ Configure an assignment component on this assignment instance. Note that all these go via the traffic assignment builder in Java
             although we hide that on the Python side to not over-complicate things for the average user. We accept PhysicalCost, VirtualCost and 
@@ -223,6 +223,13 @@ class MacroscopicLinkSegmentTypeWrapper(BaseWrapper):
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)      
  
+class MacroscopicNetworkWrapper(BaseWrapper):
+    """ Wrapper around the Java physical network class instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+        
 class MemoryOutputIteratorWrapper(BaseWrapper):
     """Wrapper class around MemoryOutputIterator class
     """
@@ -287,13 +294,6 @@ class PhysicalCostWrapper(BaseWrapper):
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
   
-class PhysicalNetworkWrapper(BaseWrapper):
-    """ Wrapper around the Java physical network class instance
-    """
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-        
 class PlanItInputBuilderWrapper(BaseWrapper):
     """ Wrapper around the Java InputBuilderListener class instance
     """
@@ -370,12 +370,9 @@ class BPRCostWrapper(PhysicalCostWrapper):
             if (link_segment_type_external_id == None):
                 self._java_counterpart.setDefaultParameters(mode_counterpart, alpha, beta)
             else:
-                for macroscopic_link_segment_counterpart in self._macroscopic_link_segment_counterpart_list:
-                    macroscopic_link_segment_instance = MacroscopicLinkSegmentWrapper(macroscopic_link_segment_counterpart)
-                    macroscopic_link_segment_type_counterpart = macroscopic_link_segment_instance.get_link_segment_type()
-                    macroscopic_link_segment_type_instance = MacroscopicLinkSegmentTypeWrapper(macroscopic_link_segment_type_counterpart)
-                    if (macroscopic_link_segment_type_instance.get_external_id() == link_segment_type_external_id):
-                        self.set_parameters(macroscopic_link_segment_counterpart, mode_counterpart, alpha, beta)
+                link_segment_type_counterpart = self._network_instance.get_macroscopic_link_segment_type_by_external_id(link_segment_type_external_id)
+                link_segment_type_instance = MacroscopicLinkSegmentTypeWrapper(link_segment_type_counterpart)
+                self.setDefaultParameters(link_segment_type_instance.java, mode_counterpart, alpha, beta)
 
 class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
     """ Wrapper around the Java PlanItOutputFormatter class instance

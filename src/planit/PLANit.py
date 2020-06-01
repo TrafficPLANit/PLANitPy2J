@@ -8,7 +8,7 @@ from planit import GatewayUtils
 from planit import GatewayState
 from planit import GatewayConfig
 from planit import BaseWrapper 
-from planit import PhysicalNetworkWrapper 
+from planit import MacroscopicNetworkWrapper 
 from planit import DemandsWrapper
 from planit import AssignmentWrapper
 from planit import ZoningWrapper
@@ -87,7 +87,7 @@ class PLANit:
         # The one macroscopic network, zoning, demand is created and populated and wrapped in a Python object
         # (Note1: to access public members in Java, we must collect it via the field method in the wrapper)
         # (Note2: since we only have a single network, demand, zoning, we do not have a wrapper for the fields, so we must access the methods directly
-        self._network_instance = PhysicalNetworkWrapper(self._project_instance.field("physicalNetworks").getFirstNetwork())
+        self._network_instance = MacroscopicNetworkWrapper(self._project_instance.field("physicalNetworks").getFirstNetwork())
         # the one zoning is created and populated
         self._zoning_instance = ZoningWrapper(self._project_instance.field("zonings").getFirstZoning())
         # the one demands is created and populated
