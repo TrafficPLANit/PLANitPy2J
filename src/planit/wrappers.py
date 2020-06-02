@@ -63,10 +63,11 @@ class AssignmentWrapper(BaseWrapper):
         self._virtual_cost_instance = VirtualCostWrapper(self.get_virtual_cost()) 
         self._smoothing = SmoothingWrapper(self.get_smoothing())
         
-        # initialise in case they have defaults available
+        # initialize in case they have defaults available
         self._link_output_type_configuration = LinkOutputTypeConfigurationWrapper(self._output_configuration.get_output_type_configuration(self.__create_java_output_type(OutputType.LINK)))
         self._origin_destination_output_type_configuration = OriginDestinationOutputTypeConfigurationWrapper(self._output_configuration.get_output_type_configuration(self.__create_java_output_type(OutputType.OD)))   
         self._path_output_type_configuration = PathOutputTypeConfigurationWrapper(self._output_configuration.get_output_type_configuration(self.__create_java_output_type(OutputType.PATH)))
+        
     def __create_java_output_type(self, output_type):
         """ create an output type enum suitable to pass to java 
         """   
@@ -371,11 +372,11 @@ class BPRCostWrapper(PhysicalCostWrapper):
         if (mode_external_id == None):
             self._java_counterpart.setDefaultParameters(alpha, beta)
         else:
-            mode_counterpart = self._modes_instance.get_mode_by_external_id(mode_external_id)
+            mode_counterpart = self._modes_instance.get_mode_by_external_id(mode_external_id, True)
             if (link_segment_type_external_id == None):
                 self._java_counterpart.setDefaultParameters(mode_counterpart, alpha, beta)
             else:
-                link_segment_type_counterpart = self._network_instance.get_macroscopic_link_segment_type_by_external_id(link_segment_type_external_id)
+                link_segment_type_counterpart = self._network_instance.get_macroscopic_link_segment_type_by_external_id(link_segment_type_external_id, True)
                 link_segment_type_instance = MacroscopicLinkSegmentTypeWrapper(link_segment_type_counterpart)
                 self.setDefaultParameters(link_segment_type_instance.java, mode_counterpart, alpha, beta)
 
@@ -403,11 +404,11 @@ class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
         """
         time_periods_counterpart = self._demands_instance.get_time_periods()
         time_periods = TimePeriodsWrapper(time_periods_counterpart)
-        time_period_counterpart = time_periods.get_time_period_by_external_id(time_period_external_id);
+        time_period_counterpart = time_periods.get_time_period_by_external_id(time_period_external_id, True);
         time_period = TimePeriodWrapper(time_period_counterpart)        
         modes_counterpart = self._network_instance.get_modes()
         modes = ModesWrapper(modes_counterpart)
-        mode_counterpart = modes.get_mode_by_external_id(mode_external_id)
+        mode_counterpart = modes.get_mode_by_external_id(mode_external_id, True)
         mode = ModeWrapper(mode_counterpart)       
         output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_type.java_class_name(), output_type.value)
         memory_output_iterator_counterpart = self._java_counterpart.getIterator(mode.java, time_period.java, no_iterations, output_type_instance)
@@ -425,11 +426,11 @@ class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
         """
         time_periods_counterpart = self._demands_instance.get_time_periods()
         time_periods = TimePeriodsWrapper(time_periods_counterpart)
-        time_period_counterpart = time_periods.get_time_period_by_external_id(time_period_external_id);
+        time_period_counterpart = time_periods.get_time_period_by_external_id(time_period_external_id, True);
         time_period = TimePeriodWrapper(time_period_counterpart)        
         modes_counterpart = self._network_instance.get_modes()
         modes = ModesWrapper(modes_counterpart)
-        mode_counterpart = modes.get_mode_by_external_id(mode_external_id)
+        mode_counterpart = modes.get_mode_by_external_id(mode_external_id, True)
         mode = ModeWrapper(mode_counterpart)
         output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_type.java_class_name(), output_type.value)
         output_property_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_property.java_class_name(), output_property.value)
@@ -447,11 +448,11 @@ class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
         """
         time_periods_counterpart = self._demands_instance.get_time_periods()
         time_periods = TimePeriodsWrapper(time_periods_counterpart)
-        time_period_counterpart = time_periods.get_time_period_by_external_id(time_period_external_id);
+        time_period_counterpart = time_periods.get_time_period_by_external_id(time_period_external_id, True);
         time_period = TimePeriodWrapper(time_period_counterpart)        
         modes_counterpart = self._network_instance.get_modes()
         modes = ModesWrapper(modes_counterpart)
-        mode_counterpart = modes.get_mode_by_external_id(mode_external_id)
+        mode_counterpart = modes.get_mode_by_external_id(mode_external_id, True)
         mode = ModeWrapper(mode_counterpart)
         output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_type.java_class_name(), output_type.value)
         output_property_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_property.java_class_name(), output_property.value)
