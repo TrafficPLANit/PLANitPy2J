@@ -1,17 +1,20 @@
 import re
+import os
+from planit import Version
 
-class GatewayConfig(object):
+class GatewayConfig(object):   
     # jar class path entries since the java install might not have them on their class path (even if Python does)
-    JAVA_P4J_JAR_PATH =  '..\\..\\rsc\\PLANitJ2Py-0.0.4-beta.jar'
-    # jar for the gateway server wrapper
-    JAVA_PLANIT_WRAPPER_PATH = '..\\..\\rsc\\PLANitJ2Py-0.0.4-SNAPSHOT.jar'
+    JAVA_PY4J_JAR_PATH =  '..\\..\\rsc\\py4j'+str(Version.py4j)+'.jar'
     # jar for the PLANit code
-    JAVA_PLANIT_JAR_PATH = '..\\..\\rsc\\PLANit-0.0.4-SNAPSHOT.jar'
+    JAVA_PLANIT_JAR_PATH = '..\\..\\rsc\\PLANit-'+str(Version.planit)+'.jar'
     # jar for the default I/O implementation of the PLANit core used by simple project implementation
-    JAVA_PLANIT_IO_JAR_PATH = '..\\..\\rsc\\PLANitIO-0.0.4-SNAPSHOT.jar'
-    # the main entry point of the Java gateway implementation for PLANit
-    JAVA_GATEWAY_WRAPPER_CLASS =  'org.planit.python.PLANitJ2Py'  
+    JAVA_PLANIT_IO_JAR_PATH = '..\\..\\rsc\\PLANitIO-'+str(Version.planit)+'.jar'
 
+    # the main entry point of the Java gateway implementation for PLANit
+    JAVA_GATEWAY_WRAPPER_CLASS =  'org.planit.python.PLANitJ2Py'
+    # jar for the gateway server wrapper
+    JAVA_PLANIT_PY2J_PATH = '..\\..\\rsc\\PLANitJ2Py-'+str(Version.planit)+'.jar'
+    
 class GatewayState(object):
     #Create a static variable which flags if the java server already is running or not
     gateway_is_running = False

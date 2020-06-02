@@ -58,8 +58,8 @@ class PLANit:
         if not GatewayState.gateway_is_running:
             # register dependencies
             dependencySet = {
-                dir_path + "\\" + GatewayConfig.JAVA_P4J_JAR_PATH,
-                dir_path + "\\" + GatewayConfig.JAVA_PLANIT_WRAPPER_PATH,
+                dir_path + "\\" + GatewayConfig.JAVA_PY4J_JAR_PATH,
+                dir_path + "\\" + GatewayConfig.JAVA_PLANIT_PY2J_PATH,
                 dir_path + "\\" + GatewayConfig.JAVA_PLANIT_JAR_PATH,
                 dir_path + "\\" + GatewayConfig.JAVA_PLANIT_IO_JAR_PATH}
             dependencySeparator = ';'

@@ -1,0 +1,7 @@
+/.gitignore
+/dist
+/build
+/.settings
+/.project
+/env
+/src/PLANit_Python.egg-info
