@@ -18,9 +18,9 @@ class TestSuite(unittest.TestCase):
         cls.test_data_path = this_path+ "\\"
  
     def test_mode_test(self):
-        project_path = self.test_data_path +  "modeTest\\xml\\simple"
+        project_path = self.test_data_path +  "mode_test\\xml\\simple"
         plan_it = PLANit(project_path)
-        description = "modeTest"
+        description = "mode_test"
         csv_file_name = "Time Period 1_2.csv"
         od_csv_file_name = "Time Period 1_1.csv"
         xml_file_name = "Time Period 1.xml"
