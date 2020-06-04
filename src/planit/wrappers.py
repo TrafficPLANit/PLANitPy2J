@@ -387,7 +387,13 @@ class BPRCostWrapper(PhysicalCostWrapper):
                 link_segment_type_instance = MacroscopicLinkSegmentTypeWrapper(link_segment_type_counterpart)
                 self.setDefaultParameters(link_segment_type_instance.java, mode_counterpart, alpha, beta)
                 
-    def set_parameters(self, link_segment_external_id,  mode_external_id, alpha, beta):
+    def set_parameters(self, alpha, beta, mode_external_id, link_segment_external_id):
+        """Set the default BPR functions parameters 
+        :param alpha value of alpha parameter
+        :param beta value of beta parameter
+        :param mode_external_id, parameters only apply to this mode
+        :param link_segment_external_id, parameters apply to this link segment 
+        """        
         link_segment_counterpart = self._link_segments_instance.get_link_segment_by_external_id(link_segment_external_id, True)
         link_segment_instance = LinkSegmentWrapper(link_segment_counterpart)
         mode_counterpart = self._modes_instance.get_mode_by_external_id(mode_external_id, True)
