@@ -56,16 +56,20 @@ class PLANit:
         dir_path = os.path.dirname(os.path.realpath(__file__))
         # Bootstrap the java gateway server
         if not GatewayState.gateway_is_running:
-            # register dependencies
+            # register dependencies (both for the IDE run, as well as for the RELEASE
             dependencySet = {
-                dir_path + "\\" + GatewayConfig.JAVA_PY4J_JAR_PATH,
-                dir_path + "\\" + GatewayConfig.JAVA_PLANIT_PY2J_PATH,
-                dir_path + "\\" + GatewayConfig.JAVA_PLANIT_JAR_PATH,
-                dir_path + "\\" + GatewayConfig.JAVA_PLANIT_IO_JAR_PATH}
+                dir_path + "\\" + GatewayConfig.JAVA_PY4J_PATH_IDE,
+                dir_path + "\\" + GatewayConfig.JAVA_PLANIT_PY2J_PATH_IDE,
+                dir_path + "\\" + GatewayConfig.JAVA_PLANIT_PATH_IDE,
+                dir_path + "\\" + GatewayConfig.JAVA_PLANIT_IO_PATH_IDE,
+                GatewayConfig.JAVA_PY4J_PATH_RELEASE,
+                GatewayConfig.JAVA_PLANIT_PY2J_PATH_RELEASE,
+                GatewayConfig.JAVA_PLANIT_PATH_RELEASE,
+                GatewayConfig.JAVA_PLANIT_IO_PATH_RELEASE}
             dependencySeparator = ';'
             fullString = dependencySeparator.join(dependencySet)
             
-            cmd = ['java', '-classpath', fullString, GatewayConfig.JAVA_GATEWAY_WRAPPER_CLASS]            
+            cmd = ['java', '-classpath', fullString, GatewayConfig.JAVA_GATEWAY_WRAPPER_CLASS]
             GatewayState.planit_java_process = subprocess.Popen(cmd)           
              
             # now we  connect to the gateway

@@ -147,19 +147,23 @@ We can create a binary distribution in the /dist directory by running (make sure
 python setup.py sdist bdist_wheel
 ```
 
+> in case it does not run, you probably need to install setuptools wheel first via: `python -m pip install --user --upgrade setuptools wheel`
+
 For more information on setuptools, please visit the [setuptools website](https://setuptools.readthedocs.io/en/latest/setuptools.html)
 
 For a tutorial on how to setup your own packaging process, see for example this [Python tutorial](https://packaging.python.org/tutorials/packaging-projects/)
 
 ## Test.PyPi
 
-Before we put any release on production via PyPi, we test it first on Test.PyPi (these have seaprate accounts).
+Before we put any release on production via PyPi, we test it first on Test.PyPi (these have separate accounts).
 
 Note that the suggestion in the tutorial on packaging  projects states that we can upload our candidate release distribution via twine through
 
 ```python
 python -m twine upload --repository testpypi dist/*
 ```
+
+> In case twine is not installed, run `python -m pip install --user --upgrade twine` first
 
 However, when using a username of `__token__` and then copying the generated token (from test.pypi website) into the prompt can cause an error. This likely is a bug. to solve this use the following command instead where you explicitly state the user and password in the command line:
 
@@ -200,5 +204,13 @@ deactivate
 We can now try and install our test distribution via
 
 ```
-python -m pip install -i https://test.pypi.org/simple/ PLANit-Python
+pip install PLANit-Python --extra-index-url https://test.pypi.org/simple/
+```
+
+> Note that we must provide the extra index url because otherwise it will try and install the dependency on py4j from test.pypi, instead of using the one on pypi.
+
+You can uninstall the test distribution via
+
+```
+python -m pip uninstall PLANit-Python
 ```
