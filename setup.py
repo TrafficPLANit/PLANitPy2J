@@ -42,7 +42,7 @@ setup(
     ],
     packages=["planit", "test_utils"],                                      # we only include these packages  
     package_dir={"": "src"},                                                # indicate the ./src directory is where to find packages rather than this ""
-    data_files=[("rsc", RESOURCE_JAR_FILE_NAMES)],                          # copy all jars in rsc dir as data_files in module
+    data_files=[(RESOURCE_DIR, RESOURCE_JAR_FILE_NAMES)],                          # copy all jars in rsc dir as data_files in module
     install_requires=[
           'py4j>='+__py4j_version__,                                        # python installation for py4j
       ],    
