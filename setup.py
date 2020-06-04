@@ -13,7 +13,7 @@ VERSION = __planit_version__
 
 # RESOURCES
 # pars all jars from resource dir
-RESOURCE_DIR = "rsc"
+RESOURCE_DIR = "share/planit"
 RESOURCE_JAR_FILE_NAMES = glob(RESOURCE_DIR+'/**')                          
 
 setup(
@@ -40,8 +40,11 @@ setup(
         "Programming Language :: Java",
         "Topic :: Scientific/Engineering",        
     ],
-    packages=["planit", "test_utils"],                                       # we only include these packages  
-    package_dir={"": "src"},                                                 # indicate the ./src directory is where to find packages rather than this ""
-    data_files=[("rsc", RESOURCE_JAR_FILE_NAMES)],                           # copy all jars in rsc dir as data_files in module    
+    packages=["planit", "test_utils"],                                      # we only include these packages  
+    package_dir={"": "src"},                                                # indicate the ./src directory is where to find packages rather than this ""
+    data_files=[("rsc", RESOURCE_JAR_FILE_NAMES)],                          # copy all jars in rsc dir as data_files in module
+    install_requires=[
+          'py4j>='+__py4j_version__,                                        # python installation for py4j
+      ],    
 
 )
