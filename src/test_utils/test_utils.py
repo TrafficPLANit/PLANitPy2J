@@ -108,7 +108,9 @@ class PlanItHelper:
                 plan_it.output.set_output_directory(project_path)
                 
         plan_it.assignment.physical_cost.set_default_parameters(0.8, 4.5, 1, 1)
-        plan_it.assignment.physical_cost.set_parameters(3, 1, 1.0, 5.0)       
+        link_segment_external_id = 3
+        mode_external_id = 1 
+        plan_it.assignment.physical_cost.set_parameters(1.0, 5.0, mode_external_id, link_segment_external_id)       
                 
         plan_it.run()
         return plan_it
