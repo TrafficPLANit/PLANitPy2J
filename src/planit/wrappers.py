@@ -201,6 +201,13 @@ class InitialCostWrapper(BaseWrapper):
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
         
+class LinkSegmentWrapper(BaseWrapper):
+    """ Wrapper around the Java LinkSegments class
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+        
 class LinkSegmentsWrapper(BaseWrapper):
     """ Wrapper around the Java LinkSegments class
     """
@@ -359,8 +366,8 @@ class BPRCostWrapper(PhysicalCostWrapper):
         modes_counterpart = self._network_instance.get_modes()
         self._modes_instance = ModesWrapper(modes_counterpart)
         link_segments_counterpart = self._network_instance.get_link_segments()
-        link_segments_instance = LinkSegmentsWrapper(link_segments_counterpart)
-        self._macroscopic_link_segment_counterpart_list = link_segments_instance.to_list()
+        self._link_segments_instance = LinkSegmentsWrapper(link_segments_counterpart)
+        self._macroscopic_link_segment_counterpart_list = self._link_segments_instance.to_list()
         
     def set_default_parameters(self, alpha, beta, mode_external_id=None, link_segment_type_external_id=None):
         """Set the default BPR functions parameters 
@@ -379,6 +386,12 @@ class BPRCostWrapper(PhysicalCostWrapper):
                 link_segment_type_counterpart = self._network_instance.get_macroscopic_link_segment_type_by_external_id(link_segment_type_external_id, True)
                 link_segment_type_instance = MacroscopicLinkSegmentTypeWrapper(link_segment_type_counterpart)
                 self.setDefaultParameters(link_segment_type_instance.java, mode_counterpart, alpha, beta)
+                
+    def set_parameters(self, link_segment_external_id,  mode_external_id, alpha, beta):
+        link_segment_counterpart = self._link_segments_instance.get_link_segment_by_external_id(link_segment_external_id, True)
+        link_segment_instance = LinkSegmentWrapper(link_segment_counterpart)
+        mode_counterpart = self._modes_instance.get_mode_by_external_id(mode_external_id, True)
+        self._java_counterpart.setParameters(link_segment_instance.java, mode_counterpart, alpha, beta)
 
 class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
     """ Wrapper around the Java PlanItOutputFormatter class instance
