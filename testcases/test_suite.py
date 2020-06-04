@@ -16,6 +16,24 @@ class TestSuite(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.test_data_path = this_path+ "\\"
+ 
+    def test_mode_test(self):
+        project_path = self.test_data_path +  "modeTest\\xml\\simple"
+        plan_it = PLANit(project_path)
+        description = "modeTest"
+        csv_file_name = "Time Period 1_2.csv"
+        od_csv_file_name = "Time Period 1_1.csv"
+        xml_file_name = "Time Period 1.xml"
+        max_iterations = 2
+        epsilon = 0.0000000001
+        PlanItHelper.run_mode_test(plan_it, max_iterations, epsilon, description, 1, project_path)
+        PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name, project_path))        
+        PlanItHelper.delete_file(OutputType.PATH, description, xml_file_name, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name, project_path))        
+        PlanItHelper.delete_file(OutputType.OD, description, xml_file_name, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name, project_path))
+        gc.collect()
         
     def test_route_choice_5(self):
         project_path = self.test_data_path + "route_choice\\xml\\test5"
