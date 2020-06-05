@@ -56,20 +56,22 @@ class PLANit:
         dir_path = os.path.dirname(os.path.realpath(__file__))
         # Bootstrap the java gateway server
         if not GatewayState.gateway_is_running:
-            # register dependencies (both for the IDE run, as well as for the RELEASE
+            # register dependencies (both for:
+            #    - the IDE run, 
+            #    - the RELEASE environment
+            #    - a venv (virtual python) environment (which contains a bug that requires us to use a different path)
             dependencySet = {
-                dir_path + "\\" + GatewayConfig.JAVA_PY4J_PATH_IDE,
-                dir_path + "\\" + GatewayConfig.JAVA_PLANIT_PY2J_PATH_IDE,
-                dir_path + "\\" + GatewayConfig.JAVA_PLANIT_PATH_IDE,
-                dir_path + "\\" + GatewayConfig.JAVA_PLANIT_IO_PATH_IDE,
-                GatewayConfig.JAVA_PY4J_PATH_RELEASE,
-                GatewayConfig.JAVA_PLANIT_PY2J_PATH_RELEASE,
-                GatewayConfig.JAVA_PLANIT_PATH_RELEASE,
-                GatewayConfig.JAVA_PLANIT_IO_PATH_RELEASE}
+                os.path.join(dir_path, GatewayConfig.IDE_SHARE_PATH,GatewayConfig.PLANIT_SHARE),
+                os.path.join(dir_path, GatewayConfig.IDE_SHARE_PATH, GatewayConfig.PY4J_SHARE),
+                os.path.join(GatewayConfig.RELEASE_SHARE_PATH, GatewayConfig.PLANIT_SHARE),
+                os.path.join(GatewayConfig.VENV_RELEASE_SHARE_PATH,GatewayConfig.PLANIT_SHARE),                
+                os.path.join(GatewayConfig.RELEASE_SHARE_PATH,GatewayConfig.PY4J_SHARE),
+                os.path.join(GatewayConfig.VENV_RELEASE_SHARE_PATH, GatewayConfig.PY4J_SHARE)}
             dependencySeparator = ';'
             fullString = dependencySeparator.join(dependencySet)
             
             cmd = ['java', '-classpath', fullString, GatewayConfig.JAVA_GATEWAY_WRAPPER_CLASS]
+            if self._debug_info: print('Java classpath: ' + fullString)
             GatewayState.planit_java_process = subprocess.Popen(cmd)           
              
             # now we  connect to the gateway
