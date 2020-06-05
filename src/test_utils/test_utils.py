@@ -241,7 +241,7 @@ class PlanItHelper:
         full_file_name += "\\" 
         full_file_name +=  type_name
         full_file_name +=  "_" 
-        full_file_name +=  "RunId 0_"
+        full_file_name +=  "RunId_0_"
         full_file_name +=  description 
         full_file_name +=  "_" 
         full_file_name += file_name

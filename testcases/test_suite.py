@@ -21,9 +21,9 @@ class TestSuite(unittest.TestCase):
         project_path = self.test_data_path +  "mode_test\\xml\\simple"
         plan_it = PLANit(project_path)
         description = "mode_test"
-        csv_file_name = "Time Period 1_2.csv"
-        od_csv_file_name = "Time Period 1_1.csv"
-        xml_file_name = "Time Period 1.xml"
+        csv_file_name = "Time_Period_1_2.csv"
+        od_csv_file_name = "Time_Period_1_1.csv"
+        xml_file_name = "Time_Period_1.xml"
         max_iterations = 2
         epsilon = 0.0000000001
         PlanItHelper.run_mode_test(plan_it, max_iterations, epsilon, description, 1, project_path)
@@ -39,9 +39,9 @@ class TestSuite(unittest.TestCase):
         project_path = self.test_data_path + "route_choice\\xml\\test5"
         plan_it = PLANit(project_path)
         description = "testRouteChoice5"
-        csv_file_name = "Time Period 1_500.csv"
-        od_csv_file_name = "Time Period 1_499.csv"
-        xml_file_name = "Time Period 1.xml"
+        csv_file_name = "Time_Period_1_500.csv"
+        od_csv_file_name = "Time_Period_1_499.csv"
+        xml_file_name = "Time_Period_1.xml"
         plan_it.initial_cost.set(self.test_data_path + "route_choice\\xml\\test2initialCosts500iterations\\initial_link_segment_costs.csv")
         max_iterations = 500
         epsilon = 0.0000000001
@@ -61,9 +61,9 @@ class TestSuite(unittest.TestCase):
         project_path = self.test_data_path + "route_choice\\xml\\test2initialCosts500iterations"
         plan_it = PLANit(project_path)
         description = "testRouteChoice2initialCosts"
-        csv_file_name = "Time Period 1_500.csv"
-        od_csv_file_name = "Time Period 1_499.csv"
-        xml_file_name = "Time Period 1.xml"
+        csv_file_name = "Time_Period_1_500.csv"
+        od_csv_file_name = "Time_Period_1_499.csv"
+        xml_file_name = "Time_Period_1.xml"
         plan_it.initial_cost.set(self.test_data_path + "route_choice\\xml\\test2initialCosts500iterations\\initial_link_segment_costs.csv")
         max_iterations = 500
         epsilon = 0.0000000001
@@ -83,15 +83,15 @@ class TestSuite(unittest.TestCase):
         project_path = self.test_data_path + "route_choice\\xml\\test2initialCostsOneIterationThreeTimePeriods"
         plan_it = PLANit(project_path)
         description = "test2initialCostsOneIterationThreeTimePeriods"
-        csv_file_name1 = "Time Period 1_1.csv"
-        od_csv_file_name1 = "Time Period 1_0.csv"
-        csv_file_name2 = "Time Period 2_1.csv"
-        od_csv_file_name2 = "Time Period 2_0.csv"
-        csv_file_name3 = "Time Period 3_1.csv"
-        od_csv_file_name3 = "Time Period 3_0.csv"
-        xml_file_name1 = "Time Period 1.xml"
-        xml_file_name2 = "Time Period 2.xml"
-        xml_file_name3 = "Time Period 3.xml"
+        csv_file_name1 = "Time_Period_1_1.csv"
+        od_csv_file_name1 = "Time_Period_1_0.csv"
+        csv_file_name2 = "Time_Period_2_1.csv"
+        od_csv_file_name2 = "Time_Period_2_0.csv"
+        csv_file_name3 = "Time_Period_3_1.csv"
+        od_csv_file_name3 = "Time_Period_3_0.csv"
+        xml_file_name1 = "Time_Period_1.xml"
+        xml_file_name2 = "Time_Period_2.xml"
+        xml_file_name3 = "Time_Period_3.xml"
         max_iterations = 1
         plan_it.initial_cost.set(self.test_data_path + "route_choice\\xml\\test2initialCostsOneIterationThreeTimePeriods\\initial_link_segment_costs_time_period_1.csv", 0)
         plan_it.initial_cost.set(self.test_data_path + "route_choice\\xml\\test2initialCostsOneIterationThreeTimePeriods\\initial_link_segment_costs_time_period_2.csv", 1)
@@ -125,9 +125,9 @@ class TestSuite(unittest.TestCase):
         project_path = self.test_data_path + "basic\\xml\\test2";
         plan_it = PLANit(project_path)
         description = "testBasic2";
-        csv_file_name = "Time Period 1_2.csv";
-        od_csv_file_name = "Time Period 1_1.csv";
-        xml_file_name = "Time Period 1.xml";
+        csv_file_name = "Time_Period_1_2.csv";
+        od_csv_file_name = "Time_Period_1_1.csv";
+        xml_file_name = "Time_Period_1.xml";
         max_iterations = 500
         epsilon = 0.001
         PlanItHelper.run_test(plan_it, max_iterations, epsilon, description, 1, project_path)
@@ -146,9 +146,9 @@ class TestSuite(unittest.TestCase):
         project_path = self.test_data_path + "basic\\xml\\test3";
         plan_it = PLANit(project_path)
         description = "testBasic3";
-        csv_file_name = "Time Period 1_2.csv";
-        od_csv_file_name = "Time Period 1_1.csv";
-        xml_file_name = "Time Period 1.xml";
+        csv_file_name = "Time_Period_1_2.csv";
+        od_csv_file_name = "Time_Period_1_1.csv";
+        xml_file_name = "Time_Period_1.xml";
         max_iterations = 500
         epsilon = 0.001
         PlanItHelper.run_test(plan_it, max_iterations, epsilon, description, 1, project_path)
@@ -230,9 +230,9 @@ class TestSuite(unittest.TestCase):
         """
         print("Running test_explanatory with default project path")
         description = "explanatory";
-        csv_file_name = "Time Period 1_2.csv";
-        od_csv_file_name = "Time Period 1_1.csv";
-        xml_file_name = "Time Period 1.xml";
+        csv_file_name = "Time_Period_1_2.csv";
+        od_csv_file_name = "Time_Period_1_1.csv";
+        xml_file_name = "Time_Period_1.xml";
         max_iterations = 500
         epsilon = 0.001
         plan_it = PLANit()
@@ -251,9 +251,9 @@ class TestSuite(unittest.TestCase):
         """
         print("Running test_explanatory with default project path")
         description = "explanatory";
-        csv_file_name = "Time Period 1_2.csv";
-        od_csv_file_name = "Time Period 1_1.csv";
-        xml_file_name = "Time Period 1.xml";
+        csv_file_name = "Time_Period_1_2.csv";
+        od_csv_file_name = "Time_Period_1_1.csv";
+        xml_file_name = "Time_Period_1.xml";
         max_iterations = 500
         epsilon = 0.001
         plan_it = PLANit()
@@ -279,15 +279,15 @@ class TestSuite(unittest.TestCase):
         project_path = self.test_data_path + "basic\\xml\\test13"
         plan_it = PLANit(project_path)
         description = "testBasic13"
-        csv_file_name1 = "Time Period 1_2.csv"
-        csv_file_name2 = "Time Period 2_2.csv"
-        csv_file_name3 = "Time Period 3_2.csv"
-        od_csv_file_name1 = "Time Period 1_1.csv"
-        od_csv_file_name2 = "Time Period 2_1.csv"
-        od_csv_file_name3 = "Time Period 3_1.csv"
-        xml_file_name1 = "Time Period 1.xml"
-        xml_file_name2 = "Time Period 2.xml"
-        xml_file_name3 = "Time Period 3.xml"
+        csv_file_name1 = "Time_Period_1_2.csv"
+        csv_file_name2 = "Time_Period_2_2.csv"
+        csv_file_name3 = "Time_Period_3_2.csv"
+        od_csv_file_name1 = "Time_Period_1_1.csv"
+        od_csv_file_name2 = "Time_Period_2_1.csv"
+        od_csv_file_name3 = "Time_Period_3_1.csv"
+        xml_file_name1 = "Time_Period_1.xml"
+        xml_file_name2 = "Time_Period_2.xml"
+        xml_file_name3 = "Time_Period_3.xml"
         max_iterations = 500
         epsilon = 0.001
         PlanItHelper.run_test(plan_it, max_iterations, epsilon, description, 1, project_path)
@@ -318,12 +318,12 @@ class TestSuite(unittest.TestCase):
         project_path = self.test_data_path + "route_choice\\xml\\test42"
         plan_it = PLANit(project_path)
         description = "testRouteChoice42"
-        csv_file_name1 = "Time Period 1_500.csv"
-        od_csv_file_name1 = "Time Period 1_499.csv"
-        csv_file_name2 = "Time Period 2_500.csv"
-        od_csv_file_name2 = "Time Period 2_499.csv"
-        xml_file_name1 = "Time Period 1.xml"
-        xml_file_name2 = "Time Period 2.xml"
+        csv_file_name1 = "Time_Period_1_500.csv"
+        od_csv_file_name1 = "Time_Period_1_499.csv"
+        csv_file_name2 = "Time_Period_2_500.csv"
+        od_csv_file_name2 = "Time_Period_2_499.csv"
+        xml_file_name1 = "Time_Period_1.xml"
+        xml_file_name2 = "Time_Period_2.xml"
         max_iterations = 500
         epsilon = 0.0
         PlanItHelper.run_test(plan_it, max_iterations, epsilon, description, 1, project_path)
