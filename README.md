@@ -171,6 +171,8 @@ However, when using a username of `__token__` and then copying the generated tok
 python -m twine upload -u __token__ -p INSERTTHETOKEN --repository testpypi dist/*
 ```
 
+> Alternatively provide the actual username and password for the account. This of course always works.
+
 Before you test if the distribution works properly. Make sure you are working in a virtual environment, so that the package is only installed there.
 
 ### Switching to a virtual environment
@@ -182,8 +184,8 @@ The below can be found in the mentioned tutorial, here we quickly reiterate the 
 Since we use Python 3, we can use `venv` for this purpose. If you haven't created a virtual environment for this project do so via:
 
 ```python
-python -m venv env
-``` 
+python -m venv env  
+```
 
 This will create a local python installation in the /env directory. It should be included in the .gitignore already, so it won't affect any commits.
 
@@ -191,7 +193,7 @@ Activate it, so that we are working on the virtual environment while testing via
 
 ```python
 .\env\Scripts\activate
-``` 
+```
 
 Your command line is now prefixed with (env) indicating we moved to the virtual environment. You can leave the environment via
 

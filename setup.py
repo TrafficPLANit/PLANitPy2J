@@ -18,7 +18,7 @@ RESOURCE_JAR_FILE_NAMES = glob(RESOURCE_DIR+'/**')
 
 setup(
     name="PLANit-Python",
-    version=VERSION,
+    version="0.0.4a7",
     description="Python API for traffic assignment using PLANit",
     long_description="PLANit-Python enables Python programs running in "
                      "a Python interpreter to configure and run "
