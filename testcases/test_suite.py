@@ -1,7 +1,4 @@
-import os, sys
-this_path = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(this_path + "\\..\\src\\")
-
+import os
 import gc
 import unittest
 import math
@@ -13,12 +10,8 @@ from planit import PLANit
 
 class TestSuite(unittest.TestCase):
       
-    @classmethod
-    def setUpClass(cls):
-        cls.test_data_path = this_path+ "\\"
- 
     def test_mode_test(self):
-        project_path = self.test_data_path +  "mode_test\\xml\\simple"
+        project_path = os.path.join('mode_test', 'xml', 'simple')
         plan_it = PLANit(project_path)
         description = "mode_test"
         csv_file_name = "Time_Period_1_2.csv"
@@ -36,13 +29,13 @@ class TestSuite(unittest.TestCase):
         gc.collect()
         
     def test_route_choice_5(self):
-        project_path = self.test_data_path + "route_choice\\xml\\test5"
+        project_path = os.path.join('route_choice', 'xml', 'test5')
         plan_it = PLANit(project_path)
         description = "testRouteChoice5"
         csv_file_name = "Time_Period_1_500.csv"
         od_csv_file_name = "Time_Period_1_499.csv"
         xml_file_name = "Time_Period_1.xml"
-        plan_it.initial_cost.set(self.test_data_path + "route_choice\\xml\\test2initialCosts500iterations\\initial_link_segment_costs.csv")
+        plan_it.initial_cost.set(os.path.join("route_choice", "xml", "test2initialCosts500iterations", "initial_link_segment_costs.csv"))
         max_iterations = 500
         epsilon = 0.0000000001
         
@@ -58,13 +51,13 @@ class TestSuite(unittest.TestCase):
     def test_route_choice_2_initial_costs_500_iterations(self):
         """Unit test for route 2 with initial costs and 500 iterations (corresponds to testRouteChoice2InitialCosts500Iterations() in Java)
         """
-        project_path = self.test_data_path + "route_choice\\xml\\test2initialCosts500iterations"
+        project_path = os.path.join('route_choice', 'xml', 'test2initialCosts500iterations')
         plan_it = PLANit(project_path)
         description = "testRouteChoice2initialCosts"
         csv_file_name = "Time_Period_1_500.csv"
         od_csv_file_name = "Time_Period_1_499.csv"
         xml_file_name = "Time_Period_1.xml"
-        plan_it.initial_cost.set(self.test_data_path + "route_choice\\xml\\test2initialCosts500iterations\\initial_link_segment_costs.csv")
+        initial_cost_path = os.path.join('route_choice', 'xml', 'test2initialCosts500iterations', 'initial_link_segment_costs.csv')
         max_iterations = 500
         epsilon = 0.0000000001
         PlanItHelper.run_test(plan_it, max_iterations, epsilon, description, 1, project_path)
@@ -80,7 +73,7 @@ class TestSuite(unittest.TestCase):
         """Unit test for route 2 with three time periods (corresponds to testRouteChoice2InitialCostsOneIterationThreeTimePeriods() in Java)
         """
         print("Running test_route_choice_2_initial_costs_one_iteration_three_time_periods")
-        project_path = self.test_data_path + "route_choice\\xml\\test2initialCostsOneIterationThreeTimePeriods"
+        project_path = os.path.join('route_choice', 'xml', 'test2initialCostsOneIterationThreeTimePeriods')
         plan_it = PLANit(project_path)
         description = "test2initialCostsOneIterationThreeTimePeriods"
         csv_file_name1 = "Time_Period_1_1.csv"
@@ -93,9 +86,9 @@ class TestSuite(unittest.TestCase):
         xml_file_name2 = "Time_Period_2.xml"
         xml_file_name3 = "Time_Period_3.xml"
         max_iterations = 1
-        plan_it.initial_cost.set(self.test_data_path + "route_choice\\xml\\test2initialCostsOneIterationThreeTimePeriods\\initial_link_segment_costs_time_period_1.csv", 0)
-        plan_it.initial_cost.set(self.test_data_path + "route_choice\\xml\\test2initialCostsOneIterationThreeTimePeriods\\initial_link_segment_costs_time_period_2.csv", 1)
-        plan_it.initial_cost.set(self.test_data_path + "route_choice\\xml\\test2initialCostsOneIterationThreeTimePeriods\\initial_link_segment_costs_time_period_3.csv", 2)
+        plan_it.initial_cost.set(os.path.join("route_choice", "xml\\test2initialCostsOneIterationThreeTimePeriods", "initial_link_segment_costs_time_period_1.csv"), 0)
+        plan_it.initial_cost.set(os.path.join("route_choice", "xml", "test2initialCostsOneIterationThreeTimePeriods", "initial_link_segment_costs_time_period_2.csv"), 1)
+        plan_it.initial_cost.set(os.path.join("route_choice", "xml", "test2initialCostsOneIterationThreeTimePeriods", "initial_link_segment_costs_time_period_3.csv"), 2)
         epsilon = 0.001
         PlanItHelper.run_test(plan_it, max_iterations, epsilon, description, 1, project_path)
         PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name1, project_path)
@@ -122,7 +115,7 @@ class TestSuite(unittest.TestCase):
         """ Unit test 2 using basic network (corresponds to testBasicShortestPathAlgorithmAtoC() in Java)
         """
         print("Running test_basic_shortest_path_algorithm_a_to_c")
-        project_path = self.test_data_path + "basic\\xml\\test2";
+        project_path = os.path.join('basic', 'xml', 'test2')
         plan_it = PLANit(project_path)
         description = "testBasic2";
         csv_file_name = "Time_Period_1_2.csv";
@@ -143,7 +136,7 @@ class TestSuite(unittest.TestCase):
         """Unit test 3 using basic network (corresponds to testBasicShortestPathAlgorithmAtoD() in Java)
         """
         print("Running test_basic_shortes_path_algorithm_a_to_d")
-        project_path = self.test_data_path + "basic\\xml\\test3";
+        project_path = os.path.join('basic', 'xml', 'test3')
         plan_it = PLANit(project_path)
         description = "testBasic3";
         csv_file_name = "Time_Period_1_2.csv";
@@ -276,7 +269,7 @@ class TestSuite(unittest.TestCase):
         """Unit test 1 using basic network three time periods (corresponds to testBasicThreeTimePeriods() in Java)
         """
         print("Running test_basic_three_time_periods")
-        project_path = self.test_data_path + "basic\\xml\\test13"
+        project_path = os.path.join('basic', 'xml', 'test13')
         plan_it = PLANit(project_path)
         description = "testBasic13"
         csv_file_name1 = "Time_Period_1_2.csv"
@@ -315,7 +308,7 @@ class TestSuite(unittest.TestCase):
         """Unit test using route choice network 4 and two time periods (corresponds to testRouteChoiceCompareWithOmniTRANS4UsingTwoTimePeriods() in Java)
         """
         print("Running test_route_choice_compare_with_OmniTRANS4_using_two_time_periods")
-        project_path = self.test_data_path + "route_choice\\xml\\test42"
+        project_path = os.path.join('route_choice', 'xml', 'test42')
         plan_it = PLANit(project_path)
         description = "testRouteChoice42"
         csv_file_name1 = "Time_Period_1_500.csv"

@@ -1,6 +1,4 @@
-import os, sys
-this_path = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(this_path + "\\..")
+import os
 
 from py4j.java_gateway import get_field
 from planit import GatewayUtils

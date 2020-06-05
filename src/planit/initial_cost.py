@@ -1,9 +1,6 @@
 """This class exists to take the logic for setting up the initial costs out of the PLANit class.  It does not wrap any Java object.  
 This class is instantiated as a member of the PLANit object.  It allows top level calls to have the signature "plan_it.initial_cost.set(..."
 """
-import os, sys
-this_path = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(this_path + "\\..")
 
 class InitialCost:
     

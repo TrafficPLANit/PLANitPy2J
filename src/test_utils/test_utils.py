@@ -1,11 +1,6 @@
-import os, sys
-this_path = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(this_path + "\\..")
+import os
 import pandas as pd
 from planit import TrafficAssignment
-from planit import PhysicalCost
-from planit import VirtualCost
-from planit import Smoothing
 from planit import OutputType
 from planit import OutputProperty
 from planit import RouteIdType

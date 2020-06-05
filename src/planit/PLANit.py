@@ -1,6 +1,4 @@
-import os, sys
-this_path = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(this_path + "\\..")
+import os
 import subprocess
 import traceback
 from py4j.java_gateway import JavaGateway
