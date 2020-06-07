@@ -1,6 +1,6 @@
 import os, sys   
-this_path = os.path.dirname(os.path.realpath(__file__))  
-sys.path.append(this_path + "\\..\\src\\")
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'..','src'))
+
 import gc
 import unittest
 import math
