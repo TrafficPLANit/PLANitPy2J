@@ -1,4 +1,6 @@
-import os
+import os, sys   
+this_path = os.path.dirname(os.path.realpath(__file__))  
+sys.path.append(this_path + "\\..\\src\\")
 import gc
 import unittest
 import math

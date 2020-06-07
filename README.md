@@ -13,19 +13,19 @@ If you want to use PLANit-Python as a user, please refer to the online documenta
 
 # Dependency on Java Projects
 
-There is a directory "rsc" which holds JAR files for the Java projects.  The "rsc" directory contains JAR files from the following three PLANit Java projects (and one thrid party jar) on which PLANitPy2J depends.
+There is a directory "share" which holds JAR files for the Java projects.  The "share" directory contains JAR files from the following three PLANit Java projects (and one thrid party jar) on which PLANitPy2J depends.
 
 * PLANit
 * PLANitIO
 * PLANitJ2Py
 
-Thirs party dependencies:
+Third party dependencies:
 
 * Py4J
 
 This project uses Java methods in these JAR files.  If you make changes to any of the Java projects to support the Python side, you must recompile the Java project and place the updated jar in this directory.
 
-Note that as long as you have all projects (Python and Java) residing in the same directory, the POMs in the Java projects will attempt to copy the compiled jar files to the python rsc directory ensuring consistency.
+Note that as long as you have all projects (Python and Java) residing in the same directory, the POMs in the Java projects will attempt to copy the compiled jar files to the python share directory ensuring consistency.
 
 # Versioning
 
