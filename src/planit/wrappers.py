@@ -365,7 +365,6 @@ class BPRCostWrapper(PhysicalCostWrapper):
         self._modes_instance = ModesWrapper(modes_counterpart)
         link_segments_counterpart = self._network_instance.get_link_segments()
         self._link_segments_instance = LinkSegmentsWrapper(link_segments_counterpart)
-        self._macroscopic_link_segment_counterpart_list = self._link_segments_instance.to_list()
         
     def set_default_parameters(self, alpha, beta, mode_external_id=None, link_segment_type_external_id=None):
         """Set the default BPR functions parameters 

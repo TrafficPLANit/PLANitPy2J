@@ -11,7 +11,49 @@ from planit import GatewayState
 from planit import PLANit
 
 class TestSuite(unittest.TestCase):
-      
+
+    def test_route_choice_2_initial_costs_one_iteration_three_time_periods(self):
+        #corresponds to testRouteChoice2InitialCostsOneIterationThreeTimePeriods() in Java)
+        
+        print("Running test_route_choice_2_initial_costs_one_iteration_three_time_periods")
+        project_path = os.path.join('route_choice', 'xml', 'test2initialCostsOneIterationThreeTimePeriods')
+        plan_it = PLANit(project_path)
+        description = "test2initialCostsOneIterationThreeTimePeriods"
+        csv_file_name1 = "Time_Period_1_1.csv"
+        od_csv_file_name1 = "Time_Period_1_0.csv"
+        csv_file_name2 = "Time_Period_2_1.csv"
+        od_csv_file_name2 = "Time_Period_2_0.csv"
+        csv_file_name3 = "Time_Period_3_1.csv"
+        od_csv_file_name3 = "Time_Period_3_0.csv"
+        xml_file_name1 = "Time_Period_1.xml"
+        xml_file_name2 = "Time_Period_2.xml"
+        xml_file_name3 = "Time_Period_3.xml"
+        max_iterations = 1
+        plan_it.initial_cost.set(os.path.join("route_choice", "xml\\test2initialCostsOneIterationThreeTimePeriods", "initial_link_segment_costs_time_period_1.csv"), 0)
+        plan_it.initial_cost.set(os.path.join("route_choice", "xml", "test2initialCostsOneIterationThreeTimePeriods", "initial_link_segment_costs_time_period_2.csv"), 1)
+        plan_it.initial_cost.set(os.path.join("route_choice", "xml", "test2initialCostsOneIterationThreeTimePeriods", "initial_link_segment_costs_time_period_3.csv"), 2)
+        epsilon = 0.001
+        PlanItHelper.run_test(plan_it, max_iterations, epsilon, description, 1, project_path)
+        PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name1, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name1, project_path))
+        PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name2, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name2, project_path))
+        PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name3, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name3, project_path))
+        PlanItHelper.delete_file(OutputType.PATH, description, xml_file_name1, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name1, project_path))
+        PlanItHelper.delete_file(OutputType.PATH, description, xml_file_name2, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name2, project_path))
+        PlanItHelper.delete_file(OutputType.PATH, description, xml_file_name3, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name3, project_path))
+        PlanItHelper.delete_file(OutputType.OD, description, xml_file_name1, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name1, project_path))
+        PlanItHelper.delete_file(OutputType.OD, description, xml_file_name2, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name2, project_path))
+        PlanItHelper.delete_file(OutputType.OD, description, xml_file_name3, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name3, project_path))
+        gc.collect()
+              
     def test_mode_test(self):
         project_path = os.path.join('mode_test', 'xml', 'simple')
         plan_it = PLANit(project_path)
@@ -51,8 +93,8 @@ class TestSuite(unittest.TestCase):
         gc.collect()
     
     def test_route_choice_2_initial_costs_500_iterations(self):
-        """Unit test for route 2 with initial costs and 500 iterations (corresponds to testRouteChoice2InitialCosts500Iterations() in Java)
-        """
+        # Unit test for route 2 with initial costs and 500 iterations (corresponds to testRouteChoice2InitialCosts500Iterations() in Java)
+
         project_path = os.path.join('route_choice', 'xml', 'test2initialCosts500iterations')
         plan_it = PLANit(project_path)
         description = "testRouteChoice2initialCosts"
@@ -70,52 +112,10 @@ class TestSuite(unittest.TestCase):
         PlanItHelper.delete_file(OutputType.OD, description, xml_file_name, project_path)
         self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name, project_path))
         gc.collect()
-  
-    def test_route_choice_2_initial_costs_one_iteration_three_time_periods(self):
-        """Unit test for route 2 with three time periods (corresponds to testRouteChoice2InitialCostsOneIterationThreeTimePeriods() in Java)
-        """
-        print("Running test_route_choice_2_initial_costs_one_iteration_three_time_periods")
-        project_path = os.path.join('route_choice', 'xml', 'test2initialCostsOneIterationThreeTimePeriods')
-        plan_it = PLANit(project_path)
-        description = "test2initialCostsOneIterationThreeTimePeriods"
-        csv_file_name1 = "Time_Period_1_1.csv"
-        od_csv_file_name1 = "Time_Period_1_0.csv"
-        csv_file_name2 = "Time_Period_2_1.csv"
-        od_csv_file_name2 = "Time_Period_2_0.csv"
-        csv_file_name3 = "Time_Period_3_1.csv"
-        od_csv_file_name3 = "Time_Period_3_0.csv"
-        xml_file_name1 = "Time_Period_1.xml"
-        xml_file_name2 = "Time_Period_2.xml"
-        xml_file_name3 = "Time_Period_3.xml"
-        max_iterations = 1
-        plan_it.initial_cost.set(os.path.join("route_choice", "xml\\test2initialCostsOneIterationThreeTimePeriods", "initial_link_segment_costs_time_period_1.csv"), 0)
-        plan_it.initial_cost.set(os.path.join("route_choice", "xml", "test2initialCostsOneIterationThreeTimePeriods", "initial_link_segment_costs_time_period_2.csv"), 1)
-        plan_it.initial_cost.set(os.path.join("route_choice", "xml", "test2initialCostsOneIterationThreeTimePeriods", "initial_link_segment_costs_time_period_3.csv"), 2)
-        epsilon = 0.001
-        PlanItHelper.run_test(plan_it, max_iterations, epsilon, description, 1, project_path)
-        PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name1, project_path)
-        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name1, project_path))
-        PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name2, project_path)
-        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name2, project_path))
-        PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name3, project_path)
-        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name3, project_path))
-        PlanItHelper.delete_file(OutputType.PATH, description, xml_file_name1, project_path)
-        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name1, project_path))
-        PlanItHelper.delete_file(OutputType.PATH, description, xml_file_name2, project_path)
-        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name2, project_path))
-        PlanItHelper.delete_file(OutputType.PATH, description, xml_file_name3, project_path)
-        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name3, project_path))
-        PlanItHelper.delete_file(OutputType.OD, description, xml_file_name1, project_path)
-        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name1, project_path))
-        PlanItHelper.delete_file(OutputType.OD, description, xml_file_name2, project_path)
-        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name2, project_path))
-        PlanItHelper.delete_file(OutputType.OD, description, xml_file_name3, project_path)
-        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name3, project_path))
-        gc.collect()
 
     def test_basic_shortest_path_algorithm_a_to_c(self):
-        """ Unit test 2 using basic network (corresponds to testBasicShortestPathAlgorithmAtoC() in Java)
-        """
+        # corresponds to testBasicShortestPathAlgorithmAtoC() in Java)
+        
         print("Running test_basic_shortest_path_algorithm_a_to_c")
         project_path = os.path.join('basic', 'xml', 'test2')
         plan_it = PLANit(project_path)
@@ -135,8 +135,8 @@ class TestSuite(unittest.TestCase):
         gc.collect()
         
     def test_basic_shortest_path_algorithm_a_to_d(self):
-        """Unit test 3 using basic network (corresponds to testBasicShortestPathAlgorithmAtoD() in Java)
-        """
+        # corresponds to testBasicShortestPathAlgorithmAtoD() in Java
+        
         print("Running test_basic_shortes_path_algorithm_a_to_d")
         project_path = os.path.join('basic', 'xml', 'test3')
         plan_it = PLANit(project_path)
@@ -156,8 +156,8 @@ class TestSuite(unittest.TestCase):
         gc.collect()
         
     def test_explanatory_with_memory_output(self):
-        """Explanatory unit test, which saves results to memory only and not to file, to test contents of memory output formatter are correct
-        """
+        # Explanatory unit test, which saves results to memory only and not to file, to test contents of memory output formatter are correct
+        
         print("Running test_explanatory with results only stored in memory")
         description = "explanatory";
         max_iterations = 2
@@ -221,8 +221,8 @@ class TestSuite(unittest.TestCase):
         gc.collect()
  
     def test_explanatory(self):
-        """Explanatory unit test, which uses the default project path rather than specifying its own (corresponds to testExplanatory() in Java)
-        """
+        # corresponds to testExplanatory() in Java
+        
         print("Running test_explanatory with default project path")
         description = "explanatory";
         csv_file_name = "Time_Period_1_2.csv";
@@ -241,9 +241,9 @@ class TestSuite(unittest.TestCase):
         gc.collect()
     
     def test_explanatory_without_activating_outputs(self):
-        """Explanatory unit test, which does not activate the output type configurations directly, but relies on the code to do this automatically (corresponds to testExplanatory() in Java)
-            Includes test that OD csv output file has not been created, since this OutputType.OD was deactivated
-        """
+        #Explanatory unit test, which does not activate the output type configurations directly, but relies on the code to do this automatically (corresponds to testExplanatory() in Java)
+        #    Includes test that OD csv output file has not been created, since this OutputType.OD was deactivated
+        
         print("Running test_explanatory with default project path")
         description = "explanatory";
         csv_file_name = "Time_Period_1_2.csv";
@@ -268,8 +268,8 @@ class TestSuite(unittest.TestCase):
         gc.collect()
    
     def test_basic_three_time_periods(self):
-        """Unit test 1 using basic network three time periods (corresponds to testBasicThreeTimePeriods() in Java)
-        """
+        # corresponds to testBasicThreeTimePeriods() in Java)
+        
         print("Running test_basic_three_time_periods")
         project_path = os.path.join('basic', 'xml', 'test13')
         plan_it = PLANit(project_path)
@@ -307,8 +307,8 @@ class TestSuite(unittest.TestCase):
         gc.collect()
         
     def test_route_choice_compare_with_OmniTRANS4_using_two_time_periods(self):
-        """Unit test using route choice network 4 and two time periods (corresponds to testRouteChoiceCompareWithOmniTRANS4UsingTwoTimePeriods() in Java)
-        """
+        # corresponds to testRouteChoiceCompareWithOmniTRANS4UsingTwoTimePeriods() in Java
+        
         print("Running test_route_choice_compare_with_OmniTRANS4_using_two_time_periods")
         project_path = os.path.join('route_choice', 'xml', 'test42')
         plan_it = PLANit(project_path)
