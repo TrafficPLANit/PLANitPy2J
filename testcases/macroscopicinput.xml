@@ -1,7 +1,6 @@
 <PLANit xmlns:gml="http://www.opengis.net/gml"
-	xmlns:xml="http://www.w3.org/XML/1998/namespace"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="../../../../../main/resources/macroscopicinput.xsd">
+	xsi:noNamespaceSchemaLocation="../../../../../../main/resources/xsd/macroscopicinput.xsd">
 	<macroscopicdemand>
 		<demandconfiguration>
 			<userclasses>
@@ -26,21 +25,20 @@
 		</oddemands>
 	</macroscopicdemand>
 	<macroscopicnetwork>
-		<linkconfiguration>
-			<modes>
-				<mode id="1">																<!-- mandatory attributes, for referencing -->
+		<linkconfiguration>                                                                        <!-- optional, if absent assume a single link segment type for the entire simulation and a simple Cartesian coordinate system with top-left (0,0) -->
+			<modes>                                                                                     <!-- optional, if absent a single 'virtual' mode is created to represent all modes -->
+				<mode id="1">																        <!-- mandatory, for referencing -->
 					<name>Basic</name>														<!-- optional -->
-					<pcu>1</pcu>															<!-- optional, default available -->
+					<pcu>1</pcu>															            <!-- optional, default available -->
 				</mode>
 			</modes>
-			<linksegmenttypes>
-				<linksegmenttype id="1">
+			<linksegmenttypes>                                                                    <!-- optional, if omitted all link segments are assumed to be of the same default 	link segment type -->
+				<linksegmenttype id="1">                                                       <!-- mandatory, for referencing -->
 					<name>Standard</name>													<!-- optional -->
-					<capacitylane>2000</capacitylane>										<!-- optional, has default -->
-					<modes>
-						<mode ref="0">															<!-- optional, when 0 it refers to all modes, when a mode is absent the mode 
-								is assumed to be banned from the link segment -->
-							<maxspeed>1</maxspeed>												<!-- mandatory, should be lower or equal than link max speed when present -->
+					<capacitylane>2000</capacitylane>									<!-- optional, has default -->
+					<modes>                                                                             <!-- optional, if omitted all modes are assumed to be allowed based on their default properties (possibly dynamically capped by the physical link properties) -->
+						<mode ref="0">															    <!-- one or more required, when 0 it refers to all modes, if not all modes are included the missing ones are assumed to be banned from the link segment -->
+							<maxspeed>1</maxspeed>										<!-- optional, should be lower or equal than link max speed when present -->
 						</mode>
 					</modes>
 				</linksegmenttype>
@@ -75,7 +73,6 @@
 				</centroid>
 				<connectoids>
 					<connectoid noderef="1">
-						<length>1.0</length>
 					</connectoid>
 				</connectoids>
 			</zone>
@@ -88,7 +85,6 @@
 				</centroid>
 				<connectoids>
 					<connectoid noderef="2">
-						<length>1.0</length>
 					</connectoid>
 				</connectoids>
 			</zone>
