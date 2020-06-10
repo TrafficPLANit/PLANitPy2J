@@ -70,6 +70,7 @@ class AssignmentWrapper(BaseWrapper):
         """ create an output type enum suitable to pass to java 
         """   
         return GatewayState.python_2_java_gateway.entry_point.createEnum(output_type.java_class_name(), output_type.value)
+    
     def set(self, assignment_component):
         """ Configure an assignment component on this assignment instance. Note that all these go via the traffic assignment builder in Java
             although we hide that on the Python side to not over-complicate things for the average user. We accept PhysicalCost, VirtualCost and 

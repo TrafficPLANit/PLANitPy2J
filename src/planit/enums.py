@@ -32,6 +32,7 @@ class OutputProperty(Enum):
     MODE_EXTERNAL_ID = "MODE_EXTERNAL_ID"                           # ID
     ORIGIN_ZONE_ID = "ORIGIN_ZONE_ID"                               # ID
     ORIGIN_ZONE_EXTERNAL_ID = "ORIGIN_ZONE_EXTERNAL_ID"             # ID
+    PATH_ID = "PATH_ID"                                                #ID
     RUN_ID = "RUN_ID"                                               # ID
     TIME_PERIOD_ID = "TIME_PERIOD_ID"                               # ID
     TIME_PERIOD_EXTERNAL_ID = "TIME_PERIOD_EXTERNAL_ID"             # ID
@@ -41,6 +42,7 @@ class OutputProperty(Enum):
     DOWNSTREAM_NODE_LOCATION = "DOWNSTREAM_NODE_LOCATION"           # INPUT
     LENGTH = "LENGTH"                                               # INPUT
     LINK_TYPE = "LINK_TYPE"                                         # INPUT    
+    MAXIMUM_DENSITY = "MAXIMUM_DENSITY"       # INPUT
     MAXIMUM_SPEED = "MAXIMUM_SPEED"                                 # INPUT
     NUMBER_OF_LANES = "NUMBER_OF_LANES"                             # INPUT
     UPSTREAM_NODE_LOCATION = "UPSTREAM_NODE_LOCATION"               # INPUT        
@@ -51,7 +53,7 @@ class OutputProperty(Enum):
     LINK_COST = "LINK_COST"                                         # OUTPUT
     OD_COST = "OD_COST"                                             # OUTPUT
     TOTAL_COST_TO_END_NODE = "TOTAL_COST_TO_END_NODE"               # OUTPUT
-    PATH_STRING = "PATH_STRING"                                     # OUTPUT
+    PATH_STRING = "PATH_STRING"                               # OUTPUT
     VC_RATIO = "VC_RATIO"                                           # OUTPUT
         
     
