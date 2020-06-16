@@ -171,12 +171,12 @@ class TestSuite(unittest.TestCase):
         mode_external_id = 1
         time_period_external_id = 0
         
-        flow_position = plan_it.memory.get_position_of_output_value_property(mode_external_id, time_period_external_id, max_iterations, OutputType.LINK, OutputProperty.FLOW)
-        cost_position = plan_it.memory.get_position_of_output_value_property(mode_external_id, time_period_external_id, max_iterations, OutputType.LINK, OutputProperty.LINK_COST)
-        length_position = plan_it.memory.get_position_of_output_value_property(mode_external_id, time_period_external_id, max_iterations, OutputType.LINK, OutputProperty.LENGTH)
-        speed_position = plan_it.memory.get_position_of_output_value_property(mode_external_id, time_period_external_id, max_iterations, OutputType.LINK, OutputProperty.CALCULATED_SPEED)
-        capacity_position = plan_it.memory.get_position_of_output_value_property(mode_external_id, time_period_external_id, max_iterations, OutputType.LINK, OutputProperty.CAPACITY_PER_LANE)
-        number_of_lanes_position = plan_it.memory.get_position_of_output_value_property(mode_external_id, time_period_external_id, max_iterations, OutputType.LINK, OutputProperty.NUMBER_OF_LANES)
+        flow_position = plan_it.memory.get_position_of_output_value_property(OutputType.LINK, OutputProperty.FLOW)
+        cost_position = plan_it.memory.get_position_of_output_value_property(OutputType.LINK, OutputProperty.LINK_COST)
+        length_position = plan_it.memory.get_position_of_output_value_property(OutputType.LINK, OutputProperty.LENGTH)
+        speed_position = plan_it.memory.get_position_of_output_value_property(OutputType.LINK, OutputProperty.CALCULATED_SPEED)
+        capacity_position = plan_it.memory.get_position_of_output_value_property(OutputType.LINK, OutputProperty.CAPACITY_PER_LANE)
+        number_of_lanes_position = plan_it.memory.get_position_of_output_value_property(OutputType.LINK, OutputProperty.NUMBER_OF_LANES)
         
         memory_output_iterator_link = plan_it.memory.iterator(mode_external_id, time_period_external_id, max_iterations, OutputType.LINK)
         while memory_output_iterator_link.has_next():
@@ -188,10 +188,10 @@ class TestSuite(unittest.TestCase):
             self.assertEquals(values[length_position], 10)
             self.assertEquals(values[capacity_position], 2000)
             self.assertEquals(values[number_of_lanes_position], 1)
-            
-        path_position = plan_it.memory.get_position_of_output_value_property(mode_external_id, time_period_external_id, max_iterations, OutputType.PATH, OutputProperty.PATH_STRING)
-        key1_position = plan_it.memory.get_position_of_output_key_property(mode_external_id, time_period_external_id, max_iterations, OutputType.PATH, OutputProperty.ORIGIN_ZONE_EXTERNAL_ID)
-        key2_position = plan_it.memory.get_position_of_output_key_property(mode_external_id, time_period_external_id, max_iterations, OutputType.PATH, OutputProperty.DESTINATION_ZONE_EXTERNAL_ID)
+ 
+        path_position = plan_it.memory.get_position_of_output_value_property(OutputType.PATH, OutputProperty.PATH_STRING)
+        key1_position = plan_it.memory.get_position_of_output_key_property(OutputType.PATH, OutputProperty.ORIGIN_ZONE_EXTERNAL_ID)
+        key2_position = plan_it.memory.get_position_of_output_key_property(OutputType.PATH, OutputProperty.DESTINATION_ZONE_EXTERNAL_ID)
         memory_output_iterator_path = plan_it.memory.iterator(mode_external_id, time_period_external_id, max_iterations, OutputType.PATH)
         while memory_output_iterator_path.has_next():
             memory_output_iterator_path.next()
@@ -205,9 +205,9 @@ class TestSuite(unittest.TestCase):
             else:
                 self.assertEquals(value, "")
                                 
-        od_position = plan_it.memory.get_position_of_output_value_property(mode_external_id, time_period_external_id, max_iterations-1, OutputType.OD, OutputProperty.OD_COST)
-        key1_position = plan_it.memory.get_position_of_output_key_property(mode_external_id, time_period_external_id, max_iterations-1, OutputType.OD, OutputProperty.ORIGIN_ZONE_EXTERNAL_ID)
-        key2_position = plan_it.memory.get_position_of_output_key_property(mode_external_id, time_period_external_id, max_iterations-1, OutputType.OD, OutputProperty.DESTINATION_ZONE_EXTERNAL_ID)
+        od_position = plan_it.memory.get_position_of_output_value_property(OutputType.OD, OutputProperty.OD_COST)
+        key1_position = plan_it.memory.get_position_of_output_key_property(OutputType.OD, OutputProperty.ORIGIN_ZONE_EXTERNAL_ID)
+        key2_position = plan_it.memory.get_position_of_output_key_property(OutputType.OD, OutputProperty.DESTINATION_ZONE_EXTERNAL_ID)
         memory_output_iterator_od = plan_it.memory.iterator(mode_external_id, time_period_external_id, max_iterations, OutputType.PATH)
         while memory_output_iterator_od.has_next():
             memory_output_iterator_od.next()
