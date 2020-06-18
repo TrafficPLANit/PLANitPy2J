@@ -208,14 +208,14 @@ class TestSuite(unittest.TestCase):
         od_position = plan_it.memory.get_position_of_output_value_property(OutputType.OD, OutputProperty.OD_COST)
         key1_position = plan_it.memory.get_position_of_output_key_property(OutputType.OD, OutputProperty.ORIGIN_ZONE_EXTERNAL_ID)
         key2_position = plan_it.memory.get_position_of_output_key_property(OutputType.OD, OutputProperty.DESTINATION_ZONE_EXTERNAL_ID)
-        memory_output_iterator_od = plan_it.memory.iterator(mode_external_id, time_period_external_id, max_iterations, OutputType.PATH)
+        memory_output_iterator_od = plan_it.memory.iterator(mode_external_id, time_period_external_id, max_iterations-1, OutputType.OD)
         while memory_output_iterator_od.has_next():
             memory_output_iterator_od.next()
-            keys = memory_output_iterator_path.get_keys()
+            keys = memory_output_iterator_od.get_keys()
             self.assertTrue(keys[key1_position] in [1,2])
             self.assertTrue(keys[key2_position] in [1,2])
-            values = memory_output_iterator_path.get_values()
-            value = values[path_position]
+            values = memory_output_iterator_od.get_values()
+            value = values[od_position]
             if ((keys[key1_position] == 1) and (keys[key2_position] == 2)):
                 self.assertEquals(value,10)
             else:
