@@ -12,6 +12,26 @@ from planit import PLANit
 
 class TestSuite(unittest.TestCase):
 
+    def test_explanatory_report_zero_outputs(self):
+        project_path = os.path.join('explanatory', 'reportZeroOutputs')
+        plan_it = PLANit(project_path)
+
+        description = "explanatory"
+        csv_file_name = "Time_Period_1_2.csv"
+        od_csv_file_name = "Time_Period_1_1.csv"
+        xml_file_name = "Time_Period_1.xml"
+        max_iterations = 500
+        epsilon = 0.0000000001
+        
+        PlanItHelper.run_test_with_zero_flow_outputs(plan_it, max_iterations, epsilon, description, 1, project_path)
+        PlanItHelper.delete_file(OutputType.LINK, description, xml_file_name, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.LINK, description, csv_file_name, project_path))        
+        PlanItHelper.delete_file(OutputType.PATH, description, xml_file_name, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.PATH, description, csv_file_name, project_path))        
+        PlanItHelper.delete_file(OutputType.OD, description, xml_file_name, project_path)
+        self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name, project_path))
+        gc.collect()
+
     def test_2_SIMO_MISO_route_choice_single_mode_with_initial_costs_and_one_iteration_and_three_time_periods(self):
         #corresponds to test_2_SIMO_MISO_route_choice_single_mode_with_initial_costs_and_one_iteration_and_three_time_periods() in Java)
         
