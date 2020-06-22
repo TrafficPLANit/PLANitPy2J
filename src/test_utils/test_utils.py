@@ -170,7 +170,7 @@ class PlanItHelper:
         # TODO : Add a unit test which testsX plan_it.assigment.physical_cost.set_default_parameters()
         # testRouteChoiceCompareWithOmniTRANS5() is a  good one for this
         plan_it.assignment.output_configuration.set_persist_only_final_Iteration(True)
-        plan_it.assignment.output_configuration.set_record_zero_flow(True)
+        plan_it.assignment.output_configuration.set_persist_zero_flow(True)
         
         plan_it.assignment.activate_output(OutputType.LINK)
         plan_it.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_EXTERNAL_ID)

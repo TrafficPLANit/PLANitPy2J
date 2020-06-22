@@ -62,9 +62,23 @@ class AssignmentWrapper(BaseWrapper):
         self._smoothing = SmoothingWrapper(self.get_smoothing())
         
         # initialize in case they have defaults available
-        self._link_output_type_configuration = LinkOutputTypeConfigurationWrapper(self._output_configuration.get_output_type_configuration(self.__create_java_output_type(OutputType.LINK)))
-        self._origin_destination_output_type_configuration = OriginDestinationOutputTypeConfigurationWrapper(self._output_configuration.get_output_type_configuration(self.__create_java_output_type(OutputType.OD)))   
-        self._path_output_type_configuration = PathOutputTypeConfigurationWrapper(self._output_configuration.get_output_type_configuration(self.__create_java_output_type(OutputType.PATH)))
+        #=======================================================================
+        # self._link_output_type_configuration = LinkOutputTypeConfigurationWrapper(self._output_configuration.get_output_type_configuration(self.__create_java_output_type(OutputType.LINK)))
+        # self._origin_destination_output_type_configuration = OriginDestinationOutputTypeConfigurationWrapper(self._output_configuration.get_output_type_configuration(self.__create_java_output_type(OutputType.OD)))   
+        # self._path_output_type_configuration = PathOutputTypeConfigurationWrapper(self._output_configuration.get_output_type_configuration(self.__create_java_output_type(OutputType.PATH)))
+        #=======================================================================
+        
+        for output_type in OutputType:
+            output_type_instance = self.__create_java_output_type(output_type)
+            if self.is_output_type_active(output_type_instance):
+                if output_type.value == "LINK":
+                    self._link_output_type_configuration = LinkOutputTypeConfigurationWrapper(self._java_counterpart.activateOutput(output_type_instance))
+                elif output_type.value == "OD":
+                    self._origin_destination_output_type_configuration = OriginDestinationOutputTypeConfigurationWrapper(self._java_counterpart.activateOutput(output_type_instance))
+                elif output_type.value == 'PATH':
+                    self._path_output_type_configuration = PathOutputTypeConfigurationWrapper(self._java_counterpart.activateOutput(output_type_instance))
+        
+        
         
     def __create_java_output_type(self, output_type):
         """ create an output type enum suitable to pass to java 
