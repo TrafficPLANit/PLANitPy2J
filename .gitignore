@@ -1,8 +1,8 @@
-/.gitignore
 /dist
 /build
 /.settings
 /.project
+/.pydevproject
 /env
 /src/PLANit_Python.egg-info
 /doc
