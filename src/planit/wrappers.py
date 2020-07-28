@@ -433,11 +433,11 @@ class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
         :param output_type the output type for the current output
         :return the wrapper for the memory output iterator
         """
-        time_periods_counterpart = self._demands_instance.get_time_periods()
+        time_periods_counterpart = self._demands_instance.field("timePeriods")
         time_periods = TimePeriodsWrapper(time_periods_counterpart)
         time_period_counterpart = time_periods.get_time_period_by_external_id(time_period_external_id, True);
         time_period = TimePeriodWrapper(time_period_counterpart)        
-        modes_counterpart = self._network_instance.get_modes()
+        modes_counterpart = self._network_instance.field("modes")
         modes = ModesWrapper(modes_counterpart)
         mode_counterpart = modes.get_mode_by_external_id(mode_external_id, True)
         mode = ModeWrapper(mode_counterpart)       

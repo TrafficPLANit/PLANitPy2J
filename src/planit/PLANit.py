@@ -142,8 +142,8 @@ class PLANit:
             default_initial_cost_wrapper = InitialCostWrapper(default_initial_cost_counterpart)
             self._assignment_instance.register_initial_link_segment_cost(default_initial_cost_wrapper.java)
             
-        if len(time_periods_external_id_set) > 0:
-            time_period_counterparts = self._demands_instance.get_time_periods.as_sorted_set_by_start_time()
+        if len(time_periods_external_id_set) > 0:            
+            time_period_counterparts = self._demands_instance.field("timePeriods").asSortedSetByStartTime()
             for time_period_counterpart in time_period_counterparts:
                 time_period = TimePeriodWrapper(time_period_counterpart)
                 time_period_external_id = time_period.get_external_id()
