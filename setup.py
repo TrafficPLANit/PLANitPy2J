@@ -18,14 +18,14 @@ RESOURCE_JAR_FILE_NAMES = glob(RESOURCE_DIR+'/**')
 
 setup(
     name="PLANit-Python",
-    version="0.0.4a7",
+    version= VERSION,
     description="Python API for traffic assignment using PLANit",
     long_description="PLANit-Python enables Python programs running in "
                      "a Python interpreter to configure and run "
                      "a PLANit traffic assignment. It uses Py4J to "
                      "access the underlying Java API that can be used "
                      "for the same purpose",                     
-    url="https://pages.github.sydney.edu.au/planit/planitmanual",
+    url="https://trafficplanit.github.io/PLANitManual",
     author="Mark Raadsen",
     author_email="mark.raadsen@sydney.edu.au",                              
     license="BSD License",                                                  # adopted license
