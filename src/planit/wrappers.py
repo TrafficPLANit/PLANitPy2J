@@ -376,9 +376,9 @@ class BPRCostWrapper(PhysicalCostWrapper):
     def __init__(self, java_counterpart, network_instance):
         super().__init__(java_counterpart)
         self._network_instance = network_instance
-        modes_counterpart = self._network_instance.get_modes()
+        modes_counterpart = self._network_instance.field("modes")
         self._modes_instance = ModesWrapper(modes_counterpart)
-        link_segments_counterpart = self._network_instance.get_link_segments()
+        link_segments_counterpart = self._network_instance.field("linkSegments")
         self._link_segments_instance = LinkSegmentsWrapper(link_segments_counterpart)
         
     def set_default_parameters(self, alpha, beta, mode_external_id=None, link_segment_type_external_id=None):
