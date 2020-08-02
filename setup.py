@@ -10,6 +10,7 @@ import os
 VERSION_PATH = os.path.join("src", "planit", "version.py")
 exec(compile(open(VERSION_PATH).read(),VERSION_PATH, "exec"))
 VERSION = __planit_version__
+LICENSE_LOCATION = "https://trafficplanit.github.io/PLANitManual/docs/licenses/"
 
 # RESOURCES
 # pars all jars from resource dir
@@ -28,11 +29,11 @@ setup(
     url="https://trafficplanit.github.io/PLANitManual",
     author="Mark Raadsen",
     author_email="mark.raadsen@sydney.edu.au",                              
-    license="BSD License",                                                  # adopted license
+    license="modified BSD License (see "+LICENSE_LOCATION+")",              # adopted license
     classifiers=[                                                           # meta information regarding this module
         "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",
-        "License :: OSI Approved :: BSD License",
+        "License :: OSI Approved :: modified BSD 3 Clause License",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3.7",

@@ -1,11 +1,13 @@
 # PLANitPy2J
-Python part of the PLANit Java/Python interface
+Python component of the PLANit Java/Python interface. Cotnains all the functionality outlined in the user manual regarding PLANit-Python.
 
 PLANitPy2J aims to provide a Python interface into the PLANit project allowing users to parse inputs, create projects, run projects, and persist results all via a Python shell while the underlying PLANit code utilizes the Java VM for its algorithms.
 
-The interaction with Java is made available via a seaprate project PLANitJ2Py. In PLANitJ2Py we implemented the gateway that allows the interaction between Python and Java. When creating your planit python project, a java call is made to bootstrap the java side.
+The interaction with Java is made available via a separate project PLANitJ2Py. In PLANitJ2Py we implemented the gateway that allows the interaction between Python and Java. When creating your PLANit-Python project, a java call is made to bootstrap the java side.
 
-We utilise py4j (www.p4j.org) to establish the connection between Java and Python. On the Python side, we provide Python wrapper classes around the Java objects such that the user is not exposed to the Java internals.  
+We utilise py4j (www.p4j.org) to establish the connection between Java and Python. On the Python side, we provide Python wrapper classes around the Java objects such that the user is not exposed to the Java internals.
+
+For more information on PLANit such as the user the manual, licensing, installation, getting started, reference documentation, and more, please visit [https://trafficplanit.github.io/PLANitManual/](https://trafficplanit.github.io/PLANitManual/)  
 
 # Getting Started
 
