@@ -2,7 +2,7 @@
 # Used to:
 # 1) Construct the correct name of the used PLANit-jar files
 # 2) Construct the version of the Python module via setup.py (hence use of globals)
-__planit_version__ = "0.0.5a2"
+__planit_version__ = "0.1.0"
 __py4j_version__ = "0.10.9"
 
 class Version:

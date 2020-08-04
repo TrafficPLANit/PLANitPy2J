@@ -37,6 +37,24 @@ python -m twine upload -u ___username___ -p ___password___ --repository testpypi
 
 Before you test if the distribution works properly. Make sure you are working in a virtual environment (see next section), so that the package is only installed there.
 
+## PyPi
+
+The motions you go through to upload your distribution to test.PyPi also hold for uploading your distribution to the actual PyPi.
+
+> Only proceed with this when you are certain your release is working!
+
+The only difference with test.PyPi is that we do not provide a --repository handle as the default is PyPi. Hence, to upload call
+
+```python
+python -m twine upload -u ___username___ -p ___password___ dist/*
+```
+
+to install we can leave out the additional utl index and simply call
+
+```python
+pip install PLANit-Python
+```
+
 ### Switching to a virtual environment
 
 For detailed information on virtual environments see Pythons' [virtual environment documentation](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/).

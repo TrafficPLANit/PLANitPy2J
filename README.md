@@ -1,5 +1,5 @@
 # PLANitPy2J
-Python component of the PLANit Java/Python interface. Cotnains all the functionality outlined in the user manual regarding PLANit-Python.
+Python component of the PLANit Java/Python interface. Contains all the functionality outlined in the user manual regarding PLANit-Python.
 
 PLANitPy2J aims to provide a Python interface into the PLANit project allowing users to parse inputs, create projects, run projects, and persist results all via a Python shell while the underlying PLANit code utilizes the Java VM for its algorithms.
 

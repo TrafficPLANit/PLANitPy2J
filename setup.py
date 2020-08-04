@@ -33,7 +33,7 @@ setup(
     classifiers=[                                                           # meta information regarding this module
         "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",
-        "License :: OSI Approved :: modified BSD 3 Clause License",
+        "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3.7",
