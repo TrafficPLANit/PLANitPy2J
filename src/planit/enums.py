@@ -78,7 +78,7 @@ class PhysicalCost(Enum):
     """
     BPR = "org.planit.cost.physical.BPRLinkTravelTimeCost"
 
-class RouteIdType(Enum):
+class PathIdType(Enum):
 
     LINK_SEGMENT_EXTERNAL_ID = "LINK_SEGMENT_EXTERNAL_ID"
     LINK_SEGMENT_ID = "LINK_SEGMENT_ID"
@@ -86,7 +86,7 @@ class RouteIdType(Enum):
     NODE_ID = "NODE_ID"
 
     def java_class_name(self) -> str:
-        return "org.planit.output.enums.RouteIdType"     
+        return "org.planit.output.enums.PathOutputIdentificationType"     
    
 class Smoothing(Enum):
     """ Enum for the different smoothing options the user can choose, they map to the Java equivalent class name for easy mapping

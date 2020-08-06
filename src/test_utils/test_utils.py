@@ -3,7 +3,7 @@ import pandas as pd
 from planit import TrafficAssignment
 from planit import OutputType
 from planit import OutputProperty
-from planit import RouteIdType
+from planit import PathIdType
 from planit import OutputFormatter
 from planit import ODSkimSubOutputType
 from builtins import staticmethod
@@ -44,7 +44,7 @@ class PlanItHelper:
         plan_it.assignment.od_configuration.remove(OutputProperty.TIME_PERIOD_EXTERNAL_ID)
         plan_it.assignment.od_configuration.remove(OutputProperty.RUN_ID)
         plan_it.assignment.activate_output(OutputType.PATH)
-        plan_it.assignment.path_configuration.set_path_id_type(RouteIdType.NODE_EXTERNAL_ID)
+        plan_it.assignment.path_configuration.set_path_id_type(PathIdType.NODE_EXTERNAL_ID)
         plan_it.assignment.gap_function.stop_criterion.set_max_iterations(max_iterations)
         plan_it.assignment.gap_function.stop_criterion.set_epsilon(epsilon)
          
@@ -89,7 +89,7 @@ class PlanItHelper:
         plan_it.assignment.od_configuration.remove(OutputProperty.TIME_PERIOD_EXTERNAL_ID)
         plan_it.assignment.od_configuration.remove(OutputProperty.RUN_ID)
         plan_it.assignment.activate_output(OutputType.PATH)
-        plan_it.assignment.path_configuration.set_path_id_type(RouteIdType.NODE_EXTERNAL_ID)
+        plan_it.assignment.path_configuration.set_path_id_type(PathIdType.NODE_EXTERNAL_ID)
         plan_it.assignment.gap_function.stop_criterion.set_max_iterations(max_iterations)
         plan_it.assignment.gap_function.stop_criterion.set_epsilon(epsilon)
          
@@ -140,7 +140,7 @@ class PlanItHelper:
         plan_it.assignment.od_configuration.remove(OutputProperty.TIME_PERIOD_EXTERNAL_ID)
         plan_it.assignment.od_configuration.remove(OutputProperty.RUN_ID)
         plan_it.assignment.activate_output(OutputType.PATH)
-        plan_it.assignment.path_configuration.set_path_id_type(RouteIdType.NODE_EXTERNAL_ID)
+        plan_it.assignment.path_configuration.set_path_id_type(PathIdType.NODE_EXTERNAL_ID)
         plan_it.assignment.gap_function.stop_criterion.set_max_iterations(max_iterations)
         plan_it.assignment.gap_function.stop_criterion.set_epsilon(epsilon)
          
@@ -187,7 +187,7 @@ class PlanItHelper:
         plan_it.assignment.od_configuration.remove(OutputProperty.TIME_PERIOD_EXTERNAL_ID)
         plan_it.assignment.od_configuration.remove(OutputProperty.RUN_ID)
         plan_it.assignment.activate_output(OutputType.PATH)
-        plan_it.assignment.path_configuration.set_path_id_type(RouteIdType.NODE_EXTERNAL_ID)
+        plan_it.assignment.path_configuration.set_path_id_type(PathIdType.NODE_EXTERNAL_ID)
         plan_it.assignment.gap_function.stop_criterion.set_max_iterations(max_iterations)
         plan_it.assignment.gap_function.stop_criterion.set_epsilon(epsilon)
          
@@ -232,7 +232,7 @@ class PlanItHelper:
         plan_it.assignment.activate_output(OutputType.OD)
         plan_it.assignment.deactivate_output(OutputType.OD)
         
-        plan_it.assignment.path_configuration.set_path_id_type(RouteIdType.NODE_EXTERNAL_ID)
+        plan_it.assignment.path_configuration.set_path_id_type(PathIdType.NODE_EXTERNAL_ID)
         plan_it.assignment.gap_function.stop_criterion.set_max_iterations(max_iterations)
         plan_it.assignment.gap_function.stop_criterion.set_epsilon(epsilon)
          

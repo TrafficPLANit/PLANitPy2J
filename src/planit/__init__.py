@@ -5,7 +5,7 @@ from .enums import OutputFormatter
 from .enums import OutputProperty
 from .enums import OutputType
 from .enums import PhysicalCost
-from .enums import RouteIdType
+from .enums import PathIdType
 from .enums import Smoothing
 from .enums import TrafficAssignment
 from .enums import VirtualCost

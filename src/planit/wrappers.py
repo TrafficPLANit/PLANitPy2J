@@ -4,7 +4,7 @@ from py4j.java_gateway import get_field
 from planit import GatewayUtils
 from planit import GatewayState
 from planit import OutputType
-from planit import RouteIdType
+from planit import PathIdType
 from planit import OutputProperty
 from planit import PhysicalCost
 from planit import VirtualCost
@@ -512,6 +512,6 @@ class PathOutputTypeConfigurationWrapper(OutputTypeConfigurationWrapper):
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
         
-    def set_path_id_type(self,  route_id_type : RouteIdType):
-        route_id_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(route_id_type.java_class_name(), route_id_type.value)
-        self._java_counterpart.setPathIdType(route_id_type_instance)
+    def set_path_id_type(self,  path_id_type : PathIdType):
+        path_id_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(path_id_type.java_class_name(), path_id_type.value)
+        self._java_counterpart.setPathIdentificationType(path_id_type_instance)
