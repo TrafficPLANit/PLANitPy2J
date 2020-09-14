@@ -119,7 +119,7 @@ class AssignmentWrapper(BaseWrapper):
             elif output_type.value == 'PATH':
                 self._path_output_type_configuration = PathOutputTypeConfigurationWrapper(self._java_counterpart.activateOutput(output_type_instance))
             else:
-                raise ValueError("Attempted to deactivate unknown output type " + output_type.value)     
+                raise ValueError("Attempted to activate unknown output type " + output_type.value)     
     
     def deactivate_output(self, output_type: OutputType):   
         """Deactivate specified output type on the assignment
@@ -128,13 +128,13 @@ class AssignmentWrapper(BaseWrapper):
         output_type_instance = self.__create_java_output_type(output_type)
         if self.is_output_type_active(output_type_instance):
             if output_type.value == "LINK":
-                self._link_output_type_configuration = LinkOutputTypeConfigurationWrapper(self._java_counterpart.deactivateOutput(output_type_instance))
+                self._java_counterpart.deactivateOutput(output_type_instance)
             elif output_type.value == "OD":
-                self._origin_destination_output_type_configuration = OriginDestinationOutputTypeConfigurationWrapper(self._java_counterpart.deactivateOutput(output_type_instance))
+                self._java_counterpart.deactivateOutput(output_type_instance)
             elif output_type.value == 'PATH':
-                self._path_output_type_configuration = PathOutputTypeConfigurationWrapper(self._java_counterpart.deactivateOutput(output_type_instance))
+                self._java_counterpart.deactivateOutput(output_type_instance)
             else:
-                raise ValueError("Attempted to activate unknown output type " + output_type.value)     
+                raise ValueError("Attempted to de-activate unknown output type " + output_type.value)     
   
     @property
     def gap_function(self):
@@ -391,7 +391,7 @@ class BPRCostWrapper(PhysicalCostWrapper):
         if (mode_external_id == None):
             self._java_counterpart.setDefaultParameters(alpha, beta)
         else:
-            mode_counterpart = self._modes_instance.get_mode_by_external_id(mode_external_id, True)
+            mode_counterpart = self._modes_instance.get_by_external_id(mode_external_id, True)
             if (link_segment_type_external_id == None):
                 self._java_counterpart.setDefaultParameters(mode_counterpart, alpha, beta)
             else:
@@ -406,9 +406,9 @@ class BPRCostWrapper(PhysicalCostWrapper):
         :param mode_external_id, parameters only apply to this mode
         :param link_segment_external_id, parameters apply to this link segment 
         """        
-        link_segment_counterpart = self._link_segments_instance.get_link_segment_by_external_id(link_segment_external_id, True)
+        link_segment_counterpart = self._link_segments_instance.get_by_external_id(link_segment_external_id, True)
         link_segment_instance = LinkSegmentWrapper(link_segment_counterpart)
-        mode_counterpart = self._modes_instance.get_mode_by_external_id(mode_external_id, True)
+        mode_counterpart = self._modes_instance.get_by_external_id(mode_external_id, True)
         self._java_counterpart.setParameters(link_segment_instance.java, mode_counterpart, alpha, beta)
 
 class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
@@ -439,7 +439,7 @@ class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
         time_period = TimePeriodWrapper(time_period_counterpart)        
         modes_counterpart = self._network_instance.field("modes")
         modes = ModesWrapper(modes_counterpart)
-        mode_counterpart = modes.get_mode_by_external_id(mode_external_id, True)
+        mode_counterpart = modes.get_by_external_id(mode_external_id, True)
         mode = ModeWrapper(mode_counterpart)       
         output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_type.java_class_name(), output_type.value)
         memory_output_iterator_counterpart = self._java_counterpart.getIterator(mode.java, time_period.java, no_iterations, output_type_instance)

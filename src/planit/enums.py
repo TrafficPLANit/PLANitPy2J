@@ -96,8 +96,8 @@ class Smoothing(Enum):
 class TrafficAssignment(Enum):
     """ Enum for the different assignment the user can choose, they map to the Java equivalent class name for easy mapping
     """
-    TRADITIONAL_STATIC = "org.planit.trafficassignment.TraditionalStaticAssignment"
-    ETLM = "org.planit.ltm.trafficassignment.ETLM"
+    TRADITIONAL_STATIC = "org.planit.assignment.traditionalstatic.TraditionalStaticAssignment"
+    ETLM = "org.planit.ltm.assignment.ETLM"
 
 class VirtualCost(Enum):
     """ Enum for the different virtual costs the user can choose, they map to the Java equivalent class name for easy mapping
