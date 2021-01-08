@@ -9,6 +9,8 @@ from planit import OutputProperty
 from planit import PhysicalCost
 from planit import VirtualCost
 from planit import Smoothing
+from _decimal import Decimal
+from numpy import string_
 
 class BaseWrapper(object):
     """ Base wrapper class which always holds a java counter part instance and a generic way to pass on method calls to the encapsulated 
@@ -228,6 +230,13 @@ class LinkSegmentsWrapper(BaseWrapper):
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
         
+class LinkSegmentTypesWrapper(BaseWrapper):
+    """ Wrapper around the Java LinkSegmentTypes class
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)        
+        
 class LinkSegmentExpectedResultsDtoWrapper(BaseWrapper):
     """ Wrapper around the Java Link Segment Expected Results DTO class instance
     """
@@ -380,35 +389,38 @@ class BPRCostWrapper(PhysicalCostWrapper):
         self._modes_instance = ModesWrapper(modes_counterpart)
         link_segments_counterpart = self._network_instance.field("linkSegments")
         self._link_segments_instance = LinkSegmentsWrapper(link_segments_counterpart)
+        link_segment_types_counterpart = self._network_instance.field("linkSegmentTypes")
+        self._link_segment_types_instance = LinkSegmentTypesWrapper(link_segment_types_counterpart)
         
-    def set_default_parameters(self, alpha, beta, mode_external_id=None, link_segment_type_external_id=None):
+        
+    def set_default_parameters(self, alpha: float, beta: float, mode_xml_id:str =None, link_segment_type_xml_id:str =None):
         """Set the default BPR functions parameters 
         :param alpha value of alpha parameter
         :param beta value of beta parameter
-        :param mode_external_id if included, default parameters only apply to this mode
-        :param link_segment_type_external_id if included, default parameters apply to this link segment type and mode
+        :param mode_xml_id if included, default parameters only apply to this mode
+        :param link_segment_type_xml_id if included, default parameters apply to this link segment type and mode
         """
-        if (mode_external_id == None):
+        if (mode_xml_id == None):
             self._java_counterpart.setDefaultParameters(alpha, beta)
         else:
-            mode_counterpart = self._modes_instance.get_by_external_id(mode_external_id, True)
-            if (link_segment_type_external_id == None):
+            mode_counterpart = self._modes_instance.get_by_xml_id(mode_xml_id)
+            if (link_segment_type_xml_id == None):
                 self._java_counterpart.setDefaultParameters(mode_counterpart, alpha, beta)
             else:
-                link_segment_type_counterpart = self._network_instance.get_macroscopic_link_segment_type_by_external_id(link_segment_type_external_id, True)
+                link_segment_type_counterpart = self._link_segment_types_instance.get_by_xml_id(link_segment_type_xml_id)
                 link_segment_type_instance = MacroscopicLinkSegmentTypeWrapper(link_segment_type_counterpart)
                 self.setDefaultParameters(link_segment_type_instance.java, mode_counterpart, alpha, beta)
                 
-    def set_parameters(self, alpha, beta, mode_external_id, link_segment_external_id):
+    def set_parameters(self, alpha: float, beta:float, mode_xml_id: str, link_segment_xml_id: str):
         """Set the default BPR functions parameters 
         :param alpha value of alpha parameter
         :param beta value of beta parameter
-        :param mode_external_id, parameters only apply to this mode
-        :param link_segment_external_id, parameters apply to this link segment 
+        :param mode_xml_id, parameters only apply to this mode
+        :param link_segment_xml_id, parameters apply to this link segment 
         """        
-        link_segment_counterpart = self._link_segments_instance.get_by_external_id(link_segment_external_id, True)
+        link_segment_counterpart = self._link_segments_instance.get_by_xml_id(link_segment_xml_id)
         link_segment_instance = LinkSegmentWrapper(link_segment_counterpart)
-        mode_counterpart = self._modes_instance.get_by_external_id(mode_external_id, True)
+        mode_counterpart = self._modes_instance.get_by_xml_id(mode_xml_id)
         self._java_counterpart.setParameters(link_segment_instance.java, mode_counterpart, alpha, beta)
 
 class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
@@ -425,21 +437,21 @@ class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
         self._demands_instance = demands_instance
         self._network_instance = network_instance
                    
-    def iterator(self, mode_external_id, time_period_external_id, no_iterations, output_type):
+    def iterator(self, mode_xml_id: str, time_period_xml_id: str, no_iterations: int, output_type: OutputType):
         """Return the  wrapper for MemoryOutputIterator object for this MemoryOutputFormatter
-        :param mode_external_id the external Id of the current mode
-        :param time_period_external_id the external Id of the current time period
+        :param mode_xml_id the external Id of the current mode
+        :param time_period_xml_id the external Id of the current time period
         :param no_iterations the iteration the output iterator applies to
         :param output_type the output type for the current output
         :return the wrapper for the memory output iterator
         """
         time_periods_counterpart = self._demands_instance.field("timePeriods")
         time_periods = TimePeriodsWrapper(time_periods_counterpart)
-        time_period_counterpart = time_periods.get_time_period_by_external_id(time_period_external_id, True);
+        time_period_counterpart = time_periods.get_time_period_by_xml_id(time_period_xml_id);
         time_period = TimePeriodWrapper(time_period_counterpart)        
         modes_counterpart = self._network_instance.field("modes")
         modes = ModesWrapper(modes_counterpart)
-        mode_counterpart = modes.get_by_external_id(mode_external_id, True)
+        mode_counterpart = modes.get_by_xml_id(mode_xml_id)
         mode = ModeWrapper(mode_counterpart)       
         output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_type.java_class_name(), output_type.value)
         memory_output_iterator_counterpart = self._java_counterpart.getIterator(mode.java, time_period.java, no_iterations, output_type_instance)

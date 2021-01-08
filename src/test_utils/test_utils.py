@@ -1,115 +1,10 @@
 import os
 import pandas as pd
-from planit import TrafficAssignment
-from planit import OutputType
-from planit import OutputProperty
-from planit import PathIdType
-from planit import OutputFormatter
-from planit import ODSkimSubOutputType
+from planit import *
 from builtins import staticmethod
 
 class PlanItHelper:
-    
-    @staticmethod
-    def run_test5(plan_it, max_iterations, epsilon, description, output_type_configuration_option, project_path=None, deactivate_file_output=False):
-        """Top-level method which runs unit test case 5
-        :param plan_it PLANit object (with any required initial costs already defined
-        :param max_iterations the maximum number of iterations for the current unit test
-        :param epsilon the convergence epsilon for the current unit test
-        :param description the name to be used to identify input and output files
-        :param output_type_configuration_option used to specify which properties to remove from link output type configuration
-        :param project_path directory of XML input file (if omitted, defaults to None which will make methods use the current directory)
-        :param deactivate_file_output if True, deactivate the file output formatter and store results in memory only
-        """        
-        plan_it.set(TrafficAssignment.TRADITIONAL_STATIC)         
-        plan_it.assignment.physical_cost.set_default_parameters(0.8, 4.5, 2, 1)
-
-        # TODO : Add a unit test which testsX plan_it.assigment.physical_cost.set_default_parameters()
-        # testRouteChoiceCompareWithOmniTRANS5() is a  good one for this
-        #plan_it.assignment.set(VirtualCost.FIXED)
-        #plan_it.assignment.set(Smoothing.MSA)
-        plan_it.assignment.output_configuration.set_persist_only_final_Iteration(True)
-        plan_it.assignment.activate_output(OutputType.LINK)
-        plan_it.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_EXTERNAL_ID)
-        plan_it.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_ID)
-  
-        if output_type_configuration_option == 1:
-            plan_it.assignment.link_configuration.remove(OutputProperty.MAXIMUM_SPEED)
-        elif output_type_configuration_option == 2:
-            plan_it.assignment.link_configuration.remove(OutputProperty.DOWNSTREAM_NODE_EXTERNAL_ID)
-            plan_it.assignment.link_configuration.remove(OutputProperty.UPSTREAM_NODE_EXTERNAL_ID)
-  
-        plan_it.assignment.activate_output(OutputType.OD)
-        plan_it.assignment.od_configuration.deactivate(ODSkimSubOutputType.NONE)
-        plan_it.assignment.od_configuration.remove(OutputProperty.TIME_PERIOD_EXTERNAL_ID)
-        plan_it.assignment.od_configuration.remove(OutputProperty.RUN_ID)
-        plan_it.assignment.activate_output(OutputType.PATH)
-        plan_it.assignment.path_configuration.set_path_id_type(PathIdType.NODE_EXTERNAL_ID)
-        plan_it.assignment.gap_function.stop_criterion.set_max_iterations(max_iterations)
-        plan_it.assignment.gap_function.stop_criterion.set_epsilon(epsilon)
-         
-        plan_it.activate(OutputFormatter.MEMORY)
-        if deactivate_file_output:
-            plan_it.deactivate(OutputFormatter.PLANIT_IO)
-        else:
-            plan_it.output.set_xml_name_root(description)                
-            plan_it.output.set_csv_name_root(description)     
-            if (project_path is not None):  
-                plan_it.output.set_output_directory(project_path)
-        plan_it.run()
-        return plan_it
-   
-    @staticmethod
-    def run_mode_test(plan_it, max_iterations, epsilon, description, output_type_configuration_option, project_path=None, deactivate_file_output=False):
-        """Top-level method which runs unit mode test
-        :param plan_it PLANit object (with any required initial costs already defined
-        :param max_iterations the maximum number of iterations for the current unit test
-        :param epsilon the convergence epsilon for the current unit test
-        :param description the name to be used to identify input and output files
-        :param output_type_configuration_option used to specify which properties to remove from link output type configuration
-        :param project_path directory of XML input file (if omitted, defaults to None which will make methods use the current directory)
-        :param deactivate_file_output if True, deactivate the file output formatter and store results in memory only
-        """        
-        plan_it.set(TrafficAssignment.TRADITIONAL_STATIC)         
-        # TODO : Add a unit test which testsX plan_it.assigment.physical_cost.set_default_parameters()
-        # testRouteChoiceCompareWithOmniTRANS5() is a  good one for this
-        plan_it.assignment.output_configuration.set_persist_only_final_Iteration(True)
-        plan_it.assignment.activate_output(OutputType.LINK)
-        plan_it.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_EXTERNAL_ID)
-        plan_it.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_ID)
-  
-        if output_type_configuration_option == 1:
-            plan_it.assignment.link_configuration.remove(OutputProperty.MAXIMUM_SPEED)
-        elif output_type_configuration_option == 2:
-            plan_it.assignment.link_configuration.remove(OutputProperty.DOWNSTREAM_NODE_EXTERNAL_ID)
-            plan_it.assignment.link_configuration.remove(OutputProperty.UPSTREAM_NODE_EXTERNAL_ID)
-  
-        plan_it.assignment.activate_output(OutputType.OD)
-        plan_it.assignment.od_configuration.deactivate(ODSkimSubOutputType.NONE)
-        plan_it.assignment.od_configuration.remove(OutputProperty.TIME_PERIOD_EXTERNAL_ID)
-        plan_it.assignment.od_configuration.remove(OutputProperty.RUN_ID)
-        plan_it.assignment.activate_output(OutputType.PATH)
-        plan_it.assignment.path_configuration.set_path_id_type(PathIdType.NODE_EXTERNAL_ID)
-        plan_it.assignment.gap_function.stop_criterion.set_max_iterations(max_iterations)
-        plan_it.assignment.gap_function.stop_criterion.set_epsilon(epsilon)
-         
-        plan_it.activate(OutputFormatter.MEMORY)
-        if deactivate_file_output:
-            plan_it.deactivate(OutputFormatter.PLANIT_IO)
-        else:
-            plan_it.output.set_xml_name_root(description)                
-            plan_it.output.set_csv_name_root(description)     
-            if (project_path is not None):  
-                plan_it.output.set_output_directory(project_path)
-                
-        plan_it.assignment.physical_cost.set_default_parameters(0.8, 4.5, 1, 1)
-        link_segment_external_id = 3
-        mode_external_id = 1 
-        plan_it.assignment.physical_cost.set_parameters(1.0, 5.0, mode_external_id, link_segment_external_id)       
-                
-        plan_it.run()
-        return plan_it
- 
+        
     @staticmethod
     def run_test(plan_it, max_iterations, epsilon, description, output_type_configuration_option, project_path=None, deactivate_file_output=False):
         """Top-level method which runs unit tests
@@ -126,21 +21,21 @@ class PlanItHelper:
         # testRouteChoiceCompareWithOmniTRANS5() is a  good one for this
         plan_it.assignment.output_configuration.set_persist_only_final_Iteration(True)
         plan_it.assignment.activate_output(OutputType.LINK)
-        plan_it.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_EXTERNAL_ID)
+        plan_it.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_XML_ID)
         plan_it.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_ID)
   
         if output_type_configuration_option == 1:
             plan_it.assignment.link_configuration.remove(OutputProperty.MAXIMUM_SPEED)
         elif output_type_configuration_option == 2:
-            plan_it.assignment.link_configuration.remove(OutputProperty.DOWNSTREAM_NODE_EXTERNAL_ID)
-            plan_it.assignment.link_configuration.remove(OutputProperty.UPSTREAM_NODE_EXTERNAL_ID)
+            plan_it.assignment.link_configuration.remove(OutputProperty.DOWNSTREAM_NODE_XML_ID)
+            plan_it.assignment.link_configuration.remove(OutputProperty.UPSTREAM_NODE_XML_ID)
   
         plan_it.assignment.activate_output(OutputType.OD)
         plan_it.assignment.od_configuration.deactivate(ODSkimSubOutputType.NONE)
-        plan_it.assignment.od_configuration.remove(OutputProperty.TIME_PERIOD_EXTERNAL_ID)
+        plan_it.assignment.od_configuration.remove(OutputProperty.TIME_PERIOD_XML_ID)
         plan_it.assignment.od_configuration.remove(OutputProperty.RUN_ID)
         plan_it.assignment.activate_output(OutputType.PATH)
-        plan_it.assignment.path_configuration.set_path_id_type(PathIdType.NODE_EXTERNAL_ID)
+        plan_it.assignment.path_configuration.set_path_id_type(PathIdType.NODE_XML_ID)
         plan_it.assignment.gap_function.stop_criterion.set_max_iterations(max_iterations)
         plan_it.assignment.gap_function.stop_criterion.set_epsilon(epsilon)
          
@@ -173,21 +68,21 @@ class PlanItHelper:
         plan_it.assignment.output_configuration.set_persist_zero_flow(True)
         
         plan_it.assignment.activate_output(OutputType.LINK)
-        plan_it.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_EXTERNAL_ID)
+        plan_it.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_XML_ID)
         plan_it.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_ID)
   
         if output_type_configuration_option == 1:
             plan_it.assignment.link_configuration.remove(OutputProperty.MAXIMUM_SPEED)
         elif output_type_configuration_option == 2:
-            plan_it.assignment.link_configuration.remove(OutputProperty.DOWNSTREAM_NODE_EXTERNAL_ID)
-            plan_it.assignment.link_configuration.remove(OutputProperty.UPSTREAM_NODE_EXTERNAL_ID)
+            plan_it.assignment.link_configuration.remove(OutputProperty.DOWNSTREAM_NODE_XML_ID)
+            plan_it.assignment.link_configuration.remove(OutputProperty.UPSTREAM_NODE_XML_ID)
   
         plan_it.assignment.activate_output(OutputType.OD)
         plan_it.assignment.od_configuration.deactivate(ODSkimSubOutputType.NONE)
-        plan_it.assignment.od_configuration.remove(OutputProperty.TIME_PERIOD_EXTERNAL_ID)
+        plan_it.assignment.od_configuration.remove(OutputProperty.TIME_PERIOD_XML_ID)
         plan_it.assignment.od_configuration.remove(OutputProperty.RUN_ID)
         plan_it.assignment.activate_output(OutputType.PATH)
-        plan_it.assignment.path_configuration.set_path_id_type(PathIdType.NODE_EXTERNAL_ID)
+        plan_it.assignment.path_configuration.set_path_id_type(PathIdType.NODE_XML_ID)
         plan_it.assignment.gap_function.stop_criterion.set_max_iterations(max_iterations)
         plan_it.assignment.gap_function.stop_criterion.set_epsilon(epsilon)
          
@@ -219,20 +114,20 @@ class PlanItHelper:
         # TODO : Add a unit test which testsX plan_it.assigment.physical_cost.set_default_parameters()
         # testRouteChoiceCompareWithOmniTRANS5() is a  good one for this
         plan_it.assignment.output_configuration.set_persist_only_final_Iteration(True)
-        plan_it.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_EXTERNAL_ID)
+        plan_it.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_XML_ID)
         plan_it.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_ID)
   
         if output_type_configuration_option == 1:
             plan_it.assignment.link_configuration.remove(OutputProperty.MAXIMUM_SPEED)
         elif output_type_configuration_option == 2:
-            plan_it.assignment.link_configuration.remove(OutputProperty.DOWNSTREAM_NODE_EXTERNAL_ID)
-            plan_it.assignment.link_configuration.remove(OutputProperty.UPSTREAM_NODE_EXTERNAL_ID)
+            plan_it.assignment.link_configuration.remove(OutputProperty.DOWNSTREAM_NODE_XML_ID)
+            plan_it.assignment.link_configuration.remove(OutputProperty.UPSTREAM_NODE_XML_ID)
   
         #Note that OutputType.OD is deactivated, check later that no OD output file is created
         plan_it.assignment.activate_output(OutputType.OD)
         plan_it.assignment.deactivate_output(OutputType.OD)
         
-        plan_it.assignment.path_configuration.set_path_id_type(PathIdType.NODE_EXTERNAL_ID)
+        plan_it.assignment.path_configuration.set_path_id_type(PathIdType.NODE_XML_ID)
         plan_it.assignment.gap_function.stop_criterion.set_max_iterations(max_iterations)
         plan_it.assignment.gap_function.stop_criterion.set_epsilon(epsilon)
          

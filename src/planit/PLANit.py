@@ -135,20 +135,20 @@ class PLANit:
     def __register_initial_costs__(self):   
         """Register the initial costs on the assignment
         """
-        time_periods_external_id_set = self._initial_cost_instance.get_time_periods_external_id_set()
+        time_periods_xml_id_set = self._initial_cost_instance.get_time_periods_xml_id_set()
         
         if self._initial_cost_instance.get_default_initial_cost_file_location() != None:
             default_initial_cost_counterpart = self._project_instance.create_and_register_initial_link_segment_cost(self._network_instance.java, self._initial_cost_instance.get_default_initial_cost_file_location())
             default_initial_cost_wrapper = InitialCostWrapper(default_initial_cost_counterpart)
             self._assignment_instance.register_initial_link_segment_cost(default_initial_cost_wrapper.java)
             
-        if len(time_periods_external_id_set) > 0:            
+        if len(time_periods_xml_id_set) > 0:            
             time_period_counterparts = self._demands_instance.field("timePeriods").asSortedSetByStartTime()
             for time_period_counterpart in time_period_counterparts:
                 time_period = TimePeriodWrapper(time_period_counterpart)
-                time_period_external_id = time_period.get_external_id()
-                if (time_period_external_id in time_periods_external_id_set):
-                    initial_cost_file_location = self._initial_cost_instance.get_initial_cost_file_location_by_time_period_external_id(time_period_external_id)
+                time_period_xml_id = time_period.get_xml_id()
+                if (time_period_xml_id in time_periods_xml_id_set):
+                    initial_cost_file_location = self._initial_cost_instance.get_initial_cost_file_location_by_time_period_xml_id(time_period_xml_id)
                     initial_cost_counterpart = self._project_instance.create_and_register_initial_link_segment_cost(self._network_instance.java, initial_cost_file_location, time_period_counterpart)
                     initial_cost_wrapper = InitialCostWrapper(initial_cost_counterpart)
                     self._assignment_instance.register_initial_link_segment_cost(time_period.java, initial_cost_wrapper.java)       
