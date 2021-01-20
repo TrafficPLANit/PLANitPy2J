@@ -387,10 +387,9 @@ class BPRCostWrapper(PhysicalCostWrapper):
         self._network_instance = network_instance
         modes_counterpart = self._network_instance.field("modes")
         self._modes_instance = ModesWrapper(modes_counterpart)
-        link_segments_counterpart = self._network_instance.field("linkSegments")
-        self._link_segments_instance = LinkSegmentsWrapper(link_segments_counterpart)
-        link_segment_types_counterpart = self._network_instance.field("linkSegmentTypes")
-        self._link_segment_types_instance = LinkSegmentTypesWrapper(link_segment_types_counterpart)
+        
+        network_layers_counterpart = network_instance.field("infrastructureLayers")
+        self._layers_instance = ModesWrapper(network_layers_counterpart)        
         
         
     def set_default_parameters(self, alpha: float, beta: float, mode_xml_id:str =None, link_segment_type_xml_id:str =None):
@@ -407,9 +406,14 @@ class BPRCostWrapper(PhysicalCostWrapper):
             if (link_segment_type_xml_id == None):
                 self._java_counterpart.setDefaultParameters(mode_counterpart, alpha, beta)
             else:
-                link_segment_type_counterpart = self._link_segment_types_instance.get_by_xml_id(link_segment_type_xml_id)
-                link_segment_type_instance = MacroscopicLinkSegmentTypeWrapper(link_segment_type_counterpart)
-                self.setDefaultParameters(link_segment_type_instance.java, mode_counterpart, alpha, beta)
+                layer_counterpart = self._layers_instance.get(mode_counterpart)
+                # cannot use field "linkSegmentTypes" for some reason, likely because layer_counterpart is a InfrastructureLayer to py4j and it cannot access field of 
+                # derived type, hence we must call method for it to find the derived implementation
+                link_segment_types_counterpart = layer_counterpart.getLinkSegmentTypes()
+                link_segment_types_instance = LinkSegmentTypesWrapper(link_segment_types_counterpart)
+                
+                link_segment_type_counterpart = link_segment_types_instance.get_by_xml_id(link_segment_type_xml_id)
+                self.setDefaultParameters(link_segment_type_counterpart, mode_counterpart, alpha, beta)
                 
     def set_parameters(self, alpha: float, beta:float, mode_xml_id: str, link_segment_xml_id: str):
         """Set the default BPR functions parameters 
@@ -418,10 +422,13 @@ class BPRCostWrapper(PhysicalCostWrapper):
         :param mode_xml_id, parameters only apply to this mode
         :param link_segment_xml_id, parameters apply to this link segment 
         """        
-        link_segment_counterpart = self._link_segments_instance.get_by_xml_id(link_segment_xml_id)
-        link_segment_instance = LinkSegmentWrapper(link_segment_counterpart)
         mode_counterpart = self._modes_instance.get_by_xml_id(mode_xml_id)
-        self._java_counterpart.setParameters(link_segment_instance.java, mode_counterpart, alpha, beta)
+        layer_counterpart = self._layers_instance.get(mode_counterpart)
+        link_segments_counterpart = layer_counterpart.getLinkSegments()
+        link_segments_instance = LinkSegmentsWrapper(link_segments_counterpart)
+        
+        link_segment_counterpart = link_segments_instance.get_by_xml_id(link_segment_xml_id)        
+        self._java_counterpart.setParameters(link_segment_counterpart, mode_counterpart, alpha, beta)
 
 class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
     """ Wrapper around the Java PlanItOutputFormatter class instance

@@ -55,11 +55,11 @@ class TestSuite(unittest.TestCase):
             memory_output_iterator_link.next()
             keys = memory_output_iterator_link.get_keys()
             values = memory_output_iterator_link.get_values()
-            self.assertEquals(values[flow_position], 1)
+            self.assertEqual(values[flow_position], 1)
             self.assertTrue(math.isclose(values[cost_position], 10, rel_tol=0.001))
-            self.assertEquals(values[length_position], 10)
-            self.assertEquals(values[capacity_position], 2000)
-            self.assertEquals(values[number_of_lanes_position], 1)
+            self.assertEqual(values[length_position], 10)
+            self.assertEqual(values[capacity_position], 2000)
+            self.assertEqual(values[number_of_lanes_position], 1)
  
         path_position = plan_it.memory.get_position_of_output_value_property(OutputType.PATH, OutputProperty.PATH_STRING)
         key1_position = plan_it.memory.get_position_of_output_key_property(OutputType.PATH, OutputProperty.ORIGIN_ZONE_XML_ID)
@@ -73,9 +73,9 @@ class TestSuite(unittest.TestCase):
             values = memory_output_iterator_path.get_values()
             value = values[path_position]
             if ((keys[key1_position] == "1") and (keys[key2_position] == "2")):
-                self.assertEquals(value,"[1,2]")
+                self.assertEqual(value,"[1,2]")
             else:
-                self.assertEquals(value, "")
+                self.assertEqual(value, "")
                                 
         od_position = plan_it.memory.get_position_of_output_value_property(OutputType.OD, OutputProperty.OD_COST)
         key1_position = plan_it.memory.get_position_of_output_key_property(OutputType.OD, OutputProperty.ORIGIN_ZONE_XML_ID)
@@ -89,9 +89,9 @@ class TestSuite(unittest.TestCase):
             values = memory_output_iterator_od.get_values()
             value = values[od_position]
             if ((keys[key1_position] == "1") and (keys[key2_position] == "2")):
-                self.assertEquals(value,10)
+                self.assertEqual(value,10)
             else:
-                self.assertEquals(value, "")
+                self.assertEqual(value, "")
        
         gc.collect()
  
