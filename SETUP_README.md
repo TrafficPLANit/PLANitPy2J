@@ -86,7 +86,7 @@ deactivate
 We can now try and install our test distribution via
 
 ```
-pip install PLANit-Python --extra-index-url https://test.pypi.org/simple/
+pip install -i https://test.pypi.org/simple/ PLANit-Python
 ```
 
 > Note that we must provide the extra index url because otherwise it will try and install the dependency on py4j from test.pypi, instead of using the one on pypi.
