@@ -250,3 +250,8 @@ class PLANit:
         """access to initial cost
         """
         return self._initial_cost_instance
+    
+    def create_converterFactory(self) -> ConverterFactory:
+        """ create a new converter factory instance
+        """
+        return _ConverterFactory()

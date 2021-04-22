@@ -423,7 +423,14 @@ class TestSuite(unittest.TestCase):
         self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name2, project_path))
         PlanItHelper.delete_file(OutputType.OD, description, xml_file_name3, project_path)
         self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name3, project_path))
-        gc.collect()        
+        gc.collect()   
+        
+    def test_converter_network_reader(self):
+        # no correspondence to Java test as we explicitly test non-failure of Python code to instantiate converters
+        plan_it = PLANit()
+        converterFactory = plan_it.create_converterFactory()
+        converterFactory.create(ConverterType.NETWORK)
+        project_path = os.path.join('basicShortestPathAlgorithm', 'xml', 'ThreeTimePeriods')
         
 if __name__ == '__main__':
     unittest.main()

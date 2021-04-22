@@ -189,6 +189,13 @@ class AssignmentWrapper(BaseWrapper):
         """
         return self._virtual_cost_instance
     
+class ConverterWrapper(BaseWrapper):
+    """ Wrapper around a Java Converter class instance which in turn has more specific implementations for which
+    we also provide wrapper classes, e.g. Network, Zoning, Intermodal etc.
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart) 
     
 class DemandsWrapper(BaseWrapper):
     """ Wrapper around the Java Demands class instance
@@ -285,6 +292,20 @@ class ModesWrapper(BaseWrapper):
     
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
+        
+class NetworkReaderWrapper(BaseWrapper):
+    """ Wrapper around a Java NetworkReader class instance (used as a base class for derived wrappers)
+    """
+        
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+class NetworkWriterWrapper(BaseWrapper):
+    """ Wrapper around a Java NetworkWriter class instance (used as a base class for derived wrappers)
+    """
+        
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)                
 
 class OutputConfigurationWrapper(BaseWrapper):
     """ Wrapper around the Java output configuration class instance
@@ -377,6 +398,10 @@ class ZoningWrapper(BaseWrapper):
     
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
+        
+##########################################################
+# Derived wrappers
+##########################################################
         
 class BPRCostWrapper(PhysicalCostWrapper):
     """Wrapper around the BPRLinkTravelTimeCost instance
@@ -486,7 +511,18 @@ class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
         output_property_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_property.java_class_name(), output_property.value)
         position = self._java_counterpart.getPositionOfOutputKeyProperty(output_type_instance, output_property_instance)
         return position
+    
+class NetworkConverterWrapper(ConverterWrapper):
+    """ Wrapper around the Java NetworkConverter class instance
+    """
         
+class OsmNetworkReaderWrapper(NetworkReaderWrapper):
+    """ Wrapper around the Java PlanitOsmNetworkReader class
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)   
+                
 class PlanItOutputFormatterWrapper(OutputFormatterWrapper):
     """ Wrapper around the Java PlanItOutputFormatter class instance
     """

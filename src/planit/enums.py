@@ -1,11 +1,30 @@
 from enum import Enum
 
+class ConverterType(Enum):
+    """ Enum for the different converters that exist
+    """
+    NETWORK = "NetworkConverter"
+    ZONING = "ZoningConverter"
+    INTERMODAL = "IntermodalConverter"
+          
 class Network(Enum):
     """ Enum for the different virtual costs the user can choose, they map to the Java equivalent class name for easy mapping
     """
     MACROSCOPIC = "org.planit.network.physical.macroscopic.MacroscopicNetwork"
     PHYSICAL = "org.planit.network.physical.PhysicalNetwork"
     VIRTUAL = "org.planit.network.virtual.VirtualNetwork"
+    
+class NetworkReaderType(Enum):
+    """ Enum for the different network readers that exist compatible with a network converter
+    """
+    OSM = "PlanitOsmNetworkReader"
+    PLANIT = "PlanitNetworkReader"
+    
+class NetworkReaderType(Enum):
+    """ Enum for the different network writers that exist compatible with a network converter
+    """
+    MATSIM = "PlanitOsmNetworkReader"
+    PLANIT = "PlanitMatsimNetworkWriter"     
     
 class OutputFormatter(Enum):
     """ Enum for the different output formatters the user can choose, they map to the Java equivalent class name for easy mapping

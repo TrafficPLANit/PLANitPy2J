@@ -1,6 +1,9 @@
 """Package initialization file for the planit package
 """
+from .enums import ConverterType
 from .enums import Network
+from .enums import NetworkReaderType
+from .enums import NetworkWriterType
 from .enums import OutputFormatter
 from .enums import OutputProperty
 from .enums import OutputType
