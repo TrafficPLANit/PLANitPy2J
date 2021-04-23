@@ -17,6 +17,7 @@ from planit import OutputFormatter
 from planit import InitialCostWrapper
 from planit import TimePeriodWrapper
 from planit import InitialCost
+from planit import _ConverterFactory
 from builtins import isinstance
 
 class PLANit:
@@ -38,6 +39,7 @@ class PLANit:
         self._initial_cost_instance = None
         self._activate_planitio_output_formatter = False
         self._activate_memory_output_formatter = False
+        self._converter_factory_instance = _ConverterFactory()
         
         self._debug_info = debug_info
         
@@ -251,7 +253,8 @@ class PLANit:
         """
         return self._initial_cost_instance
     
-    def create_converterFactory(self) -> ConverterFactory:
-        """ create a new converter factory instance
+    @property
+    def converterFactory(self) -> _ConverterFactory:
+        """ access to converter factory
         """
-        return _ConverterFactory()
+        return self._converter_factory_instance

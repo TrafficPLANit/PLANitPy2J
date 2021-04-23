@@ -293,19 +293,32 @@ class ModesWrapper(BaseWrapper):
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
         
-class NetworkReaderWrapper(BaseWrapper):
-    """ Wrapper around a Java NetworkReader class instance (used as a base class for derived wrappers)
+class ReaderWrapper(BaseWrapper):
+    """ Wrapper around a Java Reader class instance which in turn has more specific implementations for which
+    we also provide wrapper classes, e.g. NetworkReader, ZoningReader, IntermodalReader etc.
     """
-        
+    
     def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-
-class NetworkWriterWrapper(BaseWrapper):
-    """ Wrapper around a Java NetworkWriter class instance (used as a base class for derived wrappers)
+        super().__init__(java_counterpart) 
+        
+        # wrap the java settings that we expose as a property for this reader in a "ReaderSettingsWrapper"
+        # this way we have a general wrapper for all settings instances exposed to the user, while not having to create
+        # separate wrapper classes for each specific implementation (as long as the settings themselves do not expose any other
+        # classes that need to be wrapper this will work
+        self._settings = ReaderSettingsWrapper(get_settings())
+        
+    @property
+    def settings(self) -> ReaderSettingsWrapper:
+        """ access to the settings of this reader wrapper 
+        """
+        return self._settings   
+    
+class ReaderSettingsWrapper(BaseWrapper):
+    """ Wrapper around settings for a reader used by converter
     """
-        
+    
     def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)                
+        super().__init__(java_counterpart)                            
 
 class OutputConfigurationWrapper(BaseWrapper):
     """ Wrapper around the Java output configuration class instance
@@ -391,6 +404,32 @@ class VirtualCostWrapper(BaseWrapper):
     
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
+        
+class WriterWrapper(BaseWrapper):
+    """ Wrapper around a Java Writer class instance which in turn has more specific implementations for which
+    we also provide wrapper classes, e.g. NetworkWriter, ZoningWriter, IntermodalWriter etc.
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+        # wrap the java settings that we expose as a property for this writer in a "WriterSettingsWrapper"
+        # this way we have a general wrapper for all settings instances exposed to the user, while not having to create
+        # separate wrapper classes for each specific implementation (as long as the settings themselves do not expose any other
+        # classes that need to be wrapper this will work
+        self._settings = WriterSettingsWrapper(get_settings())
+        
+    @property
+    def settings(self) -> WriterSettingsWrapper:
+        """ access to the settings of this writer wrapper 
+        """
+        return self._settings   
+    
+class WriterSettingsWrapper(BaseWrapper):
+    """ Wrapper around settings for a reader used by converter
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)                            
 
 class ZoningWrapper(BaseWrapper):
     """ Wrapper around the Java Zoning class instance
@@ -400,7 +439,7 @@ class ZoningWrapper(BaseWrapper):
         super().__init__(java_counterpart)
         
 ##########################################################
-# Derived wrappers
+# Base class derived wrappers
 ##########################################################
         
 class BPRCostWrapper(PhysicalCostWrapper):
@@ -453,7 +492,7 @@ class BPRCostWrapper(PhysicalCostWrapper):
         link_segments_instance = LinkSegmentsWrapper(link_segments_counterpart)
         
         link_segment_counterpart = link_segments_instance.get_by_xml_id(link_segment_xml_id)        
-        self._java_counterpart.setParameters(link_segment_counterpart, mode_counterpart, alpha, beta)
+        self._java_counterpart.setParameters(link_segment_counterpart, mode_counterpart, alpha, beta)         
 
 class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
     """ Wrapper around the Java PlanItOutputFormatter class instance
@@ -515,13 +554,17 @@ class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
 class NetworkConverterWrapper(ConverterWrapper):
     """ Wrapper around the Java NetworkConverter class instance
     """
-        
-class OsmNetworkReaderWrapper(NetworkReaderWrapper):
-    """ Wrapper around the Java PlanitOsmNetworkReader class
+    
+class NetworkReaderWrapper(ReaderWrapper):
+    """ Wrapper around the Java NetworkReader class instance, derived implementation are more specific, e.g. OsmNetworkReaderWrapper
     """
     
     def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)   
+        super().__init__(java_counterpart)
+    
+class NetworkWriterWrapper(WriterWrapper):
+    """ Wrapper around the Java NetworkWriter class instance, derived implementations are more specific, e.g. MatsimNetworkWriterWrapper
+    """          
                 
 class PlanItOutputFormatterWrapper(OutputFormatterWrapper):
     """ Wrapper around the Java PlanItOutputFormatter class instance
@@ -570,3 +613,21 @@ class PathOutputTypeConfigurationWrapper(OutputTypeConfigurationWrapper):
     def set_path_id_type(self,  path_id_type : PathIdType):
         path_id_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(path_id_type.java_class_name(), path_id_type.value)
         self._java_counterpart.setPathIdentificationType(path_id_type_instance)
+        
+##########################################################
+# Second level derived wrappers
+##########################################################
+
+class MatsimNetworkWriterWrapper(NetworkWriterWrapper):
+    """ Wrapper around the Java PlanitMatsimNetworkWriter class
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+class OsmNetworkReaderWrapper(NetworkReaderWrapper):
+    """ Wrapper around the Java PlanitOsmNetworkReader class
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)

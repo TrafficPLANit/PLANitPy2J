@@ -8,6 +8,31 @@ from test_utils import PlanItHelper
 from planit import *
 
 class TestSuite(unittest.TestCase):
+    
+    def test_converter_network_reader(self):
+        INPUT_PATH = os.path.join('converter', 'osm')
+        OUTPUT_PATH = os.path.join(INPUT_PATH, 'matsim')
+        COUNTRY = "Australia"
+        FULL_INPUT_FILE_NAME = os.path.join(INPUT_PATH, "sydneycbd.osm.pbf")
+        
+        # no correspondence to Java test as we explicitly test non-failure of Python code to instantiate converters
+        plan_it = PLANit()
+        
+        # network converter
+        converter_factory = plan_it.converterFactory
+        network_converter = converter_factory.create(ConverterType.NETWORK)
+        
+        # osm reader        
+        osm_reader = network_converter.create_reader(NetworkReaderType.OSM, COUNTRY)
+        osm_reader.get_settings.set_input_file(FULL_INPUT_FILE_NAME)
+        
+        #writer
+        osm_writer = network_converter.create_writer(NetworkReaderType.MATSIM)
+        osm_writer.get_settings.set_output_directory(OUTPUT_PATH)
+        osm_writer.get_settings.set_country(COUNTRY)
+        
+        # perform conversion
+        network_converter.convert(osm_reader,osm_writer)    
 
     def test_explanatory_report_zero_outputs(self):
         project_path = os.path.join('explanatory', 'reportZeroOutputs')
@@ -424,14 +449,7 @@ class TestSuite(unittest.TestCase):
         PlanItHelper.delete_file(OutputType.OD, description, xml_file_name3, project_path)
         self.assertTrue(PlanItHelper.compare_csv_files_and_clean_up(OutputType.OD, description, od_csv_file_name3, project_path))
         gc.collect()   
-        
-    def test_converter_network_reader(self):
-        # no correspondence to Java test as we explicitly test non-failure of Python code to instantiate converters
-        plan_it = PLANit()
-        converterFactory = plan_it.create_converterFactory()
-        converterFactory.create(ConverterType.NETWORK)
-        project_path = os.path.join('basicShortestPathAlgorithm', 'xml', 'ThreeTimePeriods')
-        
+                
 if __name__ == '__main__':
     unittest.main()
     

@@ -20,7 +20,7 @@ class NetworkReaderType(Enum):
     OSM = "PlanitOsmNetworkReader"
     PLANIT = "PlanitNetworkReader"
     
-class NetworkReaderType(Enum):
+class NetworkWriterType(Enum):
     """ Enum for the different network writers that exist compatible with a network converter
     """
     MATSIM = "PlanitOsmNetworkReader"
