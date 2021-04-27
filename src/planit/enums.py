@@ -6,6 +6,18 @@ class ConverterType(Enum):
     NETWORK = "NetworkConverter"
     ZONING = "ZoningConverter"
     INTERMODAL = "IntermodalConverter"
+    
+class IntermodalReaderType(Enum):
+    """ Enum for the different intermodal readers that are supported
+    """
+    OSM = "PlanitOsmIntermodalReader"
+    PLANIT = "PlanitIntermodalReader"
+    
+class IntermodalWriterType(Enum):
+    """ Enum for the different intermodal writers that are supported
+    """
+    MATSIM = "PlanitMatsimIntermodalWriter"
+    PLANIT = "PlanitIntermodalWriter"
           
 class Network(Enum):
     """ Enum for the different virtual costs the user can choose, they map to the Java equivalent class name for easy mapping

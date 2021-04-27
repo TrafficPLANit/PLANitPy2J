@@ -292,6 +292,13 @@ class ModesWrapper(BaseWrapper):
     
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
+            
+class ReaderSettingsWrapper(BaseWrapper):
+    """ Wrapper around settings for a reader used by converter
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
         
 class ReaderWrapper(BaseWrapper):
     """ Wrapper around a Java Reader class instance which in turn has more specific implementations for which
@@ -305,20 +312,13 @@ class ReaderWrapper(BaseWrapper):
         # this way we have a general wrapper for all settings instances exposed to the user, while not having to create
         # separate wrapper classes for each specific implementation (as long as the settings themselves do not expose any other
         # classes that need to be wrapper this will work
-        self._settings = ReaderSettingsWrapper(get_settings())
+        self._settings = ReaderSettingsWrapper(self.get_settings())
         
     @property
     def settings(self) -> ReaderSettingsWrapper:
         """ access to the settings of this reader wrapper 
         """
-        return self._settings   
-    
-class ReaderSettingsWrapper(BaseWrapper):
-    """ Wrapper around settings for a reader used by converter
-    """
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)                            
+        return self._settings                                     
 
 class OutputConfigurationWrapper(BaseWrapper):
     """ Wrapper around the Java output configuration class instance
@@ -404,6 +404,13 @@ class VirtualCostWrapper(BaseWrapper):
     
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
+             
+class WriterSettingsWrapper(BaseWrapper):
+    """ Wrapper around settings for a reader used by converter
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)      
         
 class WriterWrapper(BaseWrapper):
     """ Wrapper around a Java Writer class instance which in turn has more specific implementations for which
@@ -416,20 +423,13 @@ class WriterWrapper(BaseWrapper):
         # this way we have a general wrapper for all settings instances exposed to the user, while not having to create
         # separate wrapper classes for each specific implementation (as long as the settings themselves do not expose any other
         # classes that need to be wrapper this will work
-        self._settings = WriterSettingsWrapper(get_settings())
+        self._settings = WriterSettingsWrapper(self.get_settings())
         
     @property
     def settings(self) -> WriterSettingsWrapper:
         """ access to the settings of this writer wrapper 
         """
-        return self._settings   
-    
-class WriterSettingsWrapper(BaseWrapper):
-    """ Wrapper around settings for a reader used by converter
-    """
-    
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)                            
+        return self._settings                               
 
 class ZoningWrapper(BaseWrapper):
     """ Wrapper around the Java Zoning class instance
@@ -492,7 +492,28 @@ class BPRCostWrapper(PhysicalCostWrapper):
         link_segments_instance = LinkSegmentsWrapper(link_segments_counterpart)
         
         link_segment_counterpart = link_segments_instance.get_by_xml_id(link_segment_xml_id)        
-        self._java_counterpart.setParameters(link_segment_counterpart, mode_counterpart, alpha, beta)         
+        self._java_counterpart.setParameters(link_segment_counterpart, mode_counterpart, alpha, beta)  
+        
+class IntermodalConverterWrapper(ConverterWrapper):
+    """ Wrapper around the Java IntermodalConverter class instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)  
+        
+class IntermodalReaderWrapper(ReaderWrapper):
+    """ Wrapper around the Java IntermodalReader class instance, derived implementation are more specific, e.g. OsmIntermodalReaderWrapper
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+    
+class IntermodalWriterWrapper(WriterWrapper):
+    """ Wrapper around the Java IntermodalWriter class instance, derived implementations are more specific, e.g. MatsimIntermodalWriterWrapper
+    """  
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)          
 
 class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
     """ Wrapper around the Java PlanItOutputFormatter class instance
@@ -555,6 +576,9 @@ class NetworkConverterWrapper(ConverterWrapper):
     """ Wrapper around the Java NetworkConverter class instance
     """
     
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)    
+    
 class NetworkReaderWrapper(ReaderWrapper):
     """ Wrapper around the Java NetworkReader class instance, derived implementation are more specific, e.g. OsmNetworkReaderWrapper
     """
@@ -564,7 +588,10 @@ class NetworkReaderWrapper(ReaderWrapper):
     
 class NetworkWriterWrapper(WriterWrapper):
     """ Wrapper around the Java NetworkWriter class instance, derived implementations are more specific, e.g. MatsimNetworkWriterWrapper
-    """          
+    """  
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)            
                 
 class PlanItOutputFormatterWrapper(OutputFormatterWrapper):
     """ Wrapper around the Java PlanItOutputFormatter class instance
@@ -618,15 +645,105 @@ class PathOutputTypeConfigurationWrapper(OutputTypeConfigurationWrapper):
 # Second level derived wrappers
 ##########################################################
 
+class MatsimIntermodalWriterWrapper(IntermodalWriterWrapper):
+    """ Wrapper around the Java PlanitMatsimNetworkWriter class
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+        
+        # matsim intermodal writer settings allow access to network and zoning settings component 
+        self.network_settings = WriterSettingsWrapper(self.settings.get_network_settings())
+        self.zoning_settings = WriterSettingsWrapper(self.settings.get_zoning_settings())
+    
+    @property
+    def network_settings(self):
+        return self.network_settings
+    
+    @property
+    def zoning_settings(self):
+        return self.zoning_settings      
+
 class MatsimNetworkWriterWrapper(NetworkWriterWrapper):
     """ Wrapper around the Java PlanitMatsimNetworkWriter class
     """
     
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
+        
+class OsmIntermodalReaderWrapper(IntermodalReaderWrapper):
+    """ Wrapper around the Java PlanitOsmIntermodalReader class
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)     
+        
+        # osm intermodal reader settings allows access to network and zoning settings component 
+        self.network_settings = ReaderSettingsWrapper(self.settings.get_network_settings())
+        self.zoning_settings = ReaderSettingsWrapper(self.settings.get_public_transport_settings())
+    
+    @property
+    def network_settings(self):
+        return self.network_settings
+    
+    @property
+    def pt_settings(self):
+        return self.zoning_settings           
 
 class OsmNetworkReaderWrapper(NetworkReaderWrapper):
     """ Wrapper around the Java PlanitOsmNetworkReader class
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+        
+class PlanitIntermodalReaderWrapper(IntermodalReaderWrapper):
+    """ Wrapper around the Java native format based PlanitIntermodalReader class
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+        
+        # planit intermodal reader allow access to network and zoning settings component 
+        self.network_settings = ReaderSettingsWrapper(self.settings.get_network_settings())
+        self.zoning_settings = ReaderSettingsWrapper(self.settings.get_zoning_settings())
+    
+    @property
+    def network_settings(self):
+        return self.network_settings
+    
+    @property
+    def zoning_settings(self):
+        return self.zoning_settings        
+        
+class PlanitIntermodalWriterWrapper(IntermodalWriterWrapper):
+    """ Wrapper around the Java native format based PlanitIntermodalWriter class
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+        
+        # planit intermodal writer allows access to network and zoning settings component 
+        self.network_settings = WriterSettingsWrapper(self.settings.get_network_settings())
+        self.zoning_settings = WriterSettingsWrapper(self.settings.get_zoning_settings())
+    
+    @property
+    def network_settings(self):
+        return self.network_settings
+    
+    @property
+    def zoning_settings(self):
+        return self.zoning_settings
+        
+class PlanitNetworkReaderWrapper(NetworkReaderWrapper):
+    """ Wrapper around the Java native format based PlanitNetworkReader class
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+        
+class PlanitNetworkWriterWrapper(NetworkWriterWrapper):
+    """ Wrapper around the Java native format based PlanitNetworkWriter class
     """
     
     def __init__(self, java_counterpart):

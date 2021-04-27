@@ -25,6 +25,9 @@ class GatewayConfig(object):
     
     
 class GatewayState(object):
+    """ the access to the Java side 
+    """
+    
     #Create a static variable which flags if the java server already is running or not
     gateway_is_running = False
     planit_java_process = None
