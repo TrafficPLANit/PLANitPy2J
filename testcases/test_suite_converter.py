@@ -8,6 +8,10 @@ from test_utils import PlanItHelper
 from planit import *
 
 class TestSuiteConverter(unittest.TestCase):
+    """ We are testing here if conversions are runnable. We do not actually test the validity of the results
+        as this is being done on the Java side. Here, we just make sure the properties can be set as expected and
+        the run does not yield any errors/exceptions
+    """
     
     def test_network_converter_osm2matsim(self):
         INPUT_PATH = os.path.join('converter', 'osm')
@@ -19,22 +23,46 @@ class TestSuiteConverter(unittest.TestCase):
         plan_it = Planit()
         
         # network converter
-        converter_factory = plan_it.converterFactory
-        network_converter = converter_factory.create(ConverterType.NETWORK)
+        network_converter = plan_it.converter_factory.create(ConverterType.NETWORK)
         
         # osm reader        
         osm_reader = network_converter.create_reader(NetworkReaderType.OSM, COUNTRY)
         osm_reader.settings.set_input_file(FULL_INPUT_FILE_NAME)
         
         #matsim writer
-        osm_writer = network_converter.create_writer(NetworkWriterType.MATSIM)
-        osm_writer.settings.set_output_directory(OUTPUT_PATH)
-        osm_writer.settings.set_country(COUNTRY)
+        matsim_writer = network_converter.create_writer(NetworkWriterType.MATSIM)
+        matsim_writer.settings.set_output_directory(OUTPUT_PATH)
+        matsim_writer.settings.set_country(COUNTRY)
         
         # perform conversion
-        network_converter.convert(osm_reader,osm_writer)
-        gc.collect()   
+        network_converter.convert(osm_reader,matsim_writer)
+        gc.collect() 
+    """    
+    def test_network_converter_osm2planit(self):
+        INPUT_PATH = os.path.join('converter', 'osm')
+        OUTPUT_PATH = os.path.join(INPUT_PATH, 'planit')
+        COUNTRY = "Australia"
+        FULL_INPUT_FILE_NAME = os.path.join(INPUT_PATH, "sydneycbd.osm.pbf")
         
+        # no correspondence to Java test as we explicitly test non-failure of Python code to instantiate converters
+        plan_it = Planit()
+        
+        # network converter
+        network_converter = plan_it.converter_factory.create(ConverterType.NETWORK)
+        
+        # osm reader        
+        osm_reader = network_converter.create_reader(NetworkReaderType.OSM, COUNTRY)
+        osm_reader.settings.set_input_file(FULL_INPUT_FILE_NAME)
+        
+        #planit writer
+        planit_writer = network_converter.create_writer(NetworkWriterType.PLANIT)
+        planit_writer.settings.set_output_directory(OUTPUT_PATH)
+        planit_writer.settings.set_country(COUNTRY)
+        
+        # perform conversion
+        network_converter.convert(osm_reader,planit_writer)
+        gc.collect()   
+    """  
     def test_intermodal_converter_osm2matsim(self):
         INPUT_PATH = os.path.join('converter', 'osm')
         OUTPUT_PATH = os.path.join(INPUT_PATH, 'matsim')
@@ -45,22 +73,112 @@ class TestSuiteConverter(unittest.TestCase):
         plan_it = Planit()
         
         # network converter
-        converter_factory = plan_it.converterFactory
-        intermodal_converter = converter_factory.create(ConverterType.INTERMODAL)
+        intermodal_converter = plan_it.converter_factory.create(ConverterType.INTERMODAL)
         
         # osm reader        
         osm_reader = intermodal_converter.create_reader(IntermodalReaderType.OSM, COUNTRY)
-        osm_reader.network_settings.set_input_file(FULL_INPUT_FILE_NAME)
+        osm_reader.settings.set_input_file(FULL_INPUT_FILE_NAME)
         
         #matsim writer
-        osm_writer = intermodal_converter.create_writer(IntermodalWriterType.MATSIM)
-        osm_writer.network_settings.set_output_directory(OUTPUT_PATH)
-        osm_writer.network_settings.set_country(COUNTRY)
+        matsim_writer = intermodal_converter.create_writer(IntermodalWriterType.MATSIM)
+        # test if setting country and output path via separate settings works
+        matsim_writer.settings.network_settings.set_output_directory(OUTPUT_PATH)
+        matsim_writer.settings.network_settings.set_country(COUNTRY)
+        matsim_writer.settings.zoning_settings.set_output_directory(OUTPUT_PATH)
+        matsim_writer.settings.zoning_settings.set_country(COUNTRY)
+        # test if setting country and output path via intermodal settings directly works
+        matsim_writer.settings.set_output_directory(OUTPUT_PATH)
+        matsim_writer.settings.set_country(COUNTRY) 
         
         # perform conversion
-        intermodal_converter.convert(osm_reader,osm_writer)
+        intermodal_converter.convert(osm_reader,matsim_writer)
+        gc.collect() 
+    
+        
+    def test_intermodal_converter_osm2planit(self):
+        INPUT_PATH = os.path.join('converter', 'osm')
+        OUTPUT_PATH = os.path.join(INPUT_PATH, 'planit')
+        COUNTRY = "Australia"
+        FULL_INPUT_FILE_NAME = os.path.join(INPUT_PATH, "sydneycbd.osm.pbf")
+        
+        # no correspondence to Java test as we explicitly test non-failure of Python code to instantiate converters
+        plan_it = Planit()
+        
+        # network converter
+        intermodal_converter = plan_it.converter_factory.create(ConverterType.INTERMODAL)
+        
+        # osm reader        
+        osm_reader = intermodal_converter.create_reader(IntermodalReaderType.OSM, COUNTRY)
+        osm_reader.settings.set_input_file(FULL_INPUT_FILE_NAME)
+        
+        #planit writer
+        planit_writer = intermodal_converter.create_writer(IntermodalWriterType.PLANIT)
+        # test if setting country and output path via separate settings works
+        planit_writer.settings.network_settings.set_output_directory(OUTPUT_PATH)
+        planit_writer.settings.zoning_settings.set_output_directory(OUTPUT_PATH)
+        planit_writer.settings.zoning_settings.set_country(COUNTRY)
+        # test if setting country and output path via intermodal settings directly works
+        planit_writer.settings.set_output_directory(OUTPUT_PATH)
+        planit_writer.settings.set_country(COUNTRY) 
+        
+        # perform conversion
+        intermodal_converter.convert(osm_reader,planit_writer)
         gc.collect()  
-              
+        
+    def test_network_converter_planit2planit(self):
+        INPUT_PATH = os.path.join('converter', 'planit')
+        OUTPUT_PATH = os.path.join(INPUT_PATH, 'planit')
+        COUNTRY = "Australia"
+        
+        # no correspondence to Java test as we explicitly test non-failure of Python code to instantiate converters
+        plan_it = Planit()
+        
+        # network converter
+        network_converter = plan_it.converter_factory.create(ConverterType.NETWORK)
+        
+        # planit reader        
+        planit_reader = network_converter.create_reader(NetworkReaderType.PLANIT)
+        planit_reader.settings.set_input_directory(INPUT_PATH)
+        
+        #planit writer
+        planit_writer = network_converter.create_writer(NetworkWriterType.PLANIT)
+        planit_writer.settings.set_output_directory(OUTPUT_PATH)
+        planit_writer.settings.set_country(COUNTRY)
+        
+        # perform conversion
+        network_converter.convert(planit_reader,planit_writer)
+        # result should be the same file, although we do not test this here automatically yet
+        gc.collect()  
+        
+    def test_intermodal_converter_planit2planit(self):
+        INPUT_PATH = os.path.join('converter', 'planit')
+        OUTPUT_PATH = os.path.join(INPUT_PATH, 'planit')
+        COUNTRY = "Australia"
+        
+        # no correspondence to Java test as we explicitly test non-failure of Python code to instantiate converters
+        plan_it = Planit()
+        
+        # network converter
+        intermodal_converter = plan_it.converter_factory.create(ConverterType.INTERMODAL)
+        
+        # planit reader        
+        planit_reader = intermodal_converter.create_reader(IntermodalReaderType.PLANIT)
+        planit_reader.settings.set_input_directory(INPUT_PATH)
+        
+        #planit writer
+        planit_writer = intermodal_converter.create_writer(IntermodalWriterType.PLANIT)
+        # test if setting country and output path via separate settings works
+        planit_writer.settings.network_settings.set_output_directory(OUTPUT_PATH)
+        planit_writer.settings.zoning_settings.set_output_directory(OUTPUT_PATH)
+        planit_writer.settings.zoning_settings.set_country(COUNTRY)
+        # test if setting country and output path via intermodal settings directly works
+        planit_writer.settings.set_output_directory(OUTPUT_PATH)
+        planit_writer.settings.set_country(COUNTRY) 
+        
+        # perform conversion
+        intermodal_converter.convert(planit_reader,planit_writer)
+        gc.collect()         
+    
 if __name__ == '__main__':
     unittest.main()
     

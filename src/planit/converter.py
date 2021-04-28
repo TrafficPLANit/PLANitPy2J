@@ -107,7 +107,7 @@ class NetworkConverter(_ConverterBase):
         if  network_writer_type == NetworkWriterType.MATSIM:
             return self.__create_matsim_network_writer()
         elif network_writer_type == NetworkWriterType.PLANIT:
-            self.__create_planit_network_writer() 
+            return self.__create_planit_network_writer() 
         else:
             raise Exception("unsupported network writer type provided, unable to instantiate")    
         
@@ -150,12 +150,12 @@ class IntermodalConverter(_ConverterBase):
     #####################################
         
     def __create_matsim_intermodal_writer(self) -> MatsimIntermodalWriterWrapper:
-        java_network_writer = GatewayState.python_2_java_gateway.jvm.org.planit.matsim.converter.PlanitMatsimNetworkWriterFactory.create()
+        java_network_writer = GatewayState.python_2_java_gateway.jvm.org.planit.matsim.converter.PlanitMatsimIntermodalWriterFactory.create()
         return MatsimIntermodalWriterWrapper(java_network_writer)
         
     def __create_planit_intermodal_writer(self) -> PlanitIntermodalWriterWrapper: 
-        java_network_writer = GatewayState.python_2_java_gateway.jvm.org.planit.io.converter.network.PlanitNetworkWriterFactory.create()
-        return PlanitNetworkWriterWrapper(java_network_writer)        
+        java_network_writer = GatewayState.python_2_java_gateway.jvm.org.planit.io.converter.intermodal.PlanitIntermodalWriterFactory.create()
+        return PlanitIntermodalWriterWrapper(java_network_writer)        
         
     def create_reader(self, intermodal_reader_type: IntermodalReaderType, country:str = "Global") -> IntermodalReaderWrapper:
         """ factory method to create an intermodal  reader compatible with this converter
@@ -178,7 +178,7 @@ class IntermodalConverter(_ConverterBase):
         if  intermodal_writer_type == IntermodalWriterType.MATSIM:
             return self.__create_matsim_intermodal_writer()
         elif intermodal_writer_type == IntermodalWriterType.PLANIT:
-            self.__create_planit_intermodal_writer() 
+            return self.__create_planit_intermodal_writer() 
         else:
             raise Exception("unsupported intermodal writer type provided, unable to instantiate")        
         

@@ -114,7 +114,7 @@ class Planit:
         return self.assignment_project
         
     @property
-    def converterFactory(self) -> ConverterFactory:
+    def converter_factory(self) -> ConverterFactory:
         """ access to converter factory
         :return factory to create converters for networks, zoning, etc.
         """
