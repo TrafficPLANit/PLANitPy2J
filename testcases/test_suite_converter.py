@@ -14,8 +14,9 @@ class TestSuiteConverter(unittest.TestCase):
     """
     
     def test_network_converter_osm2matsim(self):
-        INPUT_PATH = os.path.join('converter', 'osm')
-        OUTPUT_PATH = os.path.join(INPUT_PATH, 'matsim')
+        OSM_PATH = os.path.join('converter', 'osm')
+        INPUT_PATH = os.path.join(OSM_PATH, 'input')
+        OUTPUT_PATH = os.path.join(OSM_PATH, 'output','matsim')
         COUNTRY = "Australia"
         FULL_INPUT_FILE_NAME = os.path.join(INPUT_PATH, "sydneycbd.osm.pbf")
         
@@ -37,10 +38,11 @@ class TestSuiteConverter(unittest.TestCase):
         # perform conversion
         network_converter.convert(osm_reader,matsim_writer)
         gc.collect() 
-    """    
+        
     def test_network_converter_osm2planit(self):
-        INPUT_PATH = os.path.join('converter', 'osm')
-        OUTPUT_PATH = os.path.join(INPUT_PATH, 'planit')
+        OSM_PATH = os.path.join('converter', 'osm')
+        INPUT_PATH = os.path.join(OSM_PATH, 'input')
+        OUTPUT_PATH = os.path.join(OSM_PATH, 'output','planit')
         COUNTRY = "Australia"
         FULL_INPUT_FILE_NAME = os.path.join(INPUT_PATH, "sydneycbd.osm.pbf")
         
@@ -62,10 +64,11 @@ class TestSuiteConverter(unittest.TestCase):
         # perform conversion
         network_converter.convert(osm_reader,planit_writer)
         gc.collect()   
-    """  
+      
     def test_intermodal_converter_osm2matsim(self):
-        INPUT_PATH = os.path.join('converter', 'osm')
-        OUTPUT_PATH = os.path.join(INPUT_PATH, 'matsim')
+        OSM_PATH = os.path.join('converter', 'osm')
+        INPUT_PATH = os.path.join(OSM_PATH, 'input')
+        OUTPUT_PATH = os.path.join(OSM_PATH, 'output','matsim')
         COUNTRY = "Australia"
         FULL_INPUT_FILE_NAME = os.path.join(INPUT_PATH, "sydneycbd.osm.pbf")
         
@@ -96,8 +99,9 @@ class TestSuiteConverter(unittest.TestCase):
     
         
     def test_intermodal_converter_osm2planit(self):
-        INPUT_PATH = os.path.join('converter', 'osm')
-        OUTPUT_PATH = os.path.join(INPUT_PATH, 'planit')
+        OSM_PATH = os.path.join('converter', 'osm')
+        INPUT_PATH = os.path.join(OSM_PATH, 'input')
+        OUTPUT_PATH = os.path.join(OSM_PATH, 'output','planit')
         COUNTRY = "Australia"
         FULL_INPUT_FILE_NAME = os.path.join(INPUT_PATH, "sydneycbd.osm.pbf")
         
@@ -126,8 +130,9 @@ class TestSuiteConverter(unittest.TestCase):
         gc.collect()  
         
     def test_network_converter_planit2planit(self):
-        INPUT_PATH = os.path.join('converter', 'planit')
-        OUTPUT_PATH = os.path.join(INPUT_PATH, 'planit')
+        PLANIT_PATH = os.path.join('converter', 'planit')
+        INPUT_PATH = os.path.join(PLANIT_PATH, 'input')
+        OUTPUT_PATH = os.path.join(PLANIT_PATH, 'output','planit')
         COUNTRY = "Australia"
         
         # no correspondence to Java test as we explicitly test non-failure of Python code to instantiate converters
@@ -151,8 +156,9 @@ class TestSuiteConverter(unittest.TestCase):
         gc.collect()  
         
     def test_intermodal_converter_planit2planit(self):
-        INPUT_PATH = os.path.join('converter', 'planit')
-        OUTPUT_PATH = os.path.join(INPUT_PATH, 'planit')
+        PLANIT_PATH = os.path.join('converter', 'planit')
+        INPUT_PATH = os.path.join(PLANIT_PATH, 'input')
+        OUTPUT_PATH = os.path.join(PLANIT_PATH, 'output','planit')
         COUNTRY = "Australia"
         
         # no correspondence to Java test as we explicitly test non-failure of Python code to instantiate converters
