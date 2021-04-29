@@ -201,6 +201,8 @@ class ConverterFactory:
         """ Factory method to create a zoning converter proxy that allows the user to create readers and writers and exposes a convert method
         that performs the actual conversion 
         """
+        
+        #TODO not made available publicly
         return ZoningConverter()
     
     def __create_intermodal_converter(self) -> IntermodalConverter:
