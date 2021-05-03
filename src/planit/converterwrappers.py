@@ -187,7 +187,27 @@ class OsmIntermodalReaderWrapper(IntermodalReaderWrapper):
         super().__init__(java_counterpart)     
         
          # replace regular reader settings by planit intermodal reader settings
-        self._settings = OsmIntermodalReaderSettingsWrapper(self._settings.java)         
+        self._settings = OsmIntermodalReaderSettingsWrapper(self._settings.java)
+        
+class OsmNetworkReaderSettingsWrapper(ReaderSettingsWrapper):
+    """ Wrapper around settings for an OSM network reader used by converter
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+        
+        # OSM intermodal reader settings allow access to network and pt settings component
+        # which in turns are settings 
+        self._highway_settings = ReaderSettingsWrapper(self.get_highway_settings())
+        self._railway_settings = ReaderSettingsWrapper(self.get_railway_settings())
+    
+    @property
+    def highway_settings(self):
+        return self._highway_settings
+    
+    @property
+    def railway_settings(self):
+        return self._railway_settings           
 
 class OsmNetworkReaderWrapper(NetworkReaderWrapper):
     """ Wrapper around the Java PlanitOsmNetworkReader class
@@ -195,6 +215,10 @@ class OsmNetworkReaderWrapper(NetworkReaderWrapper):
     
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
+        
+        # OSM network reader settings allow access to highway and railway settings component
+        # requiring a dedicated wrapper -> use this wrapper instead of generic settings wrapper
+        self._settings = OsmNetworkReaderSettingsWrapper(self.settings.java)
         
 class PlanitIntermodalReaderSettingsWrapper(ReaderSettingsWrapper):
     """ Wrapper around settings for a planit intermodal reader (native format) used by converter
