@@ -2,6 +2,8 @@ import re
 import os
 import sys
 
+from py4j.java_collections import SetConverter, MapConverter, ListConverter
+
 from planit import Version
 
 class GatewayConfig(object):   
@@ -38,6 +40,8 @@ class GatewayState(object):
 
 
 class GatewayUtils(object):
+    """ Utilities for the Java gateway
+    """
  
     @staticmethod
     def to_camelcase(s):
@@ -47,3 +51,22 @@ class GatewayUtils(object):
             """
             return re.sub(r'(?!^)_([a-zA-Z])', lambda m: m.group(1).upper(), s) 
 
+    @staticmethod
+    def convert_args_to_java(args):
+        """ convert passed in arguments to java versions if needed. Required for containers which cannot be mapped one on
+        one to Java. 1) Python List is converted to Java ArrayList.
+        :param args to onvert where needed, assumed iterable
+        :return converted args to use  
+        """
+        converted_args = []
+        for arg in args:
+            
+            # convert Python List to Java ArrayList. For some reason the built in converter does not work properly, 
+            # so we do it ourselves but along the same lines. Main difference is instantiation of the array list via gateway
+            if isinstance(arg, list):
+                java_list = GatewayState.python_2_java_gateway.jvm.java.util.ArrayList()
+                for element in arg:
+                    java_list.add(element)
+                arg = java_list
+            converted_args.append(arg)
+        return converted_args

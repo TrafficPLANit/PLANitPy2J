@@ -53,7 +53,7 @@ class Planit:
             if self._debug_info: print('Java classpath: ' + fullString)
             GatewayState.planit_java_process = subprocess.Popen(cmd)           
              
-            # now we  connect to the gateway
+            # now we  connect to the gateway, ask Py4J to auto convert containers between Python and Java
             GatewayState.python_2_java_gateway = JavaGateway()
             GatewayState.gateway_is_running = True            
                 

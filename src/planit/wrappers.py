@@ -2,6 +2,7 @@ import os
 
 from py4j.java_gateway import get_field
 from planit import GatewayUtils
+
 from numpy import string_
 
 class BaseWrapper(object):
@@ -23,8 +24,8 @@ class BaseWrapper(object):
         def method(*args): #collects the arguments of the function 'name' (wrapper function within getattr)    
             java_name = GatewayUtils.to_camelcase(name)
             # pass all calls on to the underlying PLANit project java class which is obtained via the entry_point.getProject call
-            if( args ):
-                return getattr(self._java_counterpart, java_name)(*args)
+            if( args ):                
+                return getattr(self._java_counterpart, java_name)(*GatewayUtils.convert_args_to_java(args))
             else:
                 return getattr(self._java_counterpart, java_name)()               
         return method

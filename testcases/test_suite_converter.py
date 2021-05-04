@@ -33,7 +33,7 @@ class TestSuiteConverter(unittest.TestCase):
         osm_reader.settings.activate_highway_parser(True)
         osm_reader.settings.activate_railway_parser(True)        
         osm_reader.settings.deactivate_all_osm_way_types_except(["primary"])
-        osm_reader.settings.exclude_osm_ways_from_parsing(12345)
+        osm_reader.settings.exclude_osm_ways_from_parsing([12345])
         osm_reader.settings.overwrite_mode_access_by_osm_way_id(123,["foot"])
         osm_reader.settings.set_always_keep_largest_subnetwork(True)
         osm_reader.settings.set_discard_dangling_networks_above(20)
@@ -43,7 +43,6 @@ class TestSuiteConverter(unittest.TestCase):
         
         # highway settings
         osm_reader.settings.highway_settings.activate_all_osm_highway_types()
-        osm_reader.settings.highway_settings.activate_highway_parser(True)
         osm_reader.settings.highway_settings.activate_osm_highway_types(["primary"])
         osm_reader.settings.highway_settings.add_allowed_highway_modes("primary",["bus","foot"])
         osm_reader.settings.highway_settings.deactivate_all_road_modes_except(["bus"])
@@ -52,8 +51,7 @@ class TestSuiteConverter(unittest.TestCase):
         osm_reader.settings.highway_settings.deactivate_osm_highway_type("primary")
         osm_reader.settings.highway_settings.set_default_when_osm_highway_type_unsupported("primary")
         osm_reader.settings.highway_settings.overwrite_capacity_max_density_defaults("primary", 2000, 150)
-        osm_reader.settings.highway_settings.overwrite_mode_access_by_osm_highway_id(1234,["bus"])
-        osm_reader.settings.highway_settings.remove_osm_road_mode_planit_mode_mapping(["motor_car"])
+        osm_reader.settings.highway_settings.remove_osm_road_mode_planit_mode_mapping(["motorcar"])
         osm_reader.settings.highway_settings.set_speed_limit_defaults_based_on_urban_area(True)
         
     
