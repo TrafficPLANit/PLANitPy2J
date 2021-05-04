@@ -54,6 +54,20 @@ class TestSuiteConverter(unittest.TestCase):
         osm_reader.settings.highway_settings.remove_osm_road_mode_planit_mode_mapping(["motorcar"])
         osm_reader.settings.highway_settings.set_speed_limit_defaults_based_on_urban_area(True)
         
+        # railway settings
+        osm_reader.settings.railway_settings.activate_all_osm_railway_types()
+        osm_reader.settings.railway_settings.activate_osm_railway_types(["rail","funicular"])
+        osm_reader.settings.railway_settings.deactivate_all_osm_railway_types()
+        osm_reader.settings.railway_settings.deactivate_all_osm_railway_types_except(["rail","monorail"])
+        osm_reader.settings.railway_settings.deactivate_all_rail_modes_except(["train","tram"])
+        osm_reader.settings.railway_settings.deactivate_osm_railway_type("rail")
+        osm_reader.settings.railway_settings.deactivate_rail_modes(["train","subway"])
+        osm_reader.settings.railway_settings.overwrite_capacity_max_density_defaults("rail",100000,100)
+        osm_reader.settings.railway_settings.remove_osm_rail_mode_planit_mode_mapping(["train","subway"])
+        
+        # lane configuration
+        osm_reader.settings.lane_configuration.set_default_directional_lanes_by_highway_type("primary",4)
+        osm_reader.settings.lane_configuration.set_default_directional_railway_tracks(2)
     
     def test_network_converter_osm2matsim(self):
         OSM_PATH = os.path.join('converter', 'osm')
@@ -225,8 +239,8 @@ class TestSuiteConverter(unittest.TestCase):
         
         # perform conversion
         intermodal_converter.convert(planit_reader,planit_writer)
-        gc.collect()         
-    
-if __name__ == '__main__':
-    unittest.main()
+        gc.collect()
+                 
+    if __name__ == '__main__':
+        unittest.main()
     

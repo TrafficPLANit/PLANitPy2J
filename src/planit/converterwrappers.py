@@ -191,23 +191,41 @@ class OsmIntermodalReaderWrapper(IntermodalReaderWrapper):
         
 class OsmNetworkReaderSettingsWrapper(ReaderSettingsWrapper):
     """ Wrapper around settings for an OSM network reader used by converter
+    to keep things simpler compared to Java side, we always provide access to highway and
+    railway settings. In case the respective parsers are deactivated, it is assumed the user
+    wants them activated since it is unlikely they would want to change settings for them otherwise,
+    so we automatically activate the parser when the property is accessed and update the jave counterpart
+    in the wrapper
     """
     
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
         
-        # OSM intermodal reader settings allow access to network and pt settings component
-        # which in turns are settings 
+        # OSM network reader settings allow access to network and pt settings component
+        # which in turn are settings.  
         self._highway_settings = ReaderSettingsWrapper(self.get_highway_settings())
         self._railway_settings = ReaderSettingsWrapper(self.get_railway_settings())
+        
+        # lane configuration is also wrapped in a reader settings wrapper and acessed via property
+        self._lane_configuration = ReaderSettingsWrapper(self.get_lane_configuration())
     
     @property
     def highway_settings(self):
+        if not self.is_highway_parser_active() or not self._highway_settings._java_counterpart:
+            self.activate_highway_parser(True)
+            self._highway_settings = ReaderSettingsWrapper(self.get_highway_settings())
         return self._highway_settings
     
     @property
     def railway_settings(self):
-        return self._railway_settings           
+        if not self.is_railway_parser_active() or not self._railway_settings._java_counterpart:
+            self.activate_railway_parser(True)
+            self._railway_settings = ReaderSettingsWrapper(self.get_railway_settings())
+        return self._railway_settings     
+    
+    @property
+    def lane_configuration(self):
+        return self._lane_configuration      
 
 class OsmNetworkReaderWrapper(NetworkReaderWrapper):
     """ Wrapper around the Java PlanitOsmNetworkReader class
