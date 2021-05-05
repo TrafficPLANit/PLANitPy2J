@@ -36,7 +36,18 @@ class NetworkWriterType(Enum):
     """ Enum for the different network writers that exist compatible with a network converter
     """
     MATSIM = "PlanitOsmNetworkReader"
-    PLANIT = "PlanitMatsimNetworkWriter"     
+    PLANIT = "PlanitMatsimNetworkWriter"    
+    
+class OsmEntityType(Enum):
+    """ Enum for the different OSM entities that the user can differentiate between in the OSM converters
+    """
+    NODE = "Node"
+    WAY = "Way"
+    RELATION = "Relation"
+
+    def java_class_name(self) -> str:
+        return "de.topobyte.osm4j.core.model.iface.EntityType"  
+    
     
 class OutputFormatter(Enum):
     """ Enum for the different output formatters the user can choose, they map to the Java equivalent class name for easy mapping
