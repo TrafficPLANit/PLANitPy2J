@@ -89,7 +89,7 @@ class NetworkConverter(_ConverterBase):
         """ factory method to create a network reader compatible with this converter
         :param network_reader_type: the type of reader to create
         :param country: optional argument specifying the country of the source network. Used by some readers to initialise default settings. If absent
-         it defaults to "Global", i.e., no country specific information is used in initialising defaults if applicable
+         but required it defaults to "Global", i.e., no country specific information is used in initialising defaults if applicable
         """
         if  network_reader_type == NetworkReaderType.OSM:
             # OSM requires country to initialise default settings
@@ -163,7 +163,7 @@ class IntermodalConverter(_ConverterBase):
         """ factory method to create an intermodal  reader compatible with this converter
         :param intermodal_reader_type: the type of reader to create
         :param country: optional argument specifying the country of the source network. Used by some readers to initialise default settings. If absent
-         it defaults to "Global", i.e., no country specific information is used in initialising defaults if applicable
+         but required, it defaults to "Global", i.e., no country specific information is used in initialising defaults if applicable
         """
         if  intermodal_reader_type == IntermodalReaderType.OSM:
             # OSM requires country to initialise default settings

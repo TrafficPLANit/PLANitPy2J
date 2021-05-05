@@ -68,6 +68,26 @@ class TestSuiteConverter(unittest.TestCase):
         # lane configuration
         osm_reader.settings.lane_configuration.set_default_directional_lanes_by_highway_type("primary",4)
         osm_reader.settings.lane_configuration.set_default_directional_railway_tracks(2)
+        
+    def test_intermodal_converter_osm_reader_all_properties(self):
+        OSM_PATH = os.path.join('converter', 'osm')
+        INPUT_PATH = os.path.join(OSM_PATH, 'input')
+        COUNTRY = "Australia"
+        FULL_INPUT_FILE_NAME = os.path.join(INPUT_PATH, "sydneycbd.osm.pbf")
+        
+        # no correspondence to Java test as we explicitly test non-failure of Python code to test all properties
+        # are accessible on the OSM reader based on the documentation
+        plan_it = Planit()
+        
+        # network converter
+        intermodal_converter = plan_it.converter_factory.create(ConverterType.INTERMODAL)
+        
+        # osm reader        
+        osm_reader = intermodal_converter.create_reader(NetworkReaderType.OSM, COUNTRY)
+        
+        # global settings 
+        TODO
+
     
     def test_network_converter_osm2matsim(self):
         OSM_PATH = os.path.join('converter', 'osm')
