@@ -70,7 +70,7 @@ class TestSuiteConverter(unittest.TestCase):
         osm_reader.settings.lane_configuration.set_default_directional_railway_tracks(2)
         
         #ensure planit connection is reset
-        plan_it.force_stop_java()
+        gc.collect() 
         
     def test_network_converter_matsim_writer_all_properties(self):
         OSM_PATH = os.path.join('converter', 'osm')
@@ -91,8 +91,8 @@ class TestSuiteConverter(unittest.TestCase):
         matsim_writer.settings.set_generate_detailed_link_geometry_file(True)
         matsim_writer.settings.set_output_file_name("my_network")
         
-        #gc to ensure planit connectoid is reset
-        plan_it.force_stop_java()
+        #ensure planit connection is reset
+        gc.collect() 
         
         
     def test_intermodal_converter_osm_reader_all_properties(self):
@@ -128,10 +128,38 @@ class TestSuiteConverter(unittest.TestCase):
         osm_reader.settings.pt_settings.set_stop_to_waiting_area_search_radius_meters(1.45)
         osm_reader.settings.pt_settings.set_station_to_parallel_tracks_search_radius_meters(50)
         
-        #gc to ensure planit connectoid is reset
-        gc.collect()
+        #ensure planit connection is reset
+        gc.collect() 
+        
+    def test_intermodal_converter_matsim_writer_all_properties(self):
+        OSM_PATH = os.path.join('converter', 'osm')
+        OUTPUT_PATH = os.path.join(OSM_PATH, 'output','matsim')
+        COUNTRY = "Australia"
+        
+        # no correspondence to Java test as we explicitly test non-failure of Python code to test all properties
+        # are accessible on the OSM reader based on the documentation
+        plan_it = Planit()
+        
+        # network converter
+        intermodal_converter = plan_it.converter_factory.create(ConverterType.INTERMODAL)
+        
+        # matsim writer        
+        matsim_writer = intermodal_converter.create_writer(IntermodalWriterType.MATSIM)
+        
+        # global settings 
+        matsim_writer.settings.set_output_directory(OUTPUT_PATH)
+        matsim_writer.settings.set_country(COUNTRY)
+        
+        # network settings (just test one, since it is the same as network reader settings
+        matsim_writer.settings.network_settings.set_output_file_name("matsim_network")
+        
+        # zoning settings, see if collectable
+        zoning_settings = matsim_writer.settings.zoning_settings
+        
+        #ensure planit connection is reset
+        gc.collect() 
 
-    
+    """
     def test_network_converter_osm2matsim(self):
         OSM_PATH = os.path.join('converter', 'osm')
         INPUT_PATH = os.path.join(OSM_PATH, 'input')
@@ -303,7 +331,7 @@ class TestSuiteConverter(unittest.TestCase):
         # perform conversion
         intermodal_converter.convert(planit_reader,planit_writer)
         gc.collect()
-                 
+    """             
     if __name__ == '__main__':
         unittest.main()
     
