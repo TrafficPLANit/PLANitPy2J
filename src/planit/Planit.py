@@ -69,7 +69,10 @@ class Planit:
         
     def __stop_java__(self):        
         """Cleans up the gateway in Java in case this has not been done yet. It assumes a single instance available in Python tied
-        to a particular self. Only that instance is allowed to terminate the gateway.
+        to a particular self. Only that instance is allowed to terminate the gateway. In case an exception is raised indicating an instance is
+        already running it is likely this method has not been called. If you are certain the object has gone out of scope, it is likely the garbage collector
+        has not yet removed the object and therefore the connection still exists., use force_stop_java to achieve this if you do not want to call the garbage 
+        collector
         """          
         # Let the instance that instantiated the connection also terminate it automatically
         if GatewayState.gateway_is_running:
@@ -90,7 +93,12 @@ class Planit:
             except OSError:
                 if self._debug_info: print ("Terminated PLANitJava interface")   
             except:
-                traceback.print_exc()         
+                traceback.print_exc()        
+                
+    def force_stop_java(self):
+        """ force the java connectoind to be ended, only use when you are certain you no longer are using this Planit instance
+        """
+        self.__stop_java__()
                 
     def create_project(self, project_path:str = None) -> PlanitProject:
         """ access to project. Once access is requested the first time, project instance is created
