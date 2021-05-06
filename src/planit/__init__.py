@@ -6,6 +6,7 @@ from .enums import IntermodalReaderType
 from .enums import IntermodalWriterType
 from .enums import NetworkReaderType
 from .enums import NetworkWriterType
+from .enums import OsmEntityType
 from .enums import OutputFormatter
 from .enums import OutputProperty
 from .enums import OutputType

@@ -91,6 +91,8 @@ class NetworkConverter(_ConverterBase):
         :param country: optional argument specifying the country of the source network. Used by some readers to initialise default settings. If absent
          but required it defaults to "Global", i.e., no country specific information is used in initialising defaults if applicable
         """
+        if not isinstance(network_reader_type,NetworkReaderType) : raise Exception("network reader type provided is not of NetworkReaderType, unable to instantiate")
+        
         if  network_reader_type == NetworkReaderType.OSM:
             # OSM requires country to initialise default settings
             return self.__create_osm_network_reader(country)
@@ -104,6 +106,8 @@ class NetworkConverter(_ConverterBase):
         """ factory method to create a network writer compatible with this converter
         :param network_writer_type: the type of writer to create
         """
+        if not isinstance(network_writer_type,NetworkWriterType) : raise Exception("network writer type provided is not of NetworkWriterType, unable to instantiate")
+        
         if  network_writer_type == NetworkWriterType.MATSIM:
             return self.__create_matsim_network_writer()
         elif network_writer_type == NetworkWriterType.PLANIT:
@@ -165,6 +169,8 @@ class IntermodalConverter(_ConverterBase):
         :param country: optional argument specifying the country of the source network. Used by some readers to initialise default settings. If absent
          but required, it defaults to "Global", i.e., no country specific information is used in initialising defaults if applicable
         """
+        if not isinstance(intermodal_reader_type,IntermodalReaderType) : raise Exception("reader type provided is not of IntermodalReaderType, unable to instantiate")
+        
         if  intermodal_reader_type == IntermodalReaderType.OSM:
             # OSM requires country to initialise default settings
             return self.__create_osm_intermodal_reader(country)
@@ -177,6 +183,8 @@ class IntermodalConverter(_ConverterBase):
         """ factory method to create an intermodal writer compatible with this converter
         :param intermodal_writer_type: the type of writer to create
         """
+        if not isinstance(intermodal_writer_type,IntermodalWriterType) : raise Exception("writer type provided is not of IntermodalWriterType, unable to instantiate")
+        
         if  intermodal_writer_type == IntermodalWriterType.MATSIM:
             return self.__create_matsim_intermodal_writer()
         elif intermodal_writer_type == IntermodalWriterType.PLANIT:
@@ -219,8 +227,9 @@ class ConverterFactory:
         :param reader: to use in the converter
         :param writer: to use in the converter 
         """
-        if not GatewayState.gateway_is_running:
-            raise Exception('A ConverterFactory can only be used when connection to JVM present, it appears not to be')
+        if not GatewayState.gateway_is_running: raise Exception('A ConverterFactory can only be used when connection to JVM present, it appears not to be')
+        
+        if not isinstance(converter_type,ConverterType) : raise Exception("converter type provided is not of ConverterType, unable to instantiate")
         
         if converter_type == ConverterType.NETWORK:
             return self.__create_network_converter()

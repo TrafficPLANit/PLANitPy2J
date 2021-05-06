@@ -4,6 +4,7 @@ from py4j.java_gateway import get_field
 from planit import GatewayUtils
 from planit import GatewayState
 from planit import BaseWrapper
+from planit import OsmEntityType
 from _decimal import Decimal
 from numpy import string_
 
@@ -159,6 +160,27 @@ class MatsimNetworkWriterWrapper(NetworkWriterWrapper):
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
         
+class OsmPublicTransportSettingsWrapper(ReaderSettingsWrapper):
+    """ Wrapper around pt settings for an OSM intermodal reader used by converter. Wrapper is needed to deal with the methods
+    that require enum parameters
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+        
+    def __create_java_entity_type(self,  osm_entity_type:OsmEntityType):
+        """ convert Python osm entity type to Java entity type
+        :param osm_entity_type to convert
+        :return java counterpart 
+        """
+        return GatewayState.python_2_java_gateway.entry_point.createEnum(osm_entity_type.java_class_name(),osm_entity_type.value) 
+        
+    def overwrite_stop_location_waiting_area(self, osm_stop_location_id, osm_entity_type:OsmEntityType, osm_waiting_area_id):
+        self.overwriteStopLocationWaitingArea(osm_stop_location_id, self.__create_java_entity_type(osm_entity_type), osm_waiting_area_id)
+        
+    def overwrite_waiting_area_nominated_osm_way_for_stop_location(self, osm_waiting_area_id, osm_entity_type:OsmEntityType, osm_way_id):
+        self.overwriteWaitingAreaNominatedOsmWayForStopLocation(osm_waiting_area_id, self.__create_java_entity_type(osm_entity_type), osm_way_id)
+        
 class OsmIntermodalReaderSettingsWrapper(ReaderSettingsWrapper):
     """ Wrapper around settings for an OSM intermodal reader used by converter
     """
@@ -168,8 +190,8 @@ class OsmIntermodalReaderSettingsWrapper(ReaderSettingsWrapper):
         
         # OSM intermodal reader settings allow access to network and pt settings component
         # which in turns are settings 
-        self._network_settings = ReaderSettingsWrapper(self.get_network_settings())
-        self._pt_settings = ReaderSettingsWrapper(self.get_public_transport_settings())
+        self._network_settings = OsmNetworkReaderSettingsWrapper(self.getNetworkSettings())
+        self._pt_settings = OsmPublicTransportSettingsWrapper(self.getPublicTransportSettings())
     
     @property
     def network_settings(self):
@@ -188,7 +210,7 @@ class OsmIntermodalReaderWrapper(IntermodalReaderWrapper):
         
          # replace regular reader settings by planit intermodal reader settings
         self._settings = OsmIntermodalReaderSettingsWrapper(self._settings.java)
-        
+                
 class OsmNetworkReaderSettingsWrapper(ReaderSettingsWrapper):
     """ Wrapper around settings for an OSM network reader used by converter
     to keep things simpler compared to Java side, we always provide access to highway and
@@ -247,8 +269,8 @@ class PlanitIntermodalReaderSettingsWrapper(ReaderSettingsWrapper):
         
         # planit intermodal reader settings allow access to network and zoning settings component
         # which in turns are settings 
-        self._network_settings = ReaderSettingsWrapper(self.get_network_settings())
-        self._zoning_settings = ReaderSettingsWrapper(self.get_zoning_settings())
+        self._network_settings = ReaderSettingsWrapper(self.getNetworkSettings())
+        self._zoning_settings = ReaderSettingsWrapper(self.getZoningSettings())
     
     @property
     def network_settings(self):

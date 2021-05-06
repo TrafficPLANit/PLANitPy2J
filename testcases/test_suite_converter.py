@@ -83,12 +83,26 @@ class TestSuiteConverter(unittest.TestCase):
         intermodal_converter = plan_it.converter_factory.create(ConverterType.INTERMODAL)
         
         # osm reader        
-        osm_reader = intermodal_converter.create_reader(NetworkReaderType.OSM, COUNTRY)
+        osm_reader = intermodal_converter.create_reader(IntermodalReaderType.OSM, COUNTRY)
         
         # global settings 
-        TODO
+        osm_reader.settings.set_input_file(FULL_INPUT_FILE_NAME)
+        
+        # network settings (just test one, since it is the same as network reader settings
+        osm_reader.settings.network_settings.highway_settings.set_default_when_osm_highway_type_unsupported("primary")
+        
+        # PT settings
+        osm_reader.settings.pt_settings.exclude_osm_nodes_by_id([123,12345678])
+        osm_reader.settings.pt_settings.exclude_osm_ways_by_id([123,12345678])
+        osm_reader.settings.pt_settings.overwrite_stop_location_waiting_area(123,OsmEntityType.WAY, 12345678)
+        osm_reader.settings.pt_settings.overwrite_waiting_area_nominated_osm_way_for_stop_location(123456789,OsmEntityType.NODE, 123)
+        osm_reader.settings.pt_settings.set_remove_dangling_transfer_zone_groups(True)
+        osm_reader.settings.pt_settings.set_remove_dangling_zones(True)
+        osm_reader.settings.pt_settings.set_station_to_waiting_area_search_radius_meters(100)
+        osm_reader.settings.pt_settings.set_stop_to_waiting_area_search_radius_meters(1.45)
+        osm_reader.settings.pt_settings.set_station_to_parallel_tracks_search_radius_meters(50)
 
-    
+    """
     def test_network_converter_osm2matsim(self):
         OSM_PATH = os.path.join('converter', 'osm')
         INPUT_PATH = os.path.join(OSM_PATH, 'input')
@@ -260,7 +274,7 @@ class TestSuiteConverter(unittest.TestCase):
         # perform conversion
         intermodal_converter.convert(planit_reader,planit_writer)
         gc.collect()
-                 
+    """             
     if __name__ == '__main__':
         unittest.main()
     
