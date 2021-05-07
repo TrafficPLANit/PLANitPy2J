@@ -186,8 +186,52 @@ class TestSuiteConverter(unittest.TestCase):
                 
         #ensure planit connection is reset
         gc.collect() 
+        
+    def test_intermodal_converter_planit_writer_reader_all_properties(self):
+        OSM_PATH = os.path.join('converter', 'osm')
+        OUTPUT_PATH = os.path.join(OSM_PATH, 'output','planit')
+        COUNTRY = "Australia"
+        
+        # no correspondence to Java test as we explicitly test non-failure of Python code to test all properties
+        # are accessible on the OSM reader based on the documentation
+        plan_it = Planit()
+        
+        # intermodal converter
+        intermodal_converter = plan_it.converter_factory.create(ConverterType.INTERMODAL)
+        
+        # PLANit reader       
+        planit_reader = intermodal_converter.create_reader(IntermodalReaderType.PLANIT)
+        planit_reader.settings.set_input_directory(OSM_PATH)
+        
+        # network settings
+        planit_reader.settings.network_settings.set_input_directory(OSM_PATH)
+        planit_reader.settings.network_settings.set_xml_file_extension(".not_xml")
+        
+        # zoning settings
+        planit_reader.settings.zoning_settings.set_input_directory(OSM_PATH)
+        planit_reader.settings.zoning_settings.set_xml_file_extension(".not_xml")
+        
+        # PLANit writer        
+        planit_writer = intermodal_converter.create_writer(IntermodalWriterType.PLANIT)
+        
+        # global settings 
+        planit_writer.settings.set_output_directory(OUTPUT_PATH)
+        planit_writer.settings.set_country(COUNTRY)
+        
+        # network settings
+        planit_writer.settings.network_settings.set_output_directory(OUTPUT_PATH)
+        planit_writer.settings.network_settings.set_file_name("test.xml")
+        planit_writer.settings.network_settings.set_country(COUNTRY)
+        
+        # zoning settings
+        planit_writer.settings.zoning_settings.set_output_directory(OUTPUT_PATH)
+        planit_writer.settings.zoning_settings.set_file_name("test.xml")
+        planit_writer.settings.zoning_settings.set_country(COUNTRY)        
+                
+        #ensure planit connection is reset
+        gc.collect()         
 
-    """
+    
     def test_network_converter_osm2matsim(self):
         OSM_PATH = os.path.join('converter', 'osm')
         INPUT_PATH = os.path.join(OSM_PATH, 'input')
@@ -359,7 +403,7 @@ class TestSuiteConverter(unittest.TestCase):
         # perform conversion
         intermodal_converter.convert(planit_reader,planit_writer)
         gc.collect()
-    """             
+                 
     if __name__ == '__main__':
         unittest.main()
     
