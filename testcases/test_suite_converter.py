@@ -158,6 +158,34 @@ class TestSuiteConverter(unittest.TestCase):
         
         #ensure planit connection is reset
         gc.collect() 
+        
+    def test_network_converter_planit_writer_reader_all_properties(self):
+        OSM_PATH = os.path.join('converter', 'osm')
+        OUTPUT_PATH = os.path.join(OSM_PATH, 'output','planit')
+        COUNTRY = "Australia"
+        
+        # no correspondence to Java test as we explicitly test non-failure of Python code to test all properties
+        # are accessible on the OSM reader based on the documentation
+        plan_it = Planit()
+        
+        # network converter
+        network_converter = plan_it.converter_factory.create(ConverterType.NETWORK)
+        
+        # PLANit reader       
+        planit_reader = network_converter.create_reader(NetworkReaderType.PLANIT)
+        planit_reader.settings.set_input_directory(OSM_PATH)
+        planit_reader.settings.set_xml_file_extension(".not_xml")
+        
+        # PLANit writer        
+        planit_writer = network_converter.create_writer(NetworkWriterType.PLANIT)
+        
+        # settings 
+        planit_writer.settings.set_output_directory(OUTPUT_PATH)
+        planit_writer.settings.set_file_name("test.xml")
+        planit_writer.settings.set_country(COUNTRY)
+                
+        #ensure planit connection is reset
+        gc.collect() 
 
     """
     def test_network_converter_osm2matsim(self):
