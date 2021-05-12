@@ -46,7 +46,7 @@ class TestSuiteAssignment(unittest.TestCase):
         time_period_xml_id = "0"
         
         flow_position = assignment_project.memory.get_position_of_output_value_property(OutputType.LINK, OutputProperty.FLOW)
-        cost_position = assignment_project.memory.get_position_of_output_value_property(OutputType.LINK, OutputProperty.LINK_COST)
+        cost_position = assignment_project.memory.get_position_of_output_value_property(OutputType.LINK, OutputProperty.LINK_SEGMENT_COST)
         length_position = assignment_project.memory.get_position_of_output_value_property(OutputType.LINK, OutputProperty.LENGTH)
         speed_position = assignment_project.memory.get_position_of_output_value_property(OutputType.LINK, OutputProperty.CALCULATED_SPEED)
         capacity_position = assignment_project.memory.get_position_of_output_value_property(OutputType.LINK, OutputProperty.CAPACITY_PER_LANE)

@@ -99,7 +99,7 @@ class OutputProperty(Enum):
     COST_TIMES_FLOW = "COST_TIMES_FLOW"                             # OUTPUT
     DENSITY = "DENSITY"                                             # OUTPUT        
     FLOW = "FLOW"                                                   # OUTPUT
-    LINK_COST = "LINK_COST"                                         # OUTPUT
+    LINK_SEGMENT_COST = "LINK_SEGMENT_COST"                                         # OUTPUT
     OD_COST = "OD_COST"                                             # OUTPUT
     TOTAL_COST_TO_END_NODE = "TOTAL_COST_TO_END_NODE"               # OUTPUT
     PATH_STRING = "PATH_STRING"                               # OUTPUT
