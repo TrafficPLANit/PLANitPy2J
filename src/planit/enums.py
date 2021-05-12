@@ -71,7 +71,9 @@ class OutputProperty(Enum):
     DOWNSTREAM_NODE_EXTERNAL_ID = "DOWNSTREAM_NODE_EXTERNAL_ID"     # ID
     ITERATION_INDEX = "ITERATION_INDEX"                             # ID
     LINK_SEGMENT_ID = "LINK_SEGMENT_ID"                             # ID
+    LINK_SEGMENT_TYPE_ID = "LINK_SEGMENT_TYPE_ID"                   # ID
     LINK_SEGMENT_XML_ID = "LINK_SEGMENT_XML_ID"                     # ID
+    LINK_SEGMENT_TYPE_XML_ID = "LINK_SEGMENT_TYPE_XML_ID"           # ID
     LINK_SEGMENT_EXTERNAL_ID = "LINK_SEGMENT_EXTERNAL_ID"           # ID
     MODE_ID = "MODE_ID"                                             # ID
     MODE_XML_ID = "MODE_XML_ID"                                     # ID
@@ -90,7 +92,7 @@ class OutputProperty(Enum):
     CAPACITY_PER_LANE = "CAPACITY_PER_LANE"                         # INPUT
     DOWNSTREAM_NODE_LOCATION = "DOWNSTREAM_NODE_LOCATION"           # INPUT
     LENGTH = "LENGTH"                                               # INPUT
-    LINK_TYPE = "LINK_TYPE"                                         # INPUT    
+    LINK_SEGMENT_TYPE_NAME = "LINK_SEGMENT_TYPE_NAME"               # INPUT    
     MAXIMUM_DENSITY = "MAXIMUM_DENSITY"       # INPUT
     MAXIMUM_SPEED = "MAXIMUM_SPEED"                                 # INPUT
     NUMBER_OF_LANES = "NUMBER_OF_LANES"                             # INPUT
@@ -99,10 +101,10 @@ class OutputProperty(Enum):
     COST_TIMES_FLOW = "COST_TIMES_FLOW"                             # OUTPUT
     DENSITY = "DENSITY"                                             # OUTPUT        
     FLOW = "FLOW"                                                   # OUTPUT
-    LINK_SEGMENT_COST = "LINK_SEGMENT_COST"                                         # OUTPUT
+    LINK_SEGMENT_COST = "LINK_SEGMENT_COST"                         # OUTPUT
     OD_COST = "OD_COST"                                             # OUTPUT
     TOTAL_COST_TO_END_NODE = "TOTAL_COST_TO_END_NODE"               # OUTPUT
-    PATH_STRING = "PATH_STRING"                               # OUTPUT
+    PATH_STRING = "PATH_STRING"                                     # OUTPUT
     VC_RATIO = "VC_RATIO"                                           # OUTPUT
         
     
