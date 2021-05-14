@@ -40,6 +40,8 @@ class TestSuiteConverter(unittest.TestCase):
         osm_reader.settings.set_discard_dangling_networks_below(10)
         osm_reader.settings.set_input_file(FULL_INPUT_FILE_NAME)
         osm_reader.settings.set_remove_dangling_subnetworks(True)
+        osm_reader.settings.set_bounding_box(1.2,3,4.5,6)
+        osm_reader.settings.set_keep_osm_ways_outside_bounding_box([1,2,3.4])
         
         # highway settings
         osm_reader.settings.highway_settings.activate_all_osm_highway_types()

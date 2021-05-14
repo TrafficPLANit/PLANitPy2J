@@ -247,7 +247,13 @@ class OsmNetworkReaderSettingsWrapper(ReaderSettingsWrapper):
     
     @property
     def lane_configuration(self):
-        return self._lane_configuration      
+        return self._lane_configuration 
+    
+    def set_keep_osm_ways_outside_bounding_box(self, osm_way_ids):
+        """ delegate to equivalent Java method, but because we only expose the option to set a bounding box
+        rather than a bounding polygon, we renamed the method on the Python side to avoid confusion
+        """
+        self.set_keep_osm_ways_outside_bounding_polygon(osm_way_ids)     
 
 class OsmNetworkReaderWrapper(NetworkReaderWrapper):
     """ Wrapper around the Java PlanitOsmNetworkReader class
