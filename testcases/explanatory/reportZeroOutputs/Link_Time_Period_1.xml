@@ -21,19 +21,9 @@
     </simulation>
     <columns>
         <column>
-            <name>Downstream Node Id</name>
-            <units>none</units>
-            <type>integer</type>
-        </column>
-        <column>
             <name>Downstream Node Xml Id</name>
             <units>none</units>
             <type>string</type>
-        </column>
-        <column>
-            <name>Link Segment Id</name>
-            <units>none</units>
-            <type>integer</type>
         </column>
         <column>
             <name>Link Segment Xml Id</name>
@@ -41,19 +31,9 @@
             <type>string</type>
         </column>
         <column>
-            <name>Mode Id</name>
-            <units>none</units>
-            <type>integer</type>
-        </column>
-        <column>
             <name>Mode Xml Id</name>
             <units>none</units>
             <type>string</type>
-        </column>
-        <column>
-            <name>Upstream Node Id</name>
-            <units>none</units>
-            <type>integer</type>
         </column>
         <column>
             <name>Upstream Node Xml Id</name>
@@ -61,29 +41,9 @@
             <type>string</type>
         </column>
         <column>
-            <name>Capacity per Lane</name>
-            <units>veh/h</units>
-            <type>double</type>
-        </column>
-        <column>
-            <name>Downstream Node Location</name>
-            <units>srs</units>
-            <type>srsname</type>
-        </column>
-        <column>
-            <name>Length</name>
-            <units>km</units>
-            <type>double</type>
-        </column>
-        <column>
             <name>Number of Lanes</name>
             <units>none</units>
             <type>integer</type>
-        </column>
-        <column>
-            <name>Upstream Node Location</name>
-            <units>srs</units>
-            <type>srsname</type>
         </column>
         <column>
             <name>Calculated Speed</name>

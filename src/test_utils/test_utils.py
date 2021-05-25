@@ -6,7 +6,14 @@ from builtins import staticmethod
 class PlanItHelper:
         
     @staticmethod
-    def run_test(plan_it: PlanitProject, max_iterations, epsilon, description, output_type_configuration_option, project_path=None, deactivate_file_output=False):
+    def run_test(
+            plan_it: PlanitProject, 
+            max_iterations, 
+            epsilon, 
+            description, 
+            output_type_configuration_option, 
+            project_path=None, 
+            deactivate_file_output=False):        
         """Top-level method which runs unit tests
         :param plan_it PLANit object (with any required initial costs already defined
         :param max_iterations the maximum number of iterations for the current unit test

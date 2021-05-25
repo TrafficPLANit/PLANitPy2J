@@ -16,24 +16,14 @@
     <simulation>
         <iteration>
             <nr>1</nr>
-            <csvdata type="Link">.\Link_RunId_0_test2initialCostsOneIterationThreeTimePeriods_Time_Period_2_1.csv</csvdata>
+            <csvdata type="Link">.\Link_Time_Period_2_1.csv</csvdata>
         </iteration>
     </simulation>
     <columns>
         <column>
-            <name>Downstream Node Id</name>
-            <units>none</units>
-            <type>integer</type>
-        </column>
-        <column>
             <name>Downstream Node Xml Id</name>
             <units>none</units>
             <type>string</type>
-        </column>
-        <column>
-            <name>Link Segment Id</name>
-            <units>none</units>
-            <type>integer</type>
         </column>
         <column>
             <name>Link Segment Xml Id</name>
@@ -41,49 +31,14 @@
             <type>string</type>
         </column>
         <column>
-            <name>Mode Id</name>
-            <units>none</units>
-            <type>integer</type>
-        </column>
-        <column>
             <name>Mode Xml Id</name>
             <units>none</units>
             <type>string</type>
         </column>
         <column>
-            <name>Upstream Node Id</name>
-            <units>none</units>
-            <type>integer</type>
-        </column>
-        <column>
             <name>Upstream Node Xml Id</name>
             <units>none</units>
             <type>string</type>
-        </column>
-        <column>
-            <name>Capacity per Lane</name>
-            <units>veh/h</units>
-            <type>double</type>
-        </column>
-        <column>
-            <name>Downstream Node Location</name>
-            <units>srs</units>
-            <type>srsname</type>
-        </column>
-        <column>
-            <name>Length</name>
-            <units>km</units>
-            <type>double</type>
-        </column>
-        <column>
-            <name>Number of Lanes</name>
-            <units>none</units>
-            <type>integer</type>
-        </column>
-        <column>
-            <name>Upstream Node Location</name>
-            <units>srs</units>
-            <type>srsname</type>
         </column>
         <column>
             <name>Calculated Speed</name>

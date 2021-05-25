@@ -40,6 +40,7 @@ class TestSuiteAssignment(unittest.TestCase):
         epsilon = 0.001
         plan_it = Planit()
         assignment_project = plan_it.project()
+               
         PlanItHelper.run_test(assignment_project, max_iterations, epsilon, description, 1, deactivate_file_output=True)
 
         mode_xml_id = "1"
@@ -47,10 +48,7 @@ class TestSuiteAssignment(unittest.TestCase):
         
         flow_position = assignment_project.memory.get_position_of_output_value_property(OutputType.LINK, OutputProperty.FLOW)
         cost_position = assignment_project.memory.get_position_of_output_value_property(OutputType.LINK, OutputProperty.LINK_SEGMENT_COST)
-        length_position = assignment_project.memory.get_position_of_output_value_property(OutputType.LINK, OutputProperty.LENGTH)
         speed_position = assignment_project.memory.get_position_of_output_value_property(OutputType.LINK, OutputProperty.CALCULATED_SPEED)
-        capacity_position = assignment_project.memory.get_position_of_output_value_property(OutputType.LINK, OutputProperty.CAPACITY_PER_LANE)
-        number_of_lanes_position = assignment_project.memory.get_position_of_output_value_property(OutputType.LINK, OutputProperty.NUMBER_OF_LANES)
         
         memory_output_iterator_link = assignment_project.memory.iterator(mode_xml_id, time_period_xml_id, max_iterations, OutputType.LINK)
         while memory_output_iterator_link.has_next():
@@ -59,9 +57,6 @@ class TestSuiteAssignment(unittest.TestCase):
             values = memory_output_iterator_link.get_values()
             self.assertEqual(values[flow_position], 1)
             self.assertTrue(math.isclose(values[cost_position], 10, rel_tol=0.001))
-            self.assertEqual(values[length_position], 10)
-            self.assertEqual(values[capacity_position], 2000)
-            self.assertEqual(values[number_of_lanes_position], 1)
  
         path_position = assignment_project.memory.get_position_of_output_value_property(OutputType.PATH, OutputProperty.PATH_STRING)
         key1_position = assignment_project.memory.get_position_of_output_key_property(OutputType.PATH, OutputProperty.ORIGIN_ZONE_XML_ID)

@@ -146,6 +146,8 @@ class PlanitProject ():
     def assignment(self):
         """ access to the assignment builder 
         """
+        if (self._assignment_instance == None):
+            raise Exception("assignment instance not yet available, configure via .set() method")
         return self._assignment_instance  
     
     @property
