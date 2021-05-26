@@ -115,16 +115,18 @@ Install these onto your computer using Python's "pip install" facility if you ha
 
 An example is made available under src/examples/basic/basic.py.  It uses src/examples/basic/input as it project directory, and a macroscopicinput.xml input file is located in this directory. It contains a very simple network with three origins and destinations without any route choice, shaped in the form of a triangle (Tipi). It can be used to test if the PLANitPython interface is setup correctly.
 
-The file `test_suite.py` in the testcases/ dir of the project runs several Python unit tests. This script uses the `test_utils.py file` (in the test_util package) to set up PLANit runs from Python.  
+The files `test_suite_XXXX.py` in the testcases/ dir of the project runs several Python unit tests. This script uses the `test_utils.py file` (in the test_util package) to set up PLANit assignment runs from Python.  
 
-To run `test_suite.py` from Eclipse using PyDev, right-click it and select Run as/Python unit-test.  To run from the command prompt, navigate to the directory where it is stored (<path_of_project>/src/tests) and enter "python test_suite.py".
+To run `test_suite_XXXX.py` from Eclipse using PyDev, right-click it and select Run as/Python unit-test.  To run from the command prompt, navigate to the directory where it is stored (<path_of_project>/src/tests) and enter "python test_suite.py".
 
-The tests in test_suite.py use XML input files and CSV comparison files in  sub-directories of the directory "testcases".  The testcases are a subset of the equiavlent Java test cases.
- 
-As mentioned, All Python unit tests have a Java equivalent in the PLANitIO repo. However there are far fewer unit tests in Python than in Java.  Whereas the Java unit tests are intended to verify that the model results are correct for a variety of inputs, the Python unit tests exists to verify that the Python interface sends the correct values and/or calls to the Java side.
+Some tests in test_suite.py use XML input files and CSV comparison files in  sub-directories of the directory "testcases".  A subset of test cases are equivalent to the Java test cases. Whereas the Java unit tests are intended to verify that the model results are correct for a variety of inputs, the Python unit tests exists to verify that the Python interface sends the correct values and/or calls to the Java side.
 
 The `__init__()` method of the PLANit.py class can take an argument project_path which tells it where to find the XML input file and put the CSV output files. If the project_path argument is omitted, the current directory (i.e. where the PLANit.py file is located) is used.
 
 # Creating a Setup
 
 A separate readme is created to guide developers on how to create a new setup/installer for PLANit-Python. It is unlikely anyone else that contributors to the project will ever need to look at it, but the interested reader can find it under `SETUP_README.md`
+
+# Git Branching model
+
+We adopt GitFlow as per https://nvie.com/posts/a-successful-git-branching-model/
