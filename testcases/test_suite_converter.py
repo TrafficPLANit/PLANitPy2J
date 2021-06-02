@@ -231,13 +231,42 @@ class TestSuiteConverter(unittest.TestCase):
         planit_writer.settings.zoning_settings.set_country(COUNTRY)        
                 
         #ensure planit connection is reset
-        gc.collect()         
+        gc.collect()
+        
+    def test_network_converter_osm2matsim_cloud(self):           
+        
+        OSM_URL = "https://api.openstreetmap.org/api/0.6/map?bbox=13.465661,52.504055,13.469817,52.506204"
+        
+        OSM_PATH = os.path.join('converter', 'osm')
+        OUTPUT_PATH = os.path.join(OSM_PATH, 'output','matsim','cloud')
+        COUNTRY = "Germany"
+        
+        # no correspondence to Java test as we explicitly test non-failure of Python code to instantiate converters
+        plan_it = Planit()
+        
+        # network converter
+        network_converter = plan_it.converter_factory.create(ConverterType.NETWORK)
+        
+        # osm reader        
+        osm_reader = network_converter.create_reader(NetworkReaderType.OSM, COUNTRY)
+        osm_reader.settings.set_input_source(OSM_URL)
+        osm_reader.settings.deactivate_all_osm_way_types_except(["footway"])
+        osm_reader.settings.highway_settings.deactivate_all_road_modes_except(["foot"])
+        
+        #matsim writer
+        matsim_writer = network_converter.create_writer(NetworkWriterType.MATSIM)
+        matsim_writer.settings.set_output_directory(OUTPUT_PATH)
+        matsim_writer.settings.set_country(COUNTRY)
+        
+        # perform conversion
+        network_converter.convert(osm_reader,matsim_writer)
+        gc.collect()                      
 
     
-    def test_network_converter_osm2matsim(self):
+    def test_network_converter_osm2matsim_file(self):
         OSM_PATH = os.path.join('converter', 'osm')
         INPUT_PATH = os.path.join(OSM_PATH, 'input')
-        OUTPUT_PATH = os.path.join(OSM_PATH, 'output','matsim')
+        OUTPUT_PATH = os.path.join(OSM_PATH, 'output','matsim','file')
         COUNTRY = "Australia"
         FULL_INPUT_FILE_NAME = os.path.join(INPUT_PATH, "sydneycbd.osm.pbf")
         
