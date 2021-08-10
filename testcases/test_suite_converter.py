@@ -72,7 +72,7 @@ class TestSuiteConverter(unittest.TestCase):
         osm_reader.settings.lane_configuration.set_default_directional_railway_tracks(2)
         
         #ensure planit connection is reset
-        gc.collect() 
+        gc.collect()         
         
     def test_network_converter_matsim_writer_all_properties(self):
         OSM_PATH = os.path.join('converter', 'osm')
