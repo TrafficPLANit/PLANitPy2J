@@ -50,9 +50,9 @@ class PlanitProject ():
         # (Note2: since we only have a single network, demand, zoning, we do not have a wrapper for the fields, so we must access the methods directly
         self._network_instance = MacroscopicNetworkWrapper(self._project_instance.getNetwork())
         # the one zoning is created and populated
-        self._zoning_instance = ZoningWrapper(self._project_instance.field("zonings").getFirstZoning())
+        self._zoning_instance = ZoningWrapper(self._project_instance.field("zonings").getFirst())
         # the one demands is created and populated
-        self._demands_instance = DemandsWrapper(self._project_instance.field("demands").getFirstDemands())      
+        self._demands_instance = DemandsWrapper(self._project_instance.field("demands").getFirst())      
         self._initial_cost_instance = InitialCost()
         
         #PLANIT_IO output formatter is activated by default, MemoryOutputFormatter is off by default

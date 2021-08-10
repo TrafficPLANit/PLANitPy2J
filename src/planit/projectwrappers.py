@@ -325,6 +325,13 @@ class TimePeriodsWrapper(BaseWrapper):
     
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
+        
+class TransportLayersWrapper(BaseWrapper):
+    """ Wrapper around the Java TransportLayers class instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
 
 class VirtualCostWrapper(BaseWrapper):
     """ Wrapper around the Java assignment class instance
@@ -351,11 +358,11 @@ class BPRCostWrapper(PhysicalCostWrapper):
     def __init__(self, java_counterpart, network_instance):
         super().__init__(java_counterpart)
         self._network_instance = network_instance
-        modes_counterpart = self._network_instance.field("modes")
+        modes_counterpart = self._network_instance.get_modes()
         self._modes_instance = ModesWrapper(modes_counterpart)
         
-        network_layers_counterpart = network_instance.field("infrastructureLayers")
-        self._layers_instance = ModesWrapper(network_layers_counterpart)        
+        layers_counterpart = network_instance.getTransportLayers()
+        self._layers_instance = TransportLayersWrapper(layers_counterpart)        
         
         
     def set_default_parameters(self, alpha: float, beta: float, mode_xml_id:str =None, link_segment_type_xml_id:str =None):
@@ -420,9 +427,9 @@ class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
         """
         time_periods_counterpart = self._demands_instance.field("timePeriods")
         time_periods = TimePeriodsWrapper(time_periods_counterpart)
-        time_period_counterpart = time_periods.get_time_period_by_xml_id(time_period_xml_id);
+        time_period_counterpart = time_periods.get_by_xml_id(time_period_xml_id);
         time_period = TimePeriodWrapper(time_period_counterpart)        
-        modes_counterpart = self._network_instance.field("modes")
+        modes_counterpart = self._network_instance.get_modes()
         modes = ModesWrapper(modes_counterpart)
         mode_counterpart = modes.get_by_xml_id(mode_xml_id)
         mode = ModeWrapper(mode_counterpart)       
