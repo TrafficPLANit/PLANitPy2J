@@ -6,17 +6,19 @@ class ConverterType(Enum):
     NETWORK = "NetworkConverter"
     ZONING = "ZoningConverter"
     INTERMODAL = "IntermodalConverter"
+    SERVICE_NETWORK = "ServiceNetworkConverter"
+    ROUTED_SERVICES = "RoutedServicesConverter"
     
 class IntermodalReaderType(Enum):
     """ Enum for the different intermodal readers that are supported
     """
-    OSM = "PlanitOsmIntermodalReader"
+    OSM = "OsmIntermodalReader"
     PLANIT = "PlanitIntermodalReader"
     
 class IntermodalWriterType(Enum):
     """ Enum for the different intermodal writers that are supported
     """
-    MATSIM = "PlanitMatsimIntermodalWriter"
+    MATSIM = "MatsimIntermodalWriter"
     PLANIT = "PlanitIntermodalWriter"
           
 class Network(Enum):
@@ -29,14 +31,24 @@ class Network(Enum):
 class NetworkReaderType(Enum):
     """ Enum for the different network readers that exist compatible with a network converter
     """
-    OSM = "PlanitOsmNetworkReader"
+    OSM = "OsmNetworkReader"
     PLANIT = "PlanitNetworkReader"
+    
+class ServiceNetworkReaderType(Enum):
+    """ Enum for the different service network readers that exist compatible with a service network converter
+    """
+    PLANIT = "PlanitServiceNetworkReader"
+    
+class RoutedServicesReaderType(Enum):
+    """ Enum for the different routed services readers that exist compatible with a routed services converter
+    """
+    PLANIT = "PlanitRoutedServicesReader"    
     
 class NetworkWriterType(Enum):
     """ Enum for the different network writers that exist compatible with a network converter
     """
-    MATSIM = "PlanitOsmNetworkReader"
-    PLANIT = "PlanitMatsimNetworkWriter"    
+    MATSIM = "OsmNetworkReader"
+    PLANIT = "MatsimNetworkWriter"    
     
 class OsmEntityType(Enum):
     """ Enum for the different OSM entities that the user can differentiate between in the OSM converters
