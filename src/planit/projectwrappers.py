@@ -58,7 +58,9 @@ class AssignmentWrapper(BaseWrapper):
         
         if isinstance(assignment_component, PhysicalCost):
             if (assignment_component == PhysicalCost.BPR):
-                self._physical_cost_instance = BPRCostWrapper(self.create_and_register_physical_cost(assignment_component.value), self._network_instance) 
+                self._physical_cost_instance = BPRCostWrapper(self.create_and_register_physical_cost(assignment_component.value), self._network_instance)
+            elif (assignment_component == PhysicalCost.FREEFLOW):
+                self._physical_cost_instance = FreeFlowCostWrapper(self.create_and_register_physical_cost(assignment_component.value)) 
             else:
                 raise Exception('Unrecognized link cost function ' + assignment_component.type + ' cannot be set on assignment instance')
         elif isinstance(assignment_component, VirtualCost):
@@ -402,6 +404,13 @@ class BPRCostWrapper(PhysicalCostWrapper):
         
         link_segment_counterpart = link_segments_instance.get_by_xml_id(link_segment_xml_id)        
         self._java_counterpart.setParameters(link_segment_counterpart, mode_counterpart, alpha, beta)  
+        
+class FreeFlowCostWrapper(PhysicalCostWrapper):
+    """Wrapper around the FreeFlowLinkTravelTimeCost instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
         
 class MemoryOutputFormatterWrapper(OutputFormatterWrapper):
     """ Wrapper around the Java PlanItOutputFormatter class instance
