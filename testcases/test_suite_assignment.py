@@ -315,7 +315,8 @@ class TestSuiteAssignment(unittest.TestCase):
         assignment_project = plan_it.create_project(project_path)        
         
         # setup
-        assignment_project.set(TrafficAssignment.TRADITIONAL_STATIC)         
+        assignment_project.set(TrafficAssignment.TRADITIONAL_STATIC)
+        assignment_project.set(GapFunction.LINK_BASED_RELATIVE)         
         assignment_project.assignment.output_configuration.set_persist_only_final_Iteration(True)
         assignment_project.assignment.activate_output(OutputType.LINK)
         assignment_project.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_XML_ID)

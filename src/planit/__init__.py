@@ -1,6 +1,7 @@
 """Package initialization file for the planit package
 """ 
 from .enums import ConverterType
+from .enums import GapFunctionType
 from .enums import Network
 from .enums import IntermodalReaderType
 from .enums import IntermodalWriterType

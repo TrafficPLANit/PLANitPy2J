@@ -20,11 +20,11 @@ class AssignmentWrapper(BaseWrapper):
     def __init__(self, java_counterpart, network_instance):
         super().__init__(java_counterpart)
         self._output_configuration = OutputConfigurationWrapper(self.get_output_configuration()) # collect the output configuration from Java
-        self._gap_function = GapFunctionWrapper(self.get_gap_function()) # collect the gap function from Java
+        self._gap_function_instance = GapFunctionWrapper(self.get_gap_function()) # collect the gap function from Java
         self._network_instance = network_instance
         self._physical_cost_instance = BPRCostWrapper(self.get_physical_cost(), self._network_instance) 
         self._virtual_cost_instance = VirtualCostWrapper(self.get_virtual_cost()) 
-        self._smoothing = SmoothingWrapper(self.get_smoothing())
+        self._smoothing_instance = SmoothingWrapper(self.get_smoothing())    
         
         # initialize in case they have defaults available
         #=======================================================================
@@ -52,8 +52,8 @@ class AssignmentWrapper(BaseWrapper):
     
     def set(self, assignment_component):
         """ Configure an assignment component on this assignment instance. Note that all these go via the traffic assignment builder in Java
-            although we hide that on the Python side to not over-complicate things for the average user. We accept PhysicalCost, VirtualCost and 
-            Smoothing choices at this point
+            although we hide that on the Python side to not over-complicate things for the average user. We accept PhysicalCost, VirtualCost,
+            Smoothing, and GapFunction choices at this point
         """    
         
         if isinstance(assignment_component, PhysicalCost):
@@ -67,6 +67,8 @@ class AssignmentWrapper(BaseWrapper):
             self._virtual_cost_instance = VirtualCostWrapper(self.create_and_register_virtual_cost(assignment_component.value))
         elif isinstance(assignment_component, Smoothing):
             self._smoothing_instance = SmoothingWrapper(self.create_and_register_smoothing(assignment_component.value))
+        elif isinstance(assignment_component, GapFunction):
+            self._gap_function_instance = GapFunctionWrapper(self.create_and_register_gap_function(assignment_component.value))            
         else:
             raise Exception('Unrecognized component ' + assignment_component.type + ' cannot be set on assignment instance')
          

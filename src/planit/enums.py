@@ -9,6 +9,12 @@ class ConverterType(Enum):
     SERVICE_NETWORK = "ServiceNetworkConverter"
     ROUTED_SERVICES = "RoutedServicesConverter"
     
+class GapFunction(Enum):
+    """ Enum for the different gap functions that exist on supporting traffic assignments
+    """
+    LINK_BASED_RELATIVE = "org.planit.gap.LinkBasedRelativeGapFunction"
+    NORM_BASED = "org.planit.gap.NormBasedGapFunction"     
+    
 class IntermodalReaderType(Enum):
     """ Enum for the different intermodal readers that are supported
     """
