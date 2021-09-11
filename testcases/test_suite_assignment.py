@@ -220,7 +220,7 @@ class TestSuiteAssignment(unittest.TestCase):
         assignment_project.assignment.link_configuration.remove(OutputProperty.MAXIMUM_SPEED)
   
         assignment_project.assignment.activate_output(OutputType.OD)
-        assignment_project.assignment.od_configuration.deactivate(ODSkimSubOutputType.NONE)
+        assignment_project.assignment.od_configuration.deactivate(OdSkimSubOutputType.NONE)
         assignment_project.assignment.od_configuration.remove(OutputProperty.TIME_PERIOD_XML_ID)
         assignment_project.assignment.od_configuration.remove(OutputProperty.RUN_ID)
         assignment_project.assignment.activate_output(OutputType.PATH)
@@ -324,7 +324,7 @@ class TestSuiteAssignment(unittest.TestCase):
         assignment_project.assignment.link_configuration.remove(OutputProperty.MAXIMUM_SPEED)
   
         assignment_project.assignment.activate_output(OutputType.OD)
-        assignment_project.assignment.od_configuration.deactivate(ODSkimSubOutputType.NONE)
+        assignment_project.assignment.od_configuration.deactivate(OdSkimSubOutputType.NONE)
         assignment_project.assignment.od_configuration.remove(OutputProperty.TIME_PERIOD_XML_ID)
         assignment_project.assignment.od_configuration.remove(OutputProperty.RUN_ID)
         assignment_project.assignment.activate_output(OutputType.PATH)

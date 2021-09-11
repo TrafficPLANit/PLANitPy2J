@@ -127,7 +127,7 @@ class OutputProperty(Enum):
         
     
     def java_class_name(self) -> str:
-        return "org.planit.output.property.OutputProperty"     
+        return "org.planit.output.property.OutputPropertyType"     
     
 class OutputType(Enum):
     """ Enum for the different output types the user can choose to activate, 
@@ -178,10 +178,10 @@ class VirtualCost(Enum):
     FIXED = "org.planit.cost.virtual.FixedConnectoidTravelTimeCost"
     SPEED = "org.planit.cost.virtual.SpeedConnectiodTravelTimeCost"
     
-class ODSkimSubOutputType(Enum):
+class OdSkimSubOutputType(Enum):
     
     NONE = "NONE"
     COST = "COST"
 
     def java_class_name(self) -> str:
-        return "org.planit.output.enums.ODSkimSubOutputType"     
+        return "org.planit.output.enums.OdSkimSubOutputType"     

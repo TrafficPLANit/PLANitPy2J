@@ -109,7 +109,7 @@ class AssignmentWrapper(BaseWrapper):
     def gap_function(self):
         """Access to current gap function
         """
-        return self._gap_function
+        return self._gap_function_instance
     
     @property
     def link_configuration(self):
@@ -178,6 +178,24 @@ class GapFunctionWrapper(BaseWrapper):
 class InitialCostWrapper(BaseWrapper):
     """ Wrapper around the Java initial cost class instance
     """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+        
+    def get_time_period_costs(self, timePeriod):
+        """ delegate to Java counterpart and wrap result in Python object
+        """
+        return InitialCostModesWrapper(self._java_counterpart.getTimePeriodCosts(timePeriod.java))
+        
+    def get_time_period_agnostic_costs(self):
+        """ delegate to Java counterpart and wrap result in Python object
+        """
+        return InitialCostModesWrapper(self._java_counterpart.getTimePeriodAgnosticCosts())
+
+class InitialCostModesWrapper(BaseWrapper):
+    """ Wrapper around the Java InitialCostModes class instance which tracks initial costs across modes but without    
+        any knowledge of what time period (if any) it belongs to
+    """ 
     
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)

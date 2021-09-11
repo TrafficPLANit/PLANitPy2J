@@ -38,7 +38,7 @@ class PlanItHelper:
             plan_it.assignment.link_configuration.remove(OutputProperty.UPSTREAM_NODE_XML_ID)
   
         plan_it.assignment.activate_output(OutputType.OD)
-        plan_it.assignment.od_configuration.deactivate(ODSkimSubOutputType.NONE)
+        plan_it.assignment.od_configuration.deactivate(OdSkimSubOutputType.NONE)
         plan_it.assignment.od_configuration.remove(OutputProperty.TIME_PERIOD_XML_ID)
         plan_it.assignment.od_configuration.remove(OutputProperty.RUN_ID)
         plan_it.assignment.activate_output(OutputType.PATH)
@@ -85,7 +85,7 @@ class PlanItHelper:
             plan_it.assignment.link_configuration.remove(OutputProperty.UPSTREAM_NODE_XML_ID)
   
         plan_it.assignment.activate_output(OutputType.OD)
-        plan_it.assignment.od_configuration.deactivate(ODSkimSubOutputType.NONE)
+        plan_it.assignment.od_configuration.deactivate(OdSkimSubOutputType.NONE)
         plan_it.assignment.od_configuration.remove(OutputProperty.TIME_PERIOD_XML_ID)
         plan_it.assignment.od_configuration.remove(OutputProperty.RUN_ID)
         plan_it.assignment.activate_output(OutputType.PATH)

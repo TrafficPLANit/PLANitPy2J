@@ -16,7 +16,7 @@ from .enums import PathIdType
 from .enums import Smoothing
 from .enums import TrafficAssignment
 from .enums import VirtualCost
-from .enums import ODSkimSubOutputType
+from .enums import OdSkimSubOutputType
 from .version import Version
 from .gateway import GatewayConfig
 from .gateway import GatewayState
@@ -50,6 +50,7 @@ from .projectwrappers import AssignmentWrapper
 from .projectwrappers import DemandsWrapper
 from .projectwrappers import GapFunctionWrapper
 from .projectwrappers import InitialCostWrapper
+from .projectwrappers import InitialCostModesWrapper
 from .projectwrappers import LinkOutputTypeConfigurationWrapper
 from .projectwrappers import LinkSegmentExpectedResultsDtoWrapper
 from .projectwrappers import MacroscopicNetworkWrapper

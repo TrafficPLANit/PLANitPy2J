@@ -73,7 +73,7 @@ class PlanitProject ():
         return method
     
     def __register_initial_costs__(self):   
-        """Register the initial costs on the assignment
+        """Register the initial costs on the assignment with 1:1 mapping between parsed time periods and assignment time periods
         """
         time_periods_xml_id_set = self._initial_cost_instance.get_time_periods_xml_id_set()
         
@@ -91,7 +91,7 @@ class PlanitProject ():
                     initial_cost_file_location = self._initial_cost_instance.get_initial_cost_file_location_by_time_period_xml_id(time_period_xml_id)
                     initial_cost_counterpart = self._project_instance.create_and_register_initial_link_segment_cost(self._network_instance.java, initial_cost_file_location, time_period_counterpart)
                     initial_cost_wrapper = InitialCostWrapper(initial_cost_counterpart)
-                    self._assignment_instance.register_initial_link_segment_cost(time_period.java, initial_cost_wrapper.java)       
+                    self._assignment_instance.register_initial_link_segment_cost(time_period.java, initial_cost_wrapper.get_time_period_costs(time_period).java)       
                             
     def set(self, assignment_component):
         """Set the traffic assignment component
