@@ -25,28 +25,23 @@
 		</oddemands>
 	</macroscopicdemand>
 	<macroscopicnetwork>
-		<configuration>                                                                        
-			<modes>                                                                        
-				<mode id="1">																
-					<name>Basic</name>														
-					<pcu>1</pcu>															
+		<configuration>                            
+			<modes>                                      
+				<mode id="1">															
+					<name>Basic</name>											
+					<maxspeed>1</maxspeed>
 				</mode>
 			</modes>
 		</configuration>
 		<infrastructurelayers>
 			<layer id="road">
 				<layerconfiguration>
-					<linksegmenttypes>                                                                    
-						<linksegmenttype id="1">                                                       
-							<name>Standard</name>													
-							<capacitylane>2000</capacitylane>									
-							<access>                                                            
-								<mode ref="1">													
-									<maxspeed>1</maxspeed>										
-								</mode>
-							</access>
+					<linksegmenttypes>                           
+						<linksegmenttype id="1">                   
+							<name>Standard</name>										
+							<capacitylane>2000</capacitylane>				
 						</linksegmenttype>
-					</linksegmenttypes>				
+					</linksegmenttypes>
 				</layerconfiguration>
 				<nodes>
 					<node id="1" />
@@ -71,7 +66,7 @@
 			<zone id="1">
 				<centroid>
 					<name>1</name>
-					<gml:Point>									
+					<gml:Point>					
 						<gml:pos>45.256 -110.45</gml:pos>
 					</gml:Point>
 				</centroid>
@@ -83,7 +78,7 @@
 			<zone id="2">
 				<centroid>
 					<name>2</name>
-					<gml:Point>									
+					<gml:Point>	
 						<gml:pos>45.256 -110.45</gml:pos>
 					</gml:Point>
 				</centroid>

@@ -62,7 +62,7 @@
         </column>
         <column>
             <name>Capacity per Lane</name>
-            <units>veh/h</units>
+            <units>pcu/h</units>
             <type>double</type>
         </column>
         <column>
@@ -97,7 +97,7 @@
         </column>
         <column>
             <name>Flow</name>
-            <units>veh/h</units>
+            <units>pcu/h</units>
             <type>double</type>
         </column>
     </columns>

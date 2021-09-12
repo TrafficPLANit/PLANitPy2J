@@ -52,7 +52,7 @@
         </column>
         <column>
             <name>Flow</name>
-            <units>veh/h</units>
+            <units>pcu/h</units>
             <type>double</type>
         </column>
     </columns>
