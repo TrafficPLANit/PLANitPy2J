@@ -5,6 +5,7 @@ import sys
 from py4j.java_collections import SetConverter, MapConverter, ListConverter
 
 from planit import Version
+from builtins import staticmethod
 
 class GatewayConfig(object):   
 
@@ -55,7 +56,7 @@ class GatewayUtils(object):
     def convert_args_to_java(args):
         """ convert passed in arguments to java versions if needed. Required for containers which cannot be mapped one on
         one to Java. 1) Python List is converted to Java ArrayList.
-        :param args to onvert where needed, assumed iterable
+        :param args to convert where needed, assumed iterable
         :return converted args to use  
         """
         converted_args = []
@@ -70,3 +71,15 @@ class GatewayUtils(object):
                 arg = java_list
             converted_args.append(arg)
         return converted_args
+    
+    @staticmethod
+    def to_java_array(object_class, python_list):
+        """ convert a Python list to a Java array
+        :param object_class the Java class type to use for the array instances
+        :param python_list to populate the array with
+        :return java array created in Python with the contents of the Python list
+        """ 
+        java_array = GatewayState.python_2_java_gateway.new_array(object_class, len(python_list))
+        for i in range(len(python_list)):
+            java_array[i]=python_list[i]
+        return java_array

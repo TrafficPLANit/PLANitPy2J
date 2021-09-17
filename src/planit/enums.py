@@ -54,7 +54,15 @@ class NetworkWriterType(Enum):
     """ Enum for the different network writers that exist compatible with a network converter
     """
     MATSIM = "OsmNetworkReader"
-    PLANIT = "MatsimNetworkWriter"    
+    PLANIT = "MatsimNetworkWriter"
+    
+class OdSkimSubOutputType(Enum):
+    
+    NONE = "NONE"
+    COST = "COST"
+
+    def java_class_name(self) -> str:
+        return "org.planit.output.enums.OdSkimSubOutputType"      
     
 class OsmEntityType(Enum):
     """ Enum for the different OSM entities that the user can differentiate between in the OSM converters
@@ -171,17 +179,25 @@ class TrafficAssignment(Enum):
     TRADITIONAL_STATIC = "org.planit.assignment.traditionalstatic.TraditionalStaticAssignment"
     SLTM = "org.planit.assignment.ltm.sltm.StaticLtm"
     ETLM = "org.planit.assignment.ltm.eltm.EventBasedLtm"
+    
+class UnitType(Enum):
+    
+    NONE = "NONE"
+    VEH = "VEH"
+    PCU = "PCU"
+    KM = "KM"
+    METER = "METER"
+    HOUR = "HOUR"
+    MINUTE = "MINUTE"
+    SECOND = "SECOND"
+    SRS = "SRS"
+    
+    def java_class_name(self) -> str:
+        return "org.planit.utils.unit.UnitType"  
 
 class VirtualCost(Enum):
     """ Enum for the different virtual costs the user can choose, they map to the Java equivalent class name for easy mapping
     """
     FIXED = "org.planit.cost.virtual.FixedConnectoidTravelTimeCost"
     SPEED = "org.planit.cost.virtual.SpeedConnectiodTravelTimeCost"
-    
-class OdSkimSubOutputType(Enum):
-    
-    NONE = "NONE"
-    COST = "COST"
-
-    def java_class_name(self) -> str:
-        return "org.planit.output.enums.OdSkimSubOutputType"     
+       

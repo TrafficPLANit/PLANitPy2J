@@ -227,6 +227,9 @@ class TestSuiteAssignment(unittest.TestCase):
         assignment_project.assignment.path_configuration.set_path_id_type(PathIdType.NODE_XML_ID)
         assignment_project.assignment.gap_function.stop_criterion.set_max_iterations(max_iterations)
         assignment_project.assignment.gap_function.stop_criterion.set_epsilon(epsilon)
+        
+        # change desired units to veh/h
+        assignment_project.assignment.link_configuration.override_output_property_units(OutputProperty.FLOW, [UnitType.VEH], [UnitType.HOUR])
          
         assignment_project.output.set_xml_name_root(description)                
         assignment_project.output.set_csv_name_root(description)     

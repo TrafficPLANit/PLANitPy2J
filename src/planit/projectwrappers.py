@@ -5,6 +5,7 @@ from planit import BaseWrapper
 from planit import GatewayUtils
 from planit import GatewayState
 from planit import OutputType
+from planit import UnitType
 from planit import PathIdType
 from planit import OutputProperty
 from planit import PhysicalCost
@@ -283,6 +284,13 @@ class OutputFormatterWrapper(BaseWrapper):
     
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
+        
+class UnitsWrapper(BaseWrapper):
+    """ Wrapper around the Java OutputFormatter wrapper class instance
+    """
+    
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)        
 
 class OutputTypeConfigurationWrapper(BaseWrapper): 
     """ Wrapper around the Java link output type configuration class instance
@@ -291,20 +299,69 @@ class OutputTypeConfigurationWrapper(BaseWrapper):
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
         
+    def __create_java_unit_type(self, unit_type: UnitType):
+        """ create a unit type enum suitable to pass to java 
+        """   
+        return GatewayState.python_2_java_gateway.entry_point.createEnum(unit_type.java_class_name(), unit_type.value)
+    
+    def __create_java_unit_types(self, unit_types):
+        """ create a java unit type array instance based on the given type enum suitable to pass to java
+        :param unit_types list of Python UnitTypes
+        :return Java array of java UnitTypes 
+        """              
+        _unit_type_class = GatewayState.python_2_java_gateway.jvm.org.planit.utils.unit.UnitType
+        return GatewayUtils.to_java_array(_unit_type_class,[self.__create_java_unit_type(unit_type) for unit_type in unit_types])     
+        
+    def __create_java_unit(self, unit_type: UnitType):
+        """ create a java unit instance based on the given type enum suitable to pass to java 
+        """           
+        return GatewayState.python_2_java_gateway.jvm.org.planit.utils.unit.Unit.of(self.__create_java_unit_type(unit_type))
+    
+    def __create_java_unit(self, numerator_unit_types, denominator_unit_types):
+        """ create a java unit instance based on the given numerator and denominator types in Python list form
+            :param output_property tp change units for
+            :param numerator_unit_types list of python unit types 
+            :return java unit instance
+        """           
+        java_numerator_unit_types = self.__create_java_unit_types(numerator_unit_types)
+        java_denominator_unit_types = self.__create_java_unit_types(denominator_unit_types)
+        return GatewayState.python_2_java_gateway.jvm.org.planit.utils.unit.Unit.of(java_numerator_unit_types, java_denominator_unit_types)            
+        
+    def __create_java_output_property(self, output_property : OutputProperty):
+        """ create an output type enum suitable to pass to java 
+        """   
+        return GatewayState.python_2_java_gateway.entry_point.createEnum(output_property.java_class_name(), output_property.value)                  
+        
     def add(self, output_property : OutputProperty):
         """Add an output type property to the current output type configuration
         """
-        output_property_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_property.java_class_name(), output_property.value)
-        self._java_counterpart.addProperty(output_property_instance)
+        self._java_counterpart.addProperty(self.__create_java_output_property(output_property))
         
     def remove(self, output_property : OutputProperty):
         """Remove an output type property from the current output type configuration
         """
-        output_property_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_property.java_class_name(), output_property.value)
-        return self._java_counterpart.removeProperty(output_property_instance)
+        return self._java_counterpart.removeProperty(self.__create_java_output_property(output_property))
         
     def remove_all_properties(self):
+        """Remove all output properties currently registered
+        """
         self._java_counterpart.removeAllProperties()
+        
+    def override_output_property_units(self, output_property : OutputProperty, unit_type : UnitType):
+        """Change the units of the output property, where the property is a single unit
+        """
+        self._java_counterpart.overrideOutputPropertyUnits(self.__create_java_output_property(output_property), self.__create_java_unit(unit_type))
+        
+    def override_output_property_units(self, output_property : OutputProperty, numerator_unit_types, denominator_unit_types):
+        """Change the units of the output property, where the property comprises more than one unit, e.g., km/h. Provide
+            the desired units in the format of all numerator units as an array as the first argument and the denominator units
+            as the second argument, also in array form
+            :param output_property tp change units for
+            :param numerator_unit_types list of python unit types
+            :param denominator_unit_types list of python unit types
+        """
+        _java_unit_instance = self.__create_java_unit(numerator_unit_types, denominator_unit_types)
+        self._java_counterpart.overrideOutputPropertyUnits(self.__create_java_output_property(output_property), _java_unit_instance)
         
 class PhysicalCostWrapper(BaseWrapper):
     """ Wrapper around the Java physical cost class instance

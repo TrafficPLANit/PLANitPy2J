@@ -7,6 +7,7 @@ from .enums import IntermodalReaderType
 from .enums import IntermodalWriterType
 from .enums import NetworkReaderType
 from .enums import NetworkWriterType
+from .enums import OdSkimSubOutputType
 from .enums import OsmEntityType
 from .enums import OutputFormatter
 from .enums import OutputProperty
@@ -15,8 +16,8 @@ from .enums import PhysicalCost
 from .enums import PathIdType
 from .enums import Smoothing
 from .enums import TrafficAssignment
+from .enums import UnitType
 from .enums import VirtualCost
-from .enums import OdSkimSubOutputType
 from .version import Version
 from .gateway import GatewayConfig
 from .gateway import GatewayState
