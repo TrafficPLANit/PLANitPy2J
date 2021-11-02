@@ -7,7 +7,7 @@ The interaction with Java is made available via a separate project PLANitJ2Py. I
 
 We utilise py4j (www.p4j.org) to establish the connection between Java and Python. On the Python side, we provide Python wrapper classes around the Java objects such that the user is not exposed to the Java internals.
 
-For more information on PLANit such as the user the manual, licensing, installation, getting started, reference documentation, and more, please visit [https://trafficplanit.github.io/PLANitManual/](https://trafficplanit.github.io/PLANitManual/)  
+For more information on PLANit such as the user the manual, licensing, installation, getting started, reference documentation, and more, please visit [www.goPLANit.org](http://www.goplanit.org)  
 
 # Getting Started
 

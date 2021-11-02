@@ -10,7 +10,7 @@ import os
 VERSION_PATH = os.path.join("src", "planit", "version.py")
 exec(compile(open(VERSION_PATH).read(),VERSION_PATH, "exec"))
 VERSION = __planit_version__
-LICENSE_LOCATION = "https://trafficplanit.github.io/PLANitManual/docs/licenses/"
+LICENSE_LOCATION = "http://www.goplanit.org/docs/licenses/"
 
 # RESOURCES
 # pars all jars from resource dir
@@ -26,9 +26,9 @@ setup(
                      "a PLANit traffic assignment. It uses Py4J to "
                      "access the underlying Java API that can be used "
                      "for the same purpose",                     
-    url="https://trafficplanit.github.io/PLANitManual",
+    url="http://www.goplanit.org",
     author="Mark Raadsen",
-    author_email="mark.raadsen@sydney.edu.au",                              
+    author_email="info@goplanit.org",                              
     license="modified BSD License (see "+LICENSE_LOCATION+")",              # adopted license
     classifiers=[                                                           # meta information regarding this module
         "Development Status :: 2 - Pre-Alpha",
