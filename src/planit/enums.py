@@ -12,8 +12,8 @@ class ConverterType(Enum):
 class GapFunction(Enum):
     """ Enum for the different gap functions that exist on supporting traffic assignments
     """
-    LINK_BASED_RELATIVE = "org.planit.gap.LinkBasedRelativeGapFunction"
-    NORM_BASED = "org.planit.gap.NormBasedGapFunction"     
+    LINK_BASED_RELATIVE = "org.goplanit.gap.LinkBasedRelativeGapFunction"
+    NORM_BASED = "org.goplanit.gap.NormBasedGapFunction"     
     
 class IntermodalReaderType(Enum):
     """ Enum for the different intermodal readers that are supported
@@ -30,9 +30,9 @@ class IntermodalWriterType(Enum):
 class Network(Enum):
     """ Enum for the different virtual costs the user can choose, they map to the Java equivalent class name for easy mapping
     """
-    MACROSCOPIC = "org.planit.network.physical.macroscopic.MacroscopicNetwork"
-    PHYSICAL = "org.planit.network.physical.PhysicalNetwork"
-    VIRTUAL = "org.planit.network.virtual.VirtualNetwork"
+    MACROSCOPIC = "org.goplanit.network.physical.macroscopic.MacroscopicNetwork"
+    PHYSICAL = "org.goplanit.network.physical.PhysicalNetwork"
+    VIRTUAL = "org.goplanit.network.virtual.VirtualNetwork"
     
 class NetworkReaderType(Enum):
     """ Enum for the different network readers that exist compatible with a network converter
@@ -62,7 +62,7 @@ class OdSkimSubOutputType(Enum):
     COST = "COST"
 
     def java_class_name(self) -> str:
-        return "org.planit.output.enums.OdSkimSubOutputType"      
+        return "org.goplanit.output.enums.OdSkimSubOutputType"      
     
 class OsmEntityType(Enum):
     """ Enum for the different OSM entities that the user can differentiate between in the OSM converters
@@ -80,8 +80,8 @@ class OutputFormatter(Enum):
         Only the output formatters available in the PLANitIO project have been defined here
     """
     
-    MEMORY = "org.planit.output.formatter.MemoryOutputFormatter"
-    PLANIT_IO = "org.planit.io.output.formatter.PlanItOutputFormatter"
+    MEMORY = "org.goplanit.output.formatter.MemoryOutputFormatter"
+    PLANIT_IO = "org.goplanit.io.output.formatter.PlanItOutputFormatter"
     
 class OutputProperty(Enum):    
     """ Enum for the different output properties the user can configure in the output files 
@@ -135,7 +135,7 @@ class OutputProperty(Enum):
         
     
     def java_class_name(self) -> str:
-        return "org.planit.output.property.OutputPropertyType"     
+        return "org.goplanit.output.property.OutputPropertyType"     
     
 class OutputType(Enum):
     """ Enum for the different output types the user can choose to activate, 
@@ -148,13 +148,13 @@ class OutputType(Enum):
     PATH = "PATH"
     
     def java_class_name(self) -> str:
-        return "org.planit.output.enums.OutputType"   
+        return "org.goplanit.output.enums.OutputType"   
     
 class PhysicalCost(Enum):
     """ Enum for the different physical costs the user can choose, they map to the Java equivalent class name for easy mapping
     """
-    BPR = "org.planit.cost.physical.BPRLinkTravelTimeCost"
-    FREEFLOW = "org.planit.cost.physical.FreeFlowLinkTravelTimeCost"
+    BPR = "org.goplanit.cost.physical.BPRLinkTravelTimeCost"
+    FREEFLOW = "org.goplanit.cost.physical.FreeFlowLinkTravelTimeCost"
 
 class PathIdType(Enum):
 
@@ -166,19 +166,19 @@ class PathIdType(Enum):
     NODE_ID = "NODE_ID"
 
     def java_class_name(self) -> str:
-        return "org.planit.output.enums.PathOutputIdentificationType"     
+        return "org.goplanit.output.enums.PathOutputIdentificationType"     
    
 class Smoothing(Enum):
     """ Enum for the different smoothing options the user can choose, they map to the Java equivalent class name for easy mapping
     """
-    MSA = "org.planit.sdinteraction.smoothing.MSASmoothing"
+    MSA = "org.goplanit.sdinteraction.smoothing.MSASmoothing"
 
 class TrafficAssignment(Enum):
     """ Enum for the different assignment the user can choose, they map to the Java equivalent class name for easy mapping
     """
-    TRADITIONAL_STATIC = "org.planit.assignment.traditionalstatic.TraditionalStaticAssignment"
-    SLTM = "org.planit.assignment.ltm.sltm.StaticLtm"
-    ETLM = "org.planit.assignment.ltm.eltm.EventBasedLtm"
+    TRADITIONAL_STATIC = "org.goplanit.assignment.traditionalstatic.TraditionalStaticAssignment"
+    SLTM = "org.goplanit.assignment.ltm.sltm.StaticLtm"
+    ETLM = "org.goplanit.assignment.ltm.eltm.EventBasedLtm"
     
 class UnitType(Enum):
     
@@ -193,11 +193,11 @@ class UnitType(Enum):
     SRS = "SRS"
     
     def java_class_name(self) -> str:
-        return "org.planit.utils.unit.UnitType"  
+        return "org.goplanit.utils.unit.UnitType"  
 
 class VirtualCost(Enum):
     """ Enum for the different virtual costs the user can choose, they map to the Java equivalent class name for easy mapping
     """
-    FIXED = "org.planit.cost.virtual.FixedConnectoidTravelTimeCost"
-    SPEED = "org.planit.cost.virtual.SpeedConnectiodTravelTimeCost"
+    FIXED = "org.goplanit.cost.virtual.FixedConnectoidTravelTimeCost"
+    SPEED = "org.goplanit.cost.virtual.SpeedConnectiodTravelTimeCost"
        

@@ -67,7 +67,7 @@ class OutputType(Enum):
     LINK = "LINK"
     
     def java_class_name(self) -> str:
-        return "org.planit.output.OutputType"   
+        return "org.goplanit.output.OutputType"   
 ```
 
 In activate_output we then call the java side to create the enum and pass on the method call

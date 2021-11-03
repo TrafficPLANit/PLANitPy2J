@@ -309,13 +309,13 @@ class OutputTypeConfigurationWrapper(BaseWrapper):
         :param unit_types list of Python UnitTypes
         :return Java array of java UnitTypes 
         """              
-        _unit_type_class = GatewayState.python_2_java_gateway.jvm.org.planit.utils.unit.UnitType
+        _unit_type_class = GatewayState.python_2_java_gateway.jvm.org.goplanit.utils.unit.UnitType
         return GatewayUtils.to_java_array(_unit_type_class,[self.__create_java_unit_type(unit_type) for unit_type in unit_types])     
         
     def __create_java_unit(self, unit_type: UnitType):
         """ create a java unit instance based on the given type enum suitable to pass to java 
         """           
-        return GatewayState.python_2_java_gateway.jvm.org.planit.utils.unit.Unit.of(self.__create_java_unit_type(unit_type))
+        return GatewayState.python_2_java_gateway.jvm.org.goplanit.utils.unit.Unit.of(self.__create_java_unit_type(unit_type))
     
     def __create_java_unit(self, numerator_unit_types, denominator_unit_types):
         """ create a java unit instance based on the given numerator and denominator types in Python list form
@@ -325,7 +325,7 @@ class OutputTypeConfigurationWrapper(BaseWrapper):
         """           
         java_numerator_unit_types = self.__create_java_unit_types(numerator_unit_types)
         java_denominator_unit_types = self.__create_java_unit_types(denominator_unit_types)
-        return GatewayState.python_2_java_gateway.jvm.org.planit.utils.unit.Unit.of(java_numerator_unit_types, java_denominator_unit_types)            
+        return GatewayState.python_2_java_gateway.jvm.org.goplanit.utils.unit.Unit.of(java_numerator_unit_types, java_denominator_unit_types)            
         
     def __create_java_output_property(self, output_property : OutputProperty):
         """ create an output type enum suitable to pass to java 

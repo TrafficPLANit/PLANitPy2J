@@ -24,7 +24,7 @@ class GatewayConfig(object):
     PY4J_SHARE = os.path.join('py4j', '*')
     
     # the main entry point of the Java gateway implementation for PLANit
-    JAVA_GATEWAY_WRAPPER_CLASS =  'org.planit.python.PLANitJ2Py'
+    JAVA_GATEWAY_WRAPPER_CLASS =  'org.goplanit.python.PLANitJ2Py'
     
     
 class GatewayState(object):
