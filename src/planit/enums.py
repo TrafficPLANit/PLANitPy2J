@@ -53,8 +53,8 @@ class RoutedServicesReaderType(Enum):
 class NetworkWriterType(Enum):
     """ Enum for the different network writers that exist compatible with a network converter
     """
-    MATSIM = "OsmNetworkReader"
-    PLANIT = "MatsimNetworkWriter"
+    MATSIM = "MatsimNetworkWriter"
+    PLANIT = "PlanitNetworkWriter"
     
 class OdSkimSubOutputType(Enum):
     
@@ -85,7 +85,7 @@ class OutputFormatter(Enum):
     
 class OutputProperty(Enum):    
     """ Enum for the different output properties the user can configure in the output files 
-        Equivalent of Java enumeration org.planit.output.property.OutputProperty
+        Equivalent of Java enumeration org.goplanit.output.property.OutputProperty
     """
     
     # alphabetical order by priority type (ID, INPUT, OUTPUT
@@ -139,7 +139,7 @@ class OutputProperty(Enum):
     
 class OutputType(Enum):
     """ Enum for the different output types the user can choose to activate, 
-         Equivalent of Java enumeration org.planit.output.OutputType
+         Equivalent of Java enumeration org.goplanit.output.OutputType
     """
     LINK = "LINK"
     GENERAL = "GENERAL"

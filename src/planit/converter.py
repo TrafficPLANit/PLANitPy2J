@@ -57,7 +57,7 @@ class NetworkConverter(_ConverterBase):
         :param writerWrapper: to use
         :return created java network converter
         """
-        return GatewayState.python_2_java_gateway.jvm.org.planit.converter.network.NetworkConverterFactory.create(readerWrapper.java, writerWrapper.java)
+        return GatewayState.python_2_java_gateway.jvm.org.goplanit.converter.network.NetworkConverterFactory.create(readerWrapper.java, writerWrapper.java)
     
     #####################################
     #     READER FACTORY METHODS
@@ -65,11 +65,11 @@ class NetworkConverter(_ConverterBase):
    
         
     def __create_osm_network_reader(self, country: str) -> OsmNetworkReaderWrapper:
-        java_network_reader = GatewayState.python_2_java_gateway.jvm.org.planit.osm.converter.network.OsmNetworkReaderFactory.create(country)
+        java_network_reader = GatewayState.python_2_java_gateway.jvm.org.goplanit.osm.converter.network.OsmNetworkReaderFactory.create(country)
         return OsmNetworkReaderWrapper(java_network_reader)
     
     def __create_planit_network_reader(self) -> PlanitNetworkReaderWrapper:
-        java_network_reader = GatewayState.python_2_java_gateway.jvm.org.planit.io.converter.network.PlanitNetworkReaderFactory.create()
+        java_network_reader = GatewayState.python_2_java_gateway.jvm.org.goplanit.io.converter.network.PlanitNetworkReaderFactory.create()
         return PlanitNetworkReaderWrapper(java_network_reader)
         
     #####################################
@@ -77,11 +77,11 @@ class NetworkConverter(_ConverterBase):
     #####################################
         
     def __create_matsim_network_writer(self) -> MatsimNetworkWriterWrapper:
-        java_network_writer = GatewayState.python_2_java_gateway.jvm.org.planit.matsim.converter.MatsimNetworkWriterFactory.create()
+        java_network_writer = GatewayState.python_2_java_gateway.jvm.org.goplanit.matsim.converter.MatsimNetworkWriterFactory.create()
         return MatsimNetworkWriterWrapper(java_network_writer)
         
     def __create_planit_network_writer(self) -> PlanitNetworkWriterWrapper:
-        java_network_writer = GatewayState.python_2_java_gateway.jvm.org.planit.io.converter.network.PlanitNetworkWriterFactory.create()
+        java_network_writer = GatewayState.python_2_java_gateway.jvm.org.goplanit.io.converter.network.PlanitNetworkWriterFactory.create()
         return PlanitNetworkWriterWrapper(java_network_writer)
     
         
@@ -137,18 +137,18 @@ class IntermodalConverter(_ConverterBase):
         :param writerWrapper: to use
         :return created java intermodal converter
         """
-        return GatewayState.python_2_java_gateway.jvm.org.planit.converter.intermodal.IntermodalConverterFactory.create(readerWrapper.java, writerWrapper.java)        
+        return GatewayState.python_2_java_gateway.jvm.org.goplanit.converter.intermodal.IntermodalConverterFactory.create(readerWrapper.java, writerWrapper.java)        
         
    #####################################
     #     READER FACTORY METHODS
     #####################################
            
     def __create_osm_intermodal_reader(self, country: str) -> OsmIntermodalReaderWrapper:
-        java_intermodal_reader = GatewayState.python_2_java_gateway.jvm.org.planit.osm.converter.intermodal.OsmIntermodalReaderFactory.create(country)
+        java_intermodal_reader = GatewayState.python_2_java_gateway.jvm.org.goplanit.osm.converter.intermodal.OsmIntermodalReaderFactory.create(country)
         return OsmIntermodalReaderWrapper(java_intermodal_reader)
     
     def __create_planit_intermodal_reader(self) -> PlanitIntermodalReaderWrapper:
-        java_intermodal_reader = GatewayState.python_2_java_gateway.jvm.org.planit.io.converter.intermodal.PlanitIntermodalReaderFactory.create()
+        java_intermodal_reader = GatewayState.python_2_java_gateway.jvm.org.goplanit.io.converter.intermodal.PlanitIntermodalReaderFactory.create()
         return PlanitIntermodalReaderWrapper(java_intermodal_reader)
         
     #####################################
@@ -156,11 +156,11 @@ class IntermodalConverter(_ConverterBase):
     #####################################
         
     def __create_matsim_intermodal_writer(self) -> MatsimIntermodalWriterWrapper:
-        java_network_writer = GatewayState.python_2_java_gateway.jvm.org.planit.matsim.converter.MatsimIntermodalWriterFactory.create()
+        java_network_writer = GatewayState.python_2_java_gateway.jvm.org.goplanit.matsim.converter.MatsimIntermodalWriterFactory.create()
         return MatsimIntermodalWriterWrapper(java_network_writer)
         
     def __create_planit_intermodal_writer(self) -> PlanitIntermodalWriterWrapper: 
-        java_network_writer = GatewayState.python_2_java_gateway.jvm.org.planit.io.converter.intermodal.PlanitIntermodalWriterFactory.create()
+        java_network_writer = GatewayState.python_2_java_gateway.jvm.org.goplanit.io.converter.intermodal.PlanitIntermodalWriterFactory.create()
         return PlanitIntermodalWriterWrapper(java_network_writer)        
         
     def create_reader(self, intermodal_reader_type: IntermodalReaderType, country:str = "Global") -> IntermodalReaderWrapper:

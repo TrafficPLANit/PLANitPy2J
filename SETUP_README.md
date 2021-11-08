@@ -49,7 +49,7 @@ The only difference with test.PyPi is that we do not provide a --repository hand
 python -m twine upload -u ___username___ -p ___password___ dist/*
 ```
 
-to install we can leave out the additional utl index and simply call
+to install we can leave out the additional index and simply call
 
 ```python
 pip install PLANit-Python
