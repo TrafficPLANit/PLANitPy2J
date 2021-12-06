@@ -157,6 +157,7 @@ class TestSuiteConverter(unittest.TestCase):
          
         # zoning settings, see if collectable
         zoning_settings = matsim_writer.settings.zoning_settings
+        zoning_settings.set_generate_matrix_based_pt_router_files(True)
          
         #ensure planit connection is reset
         gc.collect() 
@@ -339,6 +340,7 @@ class TestSuiteConverter(unittest.TestCase):
         matsim_writer.settings.network_settings.set_country(COUNTRY)
         matsim_writer.settings.zoning_settings.set_output_directory(OUTPUT_PATH)
         matsim_writer.settings.zoning_settings.set_country(COUNTRY)
+        matsim_writer.settings.zoning_settings.set_generate_matrix_based_pt_router_files(True)
         # test if setting country and output path via intermodal settings directly works
         matsim_writer.settings.set_output_directory(OUTPUT_PATH)
         matsim_writer.settings.set_country(COUNTRY) 
