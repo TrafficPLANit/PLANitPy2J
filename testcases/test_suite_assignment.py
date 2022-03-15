@@ -228,6 +228,10 @@ class TestSuiteAssignment(unittest.TestCase):
         assignment_project.assignment.gap_function.stop_criterion.set_max_iterations(max_iterations)
         assignment_project.assignment.gap_function.stop_criterion.set_epsilon(epsilon)
         
+        # test log settings option
+        assignment_project.assignment.set_log_settings(False)
+        assignment_project.assignment.set_log_settings(True)
+        
         # change desired units to veh/h
         assignment_project.assignment.link_configuration.override_output_property_units(OutputProperty.FLOW, [UnitType.VEH], [UnitType.HOUR])
          

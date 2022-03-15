@@ -2,6 +2,7 @@ import os
 import subprocess
 import traceback
 from py4j.java_gateway import JavaGateway
+from planit import Version
 from planit import GatewayUtils
 from planit import GatewayState
 from planit import GatewayConfig
@@ -56,6 +57,8 @@ class Planit:
             # now we  connect to the gateway, ask Py4J to auto convert containers between Python and Java
             GatewayState.python_2_java_gateway = JavaGateway()
             GatewayState.gateway_is_running = True            
+            
+            print("PLANit v:" + Version.planit)
                 
             #TODO: Note we are not waiting for it to setup properly --> possibly considering some mechanism to wait for this to ensure proper connection!
             if self._debug_info: print('Java interface running with PID: '+ str(GatewayState.planit_java_process.pid))
