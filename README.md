@@ -78,7 +78,7 @@ In activate_output we then call the java side to create the enum and pass on the
         self._java_counter_part.activateOutput(output_type_instance)
 ```
 
-While the Java side creates the enum via reflection
+While the Java side creates the enum via reflection 
 
 ```Java
     public Enum createEnum(String enumCanonicalName, String EnumEntryName) throws ClassNotFoundException, PlanItException {
