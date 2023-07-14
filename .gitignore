@@ -4,8 +4,10 @@
 /.project
 /.pydevproject
 /env
+/venv
 /src/PLANit_Python.egg-info
 /doc
 /src/planit/__pycache__
 /src/test_utils/__pycache__
 /testcases/__pycache__
+/.idea
