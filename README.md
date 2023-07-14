@@ -23,7 +23,7 @@ Any changes to any of the PLANit-Java projects to support the Python side requir
 
 Whenever a change in version occurs for either the planit jars or the py4j jar, the new version(s) must be explicitly identified in this project. We do so in the `src/planit/version.py`. 
 
-Make sure that our version numbering folllows the naming conventions outlined in [PEP0440](https://www.python.org/dev/peps/pep-0440/) because otherwise we are not able to distribute our version via pip. 
+Make sure that our version numbering follows the naming conventions outlined in [PEP0440](https://www.python.org/dev/peps/pep-0440/) because otherwise we are not able to distribute our version via pip. 
 
 By updating the variables to the new version it ensures that:
 

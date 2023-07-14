@@ -41,11 +41,17 @@ setup(
         "Programming Language :: Java",
         "Topic :: Scientific/Engineering",        
     ],
-    packages=["planit", "test_utils"],                                      # we only include these packages  
-    package_dir={"": "src"},                                                # indicate the ./src directory is where to find packages rather than this ""
-    data_files=[(RESOURCE_DIR, RESOURCE_JAR_FILE_NAMES)],                          # copy all jars in rsc dir as data_files in module
+    # we only include these packages
+    packages=["planit", "test_utils"],
+    # indicate the ./src directory is where to find packages rather than this ""
+    package_dir={"": "src"},
+    # copy all jars in rsc dir as data_files in module
+    data_files=[(RESOURCE_DIR, RESOURCE_JAR_FILE_NAMES)],
     install_requires=[
-          'py4j>='+__py4j_version__,                                        # python installation for py4j
+        # python installation for py4j
+        'py4j>=' + __py4j_version__,
+        'pandas',
+        'pytest',
       ],    
 
 )
