@@ -5,6 +5,7 @@
 __planit_version__ = "0.4.0"
 __py4j_version__ = "0.10.9.7"
 
+
 class Version:
     """ access to global versions in OO style
     """

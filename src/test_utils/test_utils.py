@@ -8,15 +8,16 @@ class PlanItHelper:
 
     @staticmethod
     def run_test(
-            plan_it: PlanitProject,
+            planit: PlanitProject,
             max_iterations,
             epsilon,
             description,
             output_type_configuration_option,
             project_path=None,
             deactivate_file_output=False):
-        """Top-level method which runs unit tests
-        :param plan_it PLANit object (with any required initial costs already defined
+        """ Top-level method which runs unit tests.
+
+        :param planit PLANit object (with any required initial costs already defined
         :param max_iterations the maximum number of iterations for the current unit test
         :param epsilon the convergence epsilon for the current unit test
         :param description the name to be used to identify input and output files
@@ -24,39 +25,39 @@ class PlanItHelper:
         :param project_path directory of XML input file (if omitted, defaults to None which will make methods use the current directory)
         :param deactivate_file_output if True, deactivate the file output formatter and store results in memory only
         """
-        plan_it.set(TrafficAssignment.TRADITIONAL_STATIC)
+        planit.set(TrafficAssignment.TRADITIONAL_STATIC)
         # TODO : Add a unit test which testsX plan_it.assigment.physical_cost.set_default_parameters()
         # testRouteChoiceCompareWithOmniTRANS5() is a  good one for this
-        plan_it.assignment.output_configuration.set_persist_only_final_Iteration(True)
-        plan_it.assignment.activate_output(OutputType.LINK)
-        plan_it.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_XML_ID)
-        plan_it.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_ID)
+        planit.assignment.output_configuration.set_persist_only_final_Iteration(True)
+        planit.assignment.activate_output(OutputType.LINK)
+        planit.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_XML_ID)
+        planit.assignment.link_configuration.remove(OutputProperty.TIME_PERIOD_ID)
 
         if output_type_configuration_option == 1:
-            plan_it.assignment.link_configuration.remove(OutputProperty.MAXIMUM_SPEED)
+            planit.assignment.link_configuration.remove(OutputProperty.MAXIMUM_SPEED)
         elif output_type_configuration_option == 2:
-            plan_it.assignment.link_configuration.remove(OutputProperty.DOWNSTREAM_NODE_XML_ID)
-            plan_it.assignment.link_configuration.remove(OutputProperty.UPSTREAM_NODE_XML_ID)
+            planit.assignment.link_configuration.remove(OutputProperty.DOWNSTREAM_NODE_XML_ID)
+            planit.assignment.link_configuration.remove(OutputProperty.UPSTREAM_NODE_XML_ID)
 
-        plan_it.assignment.activate_output(OutputType.OD)
-        plan_it.assignment.od_configuration.deactivate(OdSkimSubOutputType.NONE)
-        plan_it.assignment.od_configuration.remove(OutputProperty.TIME_PERIOD_XML_ID)
-        plan_it.assignment.od_configuration.remove(OutputProperty.RUN_ID)
-        plan_it.assignment.activate_output(OutputType.PATH)
-        plan_it.assignment.path_configuration.set_path_id_type(PathIdType.NODE_XML_ID)
-        plan_it.assignment.gap_function.stop_criterion.set_max_iterations(max_iterations)
-        plan_it.assignment.gap_function.stop_criterion.set_epsilon(epsilon)
+        planit.assignment.activate_output(OutputType.OD)
+        planit.assignment.od_configuration.deactivate(OdSkimSubOutputType.NONE)
+        planit.assignment.od_configuration.remove(OutputProperty.TIME_PERIOD_XML_ID)
+        planit.assignment.od_configuration.remove(OutputProperty.RUN_ID)
+        planit.assignment.activate_output(OutputType.PATH)
+        planit.assignment.path_configuration.set_path_id_type(PathIdType.NODE_XML_ID)
+        planit.assignment.gap_function.stop_criterion.set_max_iterations(max_iterations)
+        planit.assignment.gap_function.stop_criterion.set_epsilon(epsilon)
 
-        plan_it.activate(OutputFormatter.MEMORY)
+        planit.activate(OutputFormatter.MEMORY)
         if deactivate_file_output:
-            plan_it.deactivate(OutputFormatter.PLANIT_IO)
+            planit.deactivate(OutputFormatter.PLANIT_IO)
         else:
-            plan_it.output.set_xml_name_root(description)
-            plan_it.output.set_csv_name_root(description)
+            planit.output.set_xml_name_root(description)
+            planit.output.set_csv_name_root(description)
             if (project_path is not None):
-                plan_it.output.set_output_directory(project_path)
-        plan_it.run()
-        return plan_it
+                planit.output.set_output_directory(project_path)
+        planit.run()
+        return planit
 
     @staticmethod
     def run_test_with_zero_flow_outputs(plan_it: PlanitProject, max_iterations, epsilon, description,

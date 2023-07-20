@@ -1,5 +1,6 @@
 from setuptools import setup                                                # setuptools is our method for building the module
 from setuptools import find_packages
+import planit.version as vs
 
 from glob import glob
 
@@ -9,7 +10,7 @@ import os
 # parse the __planit_version__ variable from python script
 VERSION_PATH = os.path.join("src", "planit", "version.py")
 exec(compile(open(VERSION_PATH).read(),VERSION_PATH, "exec"))
-VERSION = __planit_version__
+VERSION = vs.__planit_version__
 LICENSE_LOCATION = "http://www.goplanit.org/docs/licenses/"
 
 # RESOURCES

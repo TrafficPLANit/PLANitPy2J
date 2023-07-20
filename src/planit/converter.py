@@ -227,9 +227,11 @@ class ConverterFactory:
         :param reader: to use in the converter
         :param writer: to use in the converter 
         """
-        if not GatewayState.gateway_is_running: raise Exception('A ConverterFactory can only be used when connection to JVM present, it appears not to be')
+        if not GatewayState.gateway_is_running: raise Exception('A ConverterFactory can only be used when connection '
+                                                                'to JVM present, it appears not to be')
         
-        if not isinstance(converter_type,ConverterType) : raise Exception("converter type provided is not of ConverterType, unable to instantiate")
+        if not isinstance(converter_type,ConverterType) : raise Exception("Converter type provided is not of "
+                                                                          "ConverterType, unable to instantiate")
         
         if converter_type == ConverterType.NETWORK:
             return self.__create_network_converter()
@@ -238,5 +240,5 @@ class ConverterFactory:
         elif converter_type == ConverterType.INTERMODAL:
             return self.__create_intermodal_converter()
         else :
-             raise Exception("Invalid converter type {} provided, no converter could be created".format(converter_type))
+             raise Exception(f"Invalid converter type {converter_type} provided, no converter could be created")
      

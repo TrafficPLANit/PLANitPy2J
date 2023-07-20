@@ -440,7 +440,7 @@ class BPRCostWrapper(PhysicalCostWrapper):
         modes_counterpart = self._network_instance.get_modes()
         self._modes_instance = ModesWrapper(modes_counterpart)
         
-        layers_counterpart = network_instance.getTransportLayers()
+        layers_counterpart = network_instance.get_transport_layers()
         self._layers_instance = TransportLayersWrapper(layers_counterpart)        
         
         
