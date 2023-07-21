@@ -12,6 +12,7 @@ from .enums import OsmEntityType
 from .enums import OutputFormatter
 from .enums import OutputProperty
 from .enums import OutputType
+from .enums import DayOfWeek
 from .enums import PhysicalCost
 from .enums import PathIdType
 from .enums import Smoothing
@@ -33,6 +34,7 @@ from .converterwrappers import MatsimIntermodalWriterWrapper
 from .converterwrappers import NetworkReaderWrapper
 from .converterwrappers import NetworkWriterWrapper
 from .converterwrappers import OsmIntermodalReaderWrapper
+from .converterwrappers import GtfsIntermodalReaderWrapper
 from .converterwrappers import OsmNetworkReaderWrapper
 from .converterwrappers import PlanitIntermodalReaderWrapper
 from .converterwrappers import PlanitIntermodalWriterWrapper

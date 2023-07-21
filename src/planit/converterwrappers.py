@@ -203,18 +203,20 @@ class OsmIntermodalReaderSettingsWrapper(ReaderSettingsWrapper):
     
     @property
     def pt_settings(self):
-        return self._pt_settings         
-        
+        return self._pt_settings
+
+
 class OsmIntermodalReaderWrapper(IntermodalReaderWrapper):
-    """ Wrapper around the Java PlanitOsmIntermodalReader class
+    """ Wrapper around the Java OsmIntermodalReader class
     """
     
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)     
         
-         # replace regular reader settings by planit intermodal reader settings
+         # replace regular reader settings by OSM intermodal reader settings
         self._settings = OsmIntermodalReaderSettingsWrapper(self._settings.java)
-                
+
+
 class OsmNetworkReaderSettingsWrapper(ReaderSettingsWrapper):
     """ Wrapper around settings for an OSM network reader used by converter
     to keep things simpler compared to Java side, we always provide access to highway and
@@ -257,7 +259,8 @@ class OsmNetworkReaderSettingsWrapper(ReaderSettingsWrapper):
         """ delegate to equivalent Java method, but because we only expose the option to set a bounding box
         rather than a bounding polygon, we renamed the method on the Python side to avoid confusion
         """
-        self.set_keep_osm_ways_outside_bounding_polygon(osm_way_ids)     
+        self.set_keep_osm_ways_outside_bounding_polygon(osm_way_ids)
+
 
 class OsmNetworkReaderWrapper(NetworkReaderWrapper):
     """ Wrapper around the Java PlanitOsmNetworkReader class
@@ -269,7 +272,53 @@ class OsmNetworkReaderWrapper(NetworkReaderWrapper):
         # OSM network reader settings allow access to highway and railway settings component
         # requiring a dedicated wrapper -> use this wrapper instead of generic settings wrapper
         self._settings = OsmNetworkReaderSettingsWrapper(self.settings.java)
-        
+
+
+class GtfsIntermodalReaderWrapper(IntermodalReaderWrapper):
+    """ Wrapper around the Java GtfsIntermodalReader class
+    """
+
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+        # replace regular reader settings by Gtfs intermodal reader settings
+        self._settings = GtfsIntermodalReaderSettingsWrapper(self._settings.java)
+
+
+class GtfsIntermodalReaderSettingsWrapper(ReaderSettingsWrapper):
+    """ Wrapper around settings for a Gtfs intermodal reader used by converter
+    """
+
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+        # Gtfs intermodal reader settings allow access to network and pt settings component
+        # which in turns are settings
+        self._service_settings = GtfsServicesReaderSettingsWrapper(self.getServiceSettings())
+        self._zoning_settings = GtfsZoningReaderSettingsWrapper(self.getZoningSettings())
+
+    @property
+    def service_settings(self):
+        return self._service_settings
+
+    @property
+    def zoning_settings(self):
+        return self._zoning_settings
+
+
+class GtfsServicesReaderSettingsWrapper(ReaderSettingsWrapper):
+    """ Wrapper around settings for GTFS services used by converter
+    """
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+
+class GtfsZoningReaderSettingsWrapper(ReaderSettingsWrapper):
+    """ Wrapper around settings for GTFS zoning used by converter
+    """
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
 class PlanitIntermodalReaderSettingsWrapper(ReaderSettingsWrapper):
     """ Wrapper around settings for a planit intermodal reader (native format) used by converter
     """

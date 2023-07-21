@@ -52,17 +52,32 @@ Current design choices for this Python based PLANit module include
 It seems that Py4j cannot deal with variable argument lists for methods. The reflection does not seem to work in those cases at least in case of the variable arguments being enums. Therefore avoid using those on the Java side at all times if they are exposed to the user on the Python side
 
 ## Dealing with the mapping of enums between Java and Python
-It is not difficult to instantiate a Java enum using Py4J, however it has to go through the gateway instance like the following gateway.jvm.<java_packages>.<Enum_name>.<EnumField>. This is cumbersome and unintuitive from a user perspective which we want to avoid in our wrappers. Therefore we only want to use Python enums which then under the hood are converted into their Java counterpart and passed on. The problem is that constructing a Java enum depends on the named variable for the gateway which may change over the lifetime of this project. To avoid such dependencies we instead create all Java Enums on the Java side instead via PLANitJ2Py.createEnum(String canonicalEnumName, String EnumFieldName).
+It is not difficult to instantiate a Java enum using Py4J, however it has to go through the gateway instance like the 
+following gateway.jvm.<java_packages>.<Enum_name>.<EnumField>. This is cumbersome and unintuitive from a user 
+perspective which we want to avoid in our wrappers. Therefore, we only want to use Python enums which then under 
+the hood are converted into their Java counterpart and passed on. The problem is that constructing a Java enum 
+depends on the named variable for the gateway which may change over the lifetime of this project. 
+To avoid such dependencies we instead create all Java Enums on the Java side instead via 
+PLANitJ2Py.createEnum(String canonicalEnumName, String EnumFieldName).
 
-Each Python enum that mimics a Java enum we implement with an additional method java_class_name() (See PLANitEnums.py). We utilize the field value (string) and this method (java canonical class name) to pass on plain strings to the Java side which in turn creates the enum via reflection and returns it. The Enum is then passed in as a parameter to the underlying java call that is being made for the method at hand hiding all details from the user while still using the same conceptual approach as we do in the Java source.
+Each Python enum that mimics a Java enum we implement with an additional method java_class_name() (See PLANitEnums.py). 
+We utilize the field value (string) and this method (java canonical class name) to pass on plain strings to the 
+Java side which in turn creates the enum via reflection and returns it. The Enum is then passed in as a parameter 
+to the underlying java call that is being made for the method at hand hiding all details from the user while 
+still using the same conceptual approach as we do in the Java source.
 
 ```Python
-planIt.assignment.activate_output(OutputType.LINK)
+import planit as pl
+
+planit = pl.Planit()
+planit.assignment.activate_output(pl.OutputType.LINK)
 ```
 
 with 
 
 ```Python
+from enum import Enum
+
 class OutputType(Enum):
     LINK = "LINK"
     
@@ -70,24 +85,30 @@ class OutputType(Enum):
         return "org.goplanit.output.OutputType"   
 ```
 
-In activate_output we then call the java side to create the enum and pass on the method call
+In the wrapper method of activate_output (part of the assignment wrapper) we then call the java side 
+to create the enum and pass on the method call, hiding the way we convert the Python enum to a Java enum
 
 ```Python
-    def activate_output(self, output_type : OutputType):
-        output_type_instance = GatewayState.python_2_java_gateway.entry_point.createEnum(output_type.java_class_name(),output_type.value)
-        self._java_counter_part.activateOutput(output_type_instance)
+import planit as pl
+
+def activate_output(self, output_type : pl.OutputType):
+    output_type_instance = pl.GatewayState.python_2_java_gateway.entry_point.createEnum(\
+        output_type.java_class_name(),output_type.value)
+    
+    self._java_counter_part.activateOutput(output_type_instance)
 ```
 
-While the Java side creates the enum via reflection 
+The Java side then creates the enum via reflection 
 
-```Java
-    public Enum createEnum(String enumCanonicalName, String EnumEntryName) throws ClassNotFoundException, PlanItException {
-        Class<?> enumClass = Class.forName(enumCanonicalName);
-        if(!enumClass.isEnum()) {
-            throw new PlanItException("Class is not an enum");
-        }
-        return Enum.valueOf((Class<Enum>)enumClass,EnumEntryName);        
+```Java 
+
+public Enum createEnum(String enumCanonicalName, String EnumEntryName) throws ClassNotFoundException, PlanItException {
+    Class<?> enumClass = Class.forName(enumCanonicalName);
+    if(!enumClass.isEnum()) {
+        throw new PlanItException("Class is not an enum");
     }
+    return Enum.valueOf((Class<Enum>)enumClass,EnumEntryName);        
+}
 ```
 
 # Developing for PLANitPy2J

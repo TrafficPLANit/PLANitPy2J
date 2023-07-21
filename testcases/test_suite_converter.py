@@ -1,5 +1,6 @@
 import os
 import sys
+import datetime
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'src'))
 
@@ -12,8 +13,10 @@ GERMANY = "Germany"
 
 OSM_PATH = os.path.join('converter', 'osm')
 OSM_INPUT_PATH = os.path.join(OSM_PATH, 'input')
-
 SYDNEY_OSM_PBF_FILE_PATH = os.path.join(OSM_INPUT_PATH, "sydneycbd.osm.pbf")
+
+GTFS_PATH = os.path.join('converter', 'gtfs')
+SYDNEY_GTFS_FILE_PATH = os.path.join(GTFS_PATH, "greatersydneygtfsstaticnoshapes.zip")
 
 PLANIT_PATH = os.path.join('converter', 'planit')
 PLANIT_INPUT_PATH = os.path.join(PLANIT_PATH, 'input')
@@ -304,7 +307,7 @@ class TestSuiteConverter(unittest.TestCase):
         # no correspondence to Java test as we explicitly test non-failure of Python code to instantiate converters
         planit = Planit()
 
-        # network converter
+        # intermodal converter
         intermodal_converter = planit.converter_factory.create(ConverterType.INTERMODAL)
 
         # osm reader        
@@ -333,7 +336,7 @@ class TestSuiteConverter(unittest.TestCase):
         # no correspondence to Java test as we explicitly test non-failure of Python code to instantiate converters
         planit = Planit()
 
-        # network converter
+        # intermodal converter
         intermodal_converter = planit.converter_factory.create(ConverterType.INTERMODAL)
 
         # osm reader        
@@ -347,6 +350,38 @@ class TestSuiteConverter(unittest.TestCase):
 
         # perform conversion
         intermodal_converter.convert(osm_reader, planit_writer)
+        gc.collect()
+
+    # TODO: the gtfs_Reader portion of the below test is not yet operational, this is to be created as part of v0.4.0 release
+    def test_intermodal_converter_with_services_osmgtfs2planit(self):
+        OUTPUT_PATH = os.path.join(OSM_PATH, 'output', 'planit')
+
+        # no correspondence to Java test as we explicitly test non-failure of Python code to instantiate converters
+        planit = Planit()
+
+        # intermodal converter
+        intermodal_converter = planit.converter_factory.create(ConverterType.INTERMODAL)
+
+        # osm reader
+        osm_reader = intermodal_converter.create_reader(IntermodalReaderType.OSM, AUSTRALIA)
+        osm_reader.settings.set_input_file(SYDNEY_OSM_PBF_FILE_PATH)
+
+        # GTFS reader
+        gtfs_reader = intermodal_converter.create_reader(IntermodalReaderType.GTFS, AUSTRALIA, osm_reader)
+        gtfs_reader.settings.set_input_file(SYDNEY_GTFS_FILE_PATH)
+        gtfs_reader.settings.services_settings.day_of_week = DayOfWeek.THURSDAY
+        gtfs_reader.settings.services_settings.add_time_period_filter(
+            datetime.time(hour=6, minute=0, second=0),
+            datetime.time(hour=9, minute=59, second=59)
+        )
+
+        # planit writer
+        planit_writer = intermodal_converter.create_writer(IntermodalWriterType.PLANIT)
+        planit_writer.settings.set_output_directory(OUTPUT_PATH)
+        planit_writer.settings.set_country(AUSTRALIA)
+
+        # perform conversion
+        intermodal_converter.convert(gtfs_reader, planit_writer)
         gc.collect()
 
     def test_network_converter_planit2planit(self):
