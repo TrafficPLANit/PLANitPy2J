@@ -8,12 +8,15 @@ import unittest
 from planit import *
 
 AUSTRALIA = "Australia"
+GERMANY = "Germany"
 
 OSM_PATH = os.path.join('converter', 'osm')
 OSM_INPUT_PATH = os.path.join(OSM_PATH, 'input')
 
+SYDNEY_OSM_PBF_FILE_PATH = os.path.join(OSM_INPUT_PATH, "sydneycbd.osm.pbf")
+
 PLANIT_PATH = os.path.join('converter', 'planit')
-PLANIT_INPUT_PATH = os.path.join(OSM_PATH, 'input')
+PLANIT_INPUT_PATH = os.path.join(PLANIT_PATH, 'input')
 
 class TestSuiteConverter(unittest.TestCase):
     """ We are testing here if conversions are runnable. We do not actually test the validity of the results
@@ -22,7 +25,6 @@ class TestSuiteConverter(unittest.TestCase):
     """
 
     def test_network_converter_osm_reader_all_properties(self):
-        FULL_INPUT_FILE_NAME = os.path.join(OSM_INPUT_PATH, "sydneycbd.osm.pbf")
 
         # no correspondence to Java test as we explicitly test non-failure of Python code to test all properties
         # are accessible on the OSM reader based on the documentation
@@ -43,7 +45,7 @@ class TestSuiteConverter(unittest.TestCase):
         osm_reader.settings.set_always_keep_largest_subnetwork(True)
         osm_reader.settings.set_discard_dangling_networks_above(20)
         osm_reader.settings.set_discard_dangling_networks_below(10)
-        osm_reader.settings.set_input_file(FULL_INPUT_FILE_NAME)
+        osm_reader.settings.set_input_file(SYDNEY_OSM_PBF_FILE_PATH)
         osm_reader.settings.set_remove_dangling_subnetworks(True)
         osm_reader.settings.set_bounding_box(1.2, 3, 4.5, 6)
         osm_reader.settings.set_keep_osm_ways_outside_bounding_box([1, 2, 3.4])
@@ -52,13 +54,14 @@ class TestSuiteConverter(unittest.TestCase):
         osm_reader.settings.highway_settings.activate_all_osm_highway_types()
         osm_reader.settings.highway_settings.activate_osm_highway_types(["primary"])
         osm_reader.settings.highway_settings.add_allowed_highway_modes("primary", ["bus", "foot"])
-        osm_reader.settings.highway_settings.deactivate_all_road_modes_except(["bus"])
+        osm_reader.settings.highway_settings.deactivate_all_osm_road_modes_except(["bus"])
         osm_reader.settings.highway_settings.deactivate_all_osm_highway_types_except(["primary"])
         osm_reader.settings.highway_settings.deactivate_osm_road_modes(["bus"])
+        osm_reader.settings.highway_settings.activate_osm_road_mode("bus")
+        osm_reader.settings.highway_settings.deactivate_osm_road_mode("bus")
         osm_reader.settings.highway_settings.deactivate_osm_highway_type("primary")
         osm_reader.settings.highway_settings.set_default_when_osm_highway_type_unsupported("primary")
         osm_reader.settings.highway_settings.overwrite_capacity_max_density_defaults("primary", 2000, 150)
-        osm_reader.settings.highway_settings.remove_osm_road_mode_planit_mode_mapping(["motorcar"])
         osm_reader.settings.highway_settings.set_speed_limit_defaults_based_on_urban_area(True)
 
         # railway settings
@@ -66,11 +69,10 @@ class TestSuiteConverter(unittest.TestCase):
         osm_reader.settings.railway_settings.activate_osm_railway_types(["rail", "funicular"])
         osm_reader.settings.railway_settings.deactivate_all_osm_railway_types()
         osm_reader.settings.railway_settings.deactivate_all_osm_railway_types_except(["rail", "monorail"])
-        osm_reader.settings.railway_settings.deactivate_all_rail_modes_except(["train", "tram"])
+        osm_reader.settings.railway_settings.deactivate_all_osm_rail_modes_except(["train", "tram"])
         osm_reader.settings.railway_settings.deactivate_osm_railway_type("rail")
         osm_reader.settings.railway_settings.deactivate_osm_rail_modes(["train", "subway"])
         osm_reader.settings.railway_settings.overwrite_capacity_max_density_defaults("rail", 100000, 100)
-        osm_reader.settings.railway_settings.remove_osm_rail_mode_planit_mode_mapping(["train", "subway"])
 
         # lane configuration
         osm_reader.settings.lane_configuration.set_default_directional_lanes_by_highway_type("primary", 4)
@@ -81,7 +83,6 @@ class TestSuiteConverter(unittest.TestCase):
 
     def test_network_converter_matsim_writer_all_properties(self):
         OUTPUT_PATH = os.path.join(OSM_PATH, 'output', 'matsim')
-        COUNTRY = "Australia"
 
         # no correspondence to Java test as we explicitly test non-failure of Python code to test all properties
         # are accessible on the OSM reader based on the documentation
@@ -93,16 +94,14 @@ class TestSuiteConverter(unittest.TestCase):
         # matsim writer
         matsim_writer = network_converter.create_writer(NetworkWriterType.MATSIM)
         matsim_writer.settings.set_output_directory(OUTPUT_PATH)
-        matsim_writer.settings.set_country(COUNTRY)
+        matsim_writer.settings.set_country(AUSTRALIA)
         matsim_writer.settings.set_generate_detailed_link_geometry_file(True)
-        matsim_writer.settings.set_output_file_name("my_network")
+        matsim_writer.settings.set_file_name("my_network")
 
         # ensure planit connection is reset
         gc.collect()
 
     def test_intermodal_converter_osm_reader_all_properties(self):
-        COUNTRY = "Australia"
-        FULL_INPUT_FILE_NAME = os.path.join(OSM_INPUT_PATH, "sydneycbd.osm.pbf")
 
         # no correspondence to Java test as we explicitly test non-failure of Python code to test all properties
         # are accessible on the OSM reader based on the documentation
@@ -112,10 +111,10 @@ class TestSuiteConverter(unittest.TestCase):
         intermodal_converter = planit.converter_factory.create(ConverterType.INTERMODAL)
 
         # osm reader        
-        osm_reader = intermodal_converter.create_reader(IntermodalReaderType.OSM, COUNTRY)
+        osm_reader = intermodal_converter.create_reader(IntermodalReaderType.OSM, AUSTRALIA)
 
         # global settings 
-        osm_reader.settings.set_input_file(FULL_INPUT_FILE_NAME)
+        osm_reader.settings.set_input_file(SYDNEY_OSM_PBF_FILE_PATH)
 
         # network settings (just test one, since it is the same as network reader settings
         osm_reader.settings.network_settings.highway_settings.set_default_when_osm_highway_type_unsupported("primary")
@@ -123,7 +122,7 @@ class TestSuiteConverter(unittest.TestCase):
         # PT settings
         osm_reader.settings.pt_settings.exclude_osm_nodes_by_id([123, 12345678])
         osm_reader.settings.pt_settings.exclude_osm_ways_by_id([123, 12345678])
-        osm_reader.settings.pt_settings.overwrite_stop_location_waiting_area(123, OsmEntityType.WAY, 12345678)
+        osm_reader.settings.pt_settings.overwrite_waiting_area_of_stop_location(123, OsmEntityType.WAY, 12345678)
         osm_reader.settings.pt_settings.overwrite_waiting_area_nominated_osm_way_for_stop_location(123456789,
                                                                                                    OsmEntityType.NODE,
                                                                                                    123)
@@ -138,7 +137,6 @@ class TestSuiteConverter(unittest.TestCase):
 
     def test_intermodal_converter_matsim_writer_all_properties(self):
         OUTPUT_PATH = os.path.join(OSM_PATH, 'output', 'matsim')
-        COUNTRY = "Australia"
 
         # no correspondence to Java test as we explicitly test non-failure of Python code to test all properties
         # are accessible on the OSM reader based on the documentation
@@ -152,7 +150,7 @@ class TestSuiteConverter(unittest.TestCase):
 
         # global settings 
         matsim_writer.settings.set_output_directory(OUTPUT_PATH)
-        matsim_writer.settings.set_country(COUNTRY)
+        matsim_writer.settings.set_country(AUSTRALIA)
 
         # network settings (just test one, since it is the same as network reader settings
         matsim_writer.settings.network_settings.set_file_name("matsim_network")
@@ -166,7 +164,6 @@ class TestSuiteConverter(unittest.TestCase):
 
     def test_network_converter_planit_writer_reader_all_properties(self):
         OUTPUT_PATH = os.path.join(OSM_PATH, 'output', 'planit')
-        COUNTRY = "Australia"
 
         # no correspondence to Java test as we explicitly test non-failure of Python code to test all properties
         # are accessible on the OSM reader based on the documentation
@@ -186,14 +183,13 @@ class TestSuiteConverter(unittest.TestCase):
         # settings 
         planit_writer.settings.set_output_directory(OUTPUT_PATH)
         planit_writer.settings.set_file_name("test.xml")
-        planit_writer.settings.set_country(COUNTRY)
+        planit_writer.settings.set_country(AUSTRALIA)
 
         # ensure planit connection is reset
         gc.collect()
 
     def test_intermodal_converter_planit_writer_reader_all_properties(self):
         OUTPUT_PATH = os.path.join(OSM_PATH, 'output', 'planit')
-        COUNTRY = "Australia"
 
         # no correspondence to Java test as we explicitly test non-failure of Python code to test all properties
         # are accessible on the OSM reader based on the documentation
@@ -219,17 +215,15 @@ class TestSuiteConverter(unittest.TestCase):
 
         # global settings 
         planit_writer.settings.set_output_directory(OUTPUT_PATH)
-        planit_writer.settings.set_country(COUNTRY)
+        planit_writer.settings.set_country(AUSTRALIA)
 
         # network settings
         planit_writer.settings.network_settings.set_output_directory(OUTPUT_PATH)
         planit_writer.settings.network_settings.set_file_name("test.xml")
-        planit_writer.settings.network_settings.set_country(COUNTRY)
 
         # zoning settings
         planit_writer.settings.zoning_settings.set_output_directory(OUTPUT_PATH)
         planit_writer.settings.zoning_settings.set_file_name("test.xml")
-        planit_writer.settings.zoning_settings.set_country(COUNTRY)
 
         # ensure planit connection is reset
         gc.collect()
@@ -238,7 +232,6 @@ class TestSuiteConverter(unittest.TestCase):
         OSM_URL = "https://api.openstreetmap.org/api/0.6/map?bbox=13.465661,52.504055,13.469817,52.506204"
 
         OUTPUT_PATH = os.path.join(OSM_PATH, 'output', 'matsim', 'cloud')
-        COUNTRY = "Germany"
 
         # no correspondence to Java test as we explicitly test non-failure of Python code to instantiate converters
         planit = Planit()
@@ -247,15 +240,15 @@ class TestSuiteConverter(unittest.TestCase):
         network_converter = planit.converter_factory.create(ConverterType.NETWORK)
 
         # osm reader        
-        osm_reader = network_converter.create_reader(NetworkReaderType.OSM, COUNTRY)
+        osm_reader = network_converter.create_reader(NetworkReaderType.OSM, GERMANY)
         osm_reader.settings.set_input_source(OSM_URL)
         osm_reader.settings.deactivate_all_osm_way_types_except(["footway"])
-        osm_reader.settings.highway_settings.deactivate_all_road_modes_except(["foot"])
+        osm_reader.settings.highway_settings.deactivate_all_osm_road_modes_except(["foot"])
 
         # matsim writer
         matsim_writer = network_converter.create_writer(NetworkWriterType.MATSIM)
         matsim_writer.settings.set_output_directory(OUTPUT_PATH)
-        matsim_writer.settings.set_country(COUNTRY)
+        matsim_writer.settings.set_country(GERMANY)
 
         # perform conversion
         network_converter.convert(osm_reader, matsim_writer)
@@ -263,8 +256,6 @@ class TestSuiteConverter(unittest.TestCase):
 
     def test_network_converter_osm2matsim_file(self):
         OUTPUT_PATH = os.path.join(OSM_PATH, 'output', 'matsim', 'file')
-        COUNTRY = "Australia"
-        FULL_INPUT_FILE_NAME = os.path.join(OSM_INPUT_PATH, "sydneycbd.osm.pbf")
 
         # no correspondence to Java test as we explicitly test non-failure of Python code to instantiate converters
         planit = Planit()
@@ -273,13 +264,13 @@ class TestSuiteConverter(unittest.TestCase):
         network_converter = planit.converter_factory.create(ConverterType.NETWORK)
 
         # osm reader        
-        osm_reader = network_converter.create_reader(NetworkReaderType.OSM, COUNTRY)
-        osm_reader.settings.set_input_file(FULL_INPUT_FILE_NAME)
+        osm_reader = network_converter.create_reader(NetworkReaderType.OSM, AUSTRALIA)
+        osm_reader.settings.set_input_file(SYDNEY_OSM_PBF_FILE_PATH)
 
         # matsim writer
         matsim_writer = network_converter.create_writer(NetworkWriterType.MATSIM)
         matsim_writer.settings.set_output_directory(OUTPUT_PATH)
-        matsim_writer.settings.set_country(COUNTRY)
+        matsim_writer.settings.set_country(AUSTRALIA)
 
         # perform conversion
         network_converter.convert(osm_reader, matsim_writer)
@@ -287,8 +278,6 @@ class TestSuiteConverter(unittest.TestCase):
 
     def test_network_converter_osm2planit(self):
         OUTPUT_PATH = os.path.join(OSM_PATH, 'output', 'planit')
-        COUNTRY = "Australia"
-        FULL_INPUT_FILE_NAME = os.path.join(OSM_INPUT_PATH, "sydneycbd.osm.pbf")
 
         # no correspondence to Java test as we explicitly test non-failure of Python code to instantiate converters
         planit = Planit()
@@ -297,13 +286,13 @@ class TestSuiteConverter(unittest.TestCase):
         network_converter = planit.converter_factory.create(ConverterType.NETWORK)
 
         # osm reader        
-        osm_reader = network_converter.create_reader(NetworkReaderType.OSM, COUNTRY)
-        osm_reader.settings.set_input_file(FULL_INPUT_FILE_NAME)
+        osm_reader = network_converter.create_reader(NetworkReaderType.OSM, AUSTRALIA)
+        osm_reader.settings.set_input_file(SYDNEY_OSM_PBF_FILE_PATH)
 
         # planit writer
         planit_writer = network_converter.create_writer(NetworkWriterType.PLANIT)
         planit_writer.settings.set_output_directory(OUTPUT_PATH)
-        planit_writer.settings.set_country(COUNTRY)
+        planit_writer.settings.set_country(AUSTRALIA)
 
         # perform conversion
         network_converter.convert(osm_reader, planit_writer)
@@ -311,8 +300,6 @@ class TestSuiteConverter(unittest.TestCase):
 
     def test_intermodal_converter_osm2matsim(self):
         OUTPUT_PATH = os.path.join(OSM_PATH, 'output', 'matsim')
-        COUNTRY = "Australia"
-        FULL_INPUT_FILE_NAME = os.path.join(OSM_INPUT_PATH, "sydneycbd.osm.pbf")
 
         # no correspondence to Java test as we explicitly test non-failure of Python code to instantiate converters
         planit = Planit()
@@ -321,20 +308,20 @@ class TestSuiteConverter(unittest.TestCase):
         intermodal_converter = planit.converter_factory.create(ConverterType.INTERMODAL)
 
         # osm reader        
-        osm_reader = intermodal_converter.create_reader(IntermodalReaderType.OSM, COUNTRY)
-        osm_reader.settings.set_input_file(FULL_INPUT_FILE_NAME)
+        osm_reader = intermodal_converter.create_reader(IntermodalReaderType.OSM, AUSTRALIA)
+        osm_reader.settings.set_input_file(SYDNEY_OSM_PBF_FILE_PATH)
 
         # matsim writer
         matsim_writer = intermodal_converter.create_writer(IntermodalWriterType.MATSIM)
         # test if setting country and output path via separate settings works
         matsim_writer.settings.network_settings.set_output_directory(OUTPUT_PATH)
-        matsim_writer.settings.network_settings.set_country(COUNTRY)
+        matsim_writer.settings.network_settings.set_country(AUSTRALIA)
         matsim_writer.settings.zoning_settings.set_output_directory(OUTPUT_PATH)
-        matsim_writer.settings.zoning_settings.set_country(COUNTRY)
+        matsim_writer.settings.zoning_settings.set_country(AUSTRALIA)
         matsim_writer.settings.zoning_settings.set_generate_matrix_based_pt_router_files(True)
         # test if setting country and output path via intermodal settings directly works
         matsim_writer.settings.set_output_directory(OUTPUT_PATH)
-        matsim_writer.settings.set_country(COUNTRY)
+        matsim_writer.settings.set_country(AUSTRALIA)
 
         # perform conversion
         intermodal_converter.convert(osm_reader, matsim_writer)
@@ -342,28 +329,21 @@ class TestSuiteConverter(unittest.TestCase):
 
     def test_intermodal_converter_osm2planit(self):
         OUTPUT_PATH = os.path.join(OSM_PATH, 'output', 'planit')
-        COUNTRY = "Australia"
-        FULL_INPUT_FILE_NAME = os.path.join(OSM_INPUT_PATH, "sydneycbd.osm.pbf")
 
         # no correspondence to Java test as we explicitly test non-failure of Python code to instantiate converters
-        plan_it = Planit()
+        planit = Planit()
 
         # network converter
-        intermodal_converter = plan_it.converter_factory.create(ConverterType.INTERMODAL)
+        intermodal_converter = planit.converter_factory.create(ConverterType.INTERMODAL)
 
         # osm reader        
-        osm_reader = intermodal_converter.create_reader(IntermodalReaderType.OSM, COUNTRY)
-        osm_reader.settings.set_input_file(FULL_INPUT_FILE_NAME)
+        osm_reader = intermodal_converter.create_reader(IntermodalReaderType.OSM, AUSTRALIA)
+        osm_reader.settings.set_input_file(SYDNEY_OSM_PBF_FILE_PATH)
 
         # planit writer
         planit_writer = intermodal_converter.create_writer(IntermodalWriterType.PLANIT)
-        # test if setting country and output path via separate settings works
-        planit_writer.settings.network_settings.set_output_directory(OUTPUT_PATH)
-        planit_writer.settings.zoning_settings.set_output_directory(OUTPUT_PATH)
-        planit_writer.settings.zoning_settings.set_country(COUNTRY)
-        # test if setting country and output path via intermodal settings directly works
         planit_writer.settings.set_output_directory(OUTPUT_PATH)
-        planit_writer.settings.set_country(COUNTRY)
+        planit_writer.settings.set_country(AUSTRALIA)
 
         # perform conversion
         intermodal_converter.convert(osm_reader, planit_writer)
@@ -371,7 +351,6 @@ class TestSuiteConverter(unittest.TestCase):
 
     def test_network_converter_planit2planit(self):
         OUTPUT_PATH = os.path.join(PLANIT_PATH, 'output', 'planit')
-        COUNTRY = "Australia"
 
         # no correspondence to Java test as we explicitly test non-failure of Python code to instantiate converters
         plan_it = Planit()
@@ -386,7 +365,7 @@ class TestSuiteConverter(unittest.TestCase):
         # planit writer
         planit_writer = network_converter.create_writer(NetworkWriterType.PLANIT)
         planit_writer.settings.set_output_directory(OUTPUT_PATH)
-        planit_writer.settings.set_country(COUNTRY)
+        planit_writer.settings.set_country(AUSTRALIA)
 
         # perform conversion
         network_converter.convert(planit_reader, planit_writer)
@@ -395,7 +374,6 @@ class TestSuiteConverter(unittest.TestCase):
 
     def test_intermodal_converter_planit2planit(self):
         OUTPUT_PATH = os.path.join(PLANIT_PATH, 'output', 'planit')
-        COUNTRY = "Australia"
 
         # no correspondence to Java test as we explicitly test non-failure of Python code to instantiate converters
         plan_it = Planit()
@@ -412,10 +390,10 @@ class TestSuiteConverter(unittest.TestCase):
         # test if setting country and output path via separate settings works
         planit_writer.settings.network_settings.set_output_directory(OUTPUT_PATH)
         planit_writer.settings.zoning_settings.set_output_directory(OUTPUT_PATH)
-        planit_writer.settings.zoning_settings.set_country(COUNTRY)
+        planit_writer.settings.zoning_settings.set_country(AUSTRALIA)
         # test if setting country and output path via intermodal settings directly works
         planit_writer.settings.set_output_directory(OUTPUT_PATH)
-        planit_writer.settings.set_country(COUNTRY)
+        planit_writer.settings.set_country(AUSTRALIA)
 
         # perform conversion
         intermodal_converter.convert(planit_reader, planit_writer)

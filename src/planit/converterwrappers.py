@@ -175,11 +175,15 @@ class OsmPublicTransportSettingsWrapper(ReaderSettingsWrapper):
         """
         return GatewayState.python_2_java_gateway.entry_point.createEnum(osm_entity_type.java_class_name(),osm_entity_type.value) 
         
-    def overwrite_stop_location_waiting_area(self, osm_stop_location_id, osm_entity_type:OsmEntityType, osm_waiting_area_id):
-        self.overwriteStopLocationWaitingArea(osm_stop_location_id, self.__create_java_entity_type(osm_entity_type), osm_waiting_area_id)
+    def overwrite_waiting_area_of_stop_location(
+            self, osm_stop_location_id, osm_entity_type:OsmEntityType, osm_waiting_area_id):
+        self.overwriteWaitingAreaOfStopLocation(
+            osm_stop_location_id, self.__create_java_entity_type(osm_entity_type), osm_waiting_area_id)
         
-    def overwrite_waiting_area_nominated_osm_way_for_stop_location(self, osm_waiting_area_id, osm_entity_type:OsmEntityType, osm_way_id):
-        self.overwriteWaitingAreaNominatedOsmWayForStopLocation(osm_waiting_area_id, self.__create_java_entity_type(osm_entity_type), osm_way_id)
+    def overwrite_waiting_area_nominated_osm_way_for_stop_location(
+            self, osm_waiting_area_id, osm_entity_type:OsmEntityType, osm_way_id):
+        self.overwriteWaitingAreaNominatedOsmWayForStopLocation(
+            osm_waiting_area_id, self.__create_java_entity_type(osm_entity_type), osm_way_id)
         
 class OsmIntermodalReaderSettingsWrapper(ReaderSettingsWrapper):
     """ Wrapper around settings for an OSM intermodal reader used by converter
