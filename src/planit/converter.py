@@ -1,4 +1,4 @@
-from abc import ABCMeta, abstractmethod
+from abc import abstractmethod
 
 from planit import ConverterType
 from planit import GatewayState
@@ -20,9 +20,10 @@ from planit import PlanitIntermodalReaderWrapper
 from planit import PlanitIntermodalWriterWrapper
 from planit import PlanitNetworkReaderWrapper
 from planit import PlanitNetworkWriterWrapper
+from planit import GeometryIntermodalWriterWrapper
 
 
-class _ConverterBase(metaclass=ABCMeta):
+class _ConverterBase():
     """ Base converter class on python side exposing the convert functionality
     """
 
@@ -35,14 +36,14 @@ class _ConverterBase(metaclass=ABCMeta):
         """
         pass
 
-    def convert(self, reader, writer):
-        """ each converter should be able to convert from a reader to a writer
-        :param readerWrapper: to use
-        :param writerWrapper: to use
+    def convert(self, reader_wrapper, writer_wrapper):
+        """ Each converter should be able to convert from a reader to a writer
+        :param reader_wrapper: to use
+        :param writer_wrapper: to use
         """
 
         # construct java converter and perform conversion
-        self._create_java_converter(reader, writer).convert()
+        self._create_java_converter(reader_wrapper, writer_wrapper).convert()
 
 
 class NetworkConverter(_ConverterBase):
@@ -91,10 +92,10 @@ class NetworkConverter(_ConverterBase):
         return PlanitNetworkWriterWrapper(java_network_writer)
 
     def create_reader(self, network_reader_type: NetworkReaderType, country: str = "Global") -> NetworkReaderWrapper:
-        """ factory method to create a network reader compatible with this converter
-        :param network_reader_type: the type of reader to create
-        :param country: optional argument specifying the country of the source network. Used by some readers to initialise default settings. If absent
-         but required it defaults to "Global", i.e., no country specific information is used in initialising defaults if applicable
+        """ factory method to create a network reader compatible with this converter :param network_reader_type: the
+        type of reader to create :param country: optional argument specifying the country of the source network. Used
+        by some readers to initialise default settings. If absent but required it defaults to "Global", i.e.,
+        no country specific information is used in initialising defaults if applicable
         """
         if not isinstance(network_reader_type, NetworkReaderType): raise Exception(
             "network reader type provided is not of NetworkReaderType, unable to instantiate")
@@ -134,7 +135,8 @@ class ZoningConverter(_ConverterBase):
 
 
 class IntermodalConverter(_ConverterBase):
-    """ Expose the options to create intermodal reader and writers of supported types and perform conversion between them
+    """ Expose the options to create intermodal reader and writers of supported types and perform conversion between
+    them
     """
 
     def __init__(self):
@@ -147,8 +149,17 @@ class IntermodalConverter(_ConverterBase):
         :param writerWrapper: to use
         :return created java intermodal converter
         """
-        return GatewayState.python_2_java_gateway.jvm.org.goplanit.converter.intermodal. \
-            IntermodalConverterFactory.create(readerWrapper.java, writerWrapper.java)
+        return IntermodalConverterWrapper(GatewayState.python_2_java_gateway.jvm.org.goplanit.converter.intermodal.
+                                          IntermodalConverterFactory.create(readerWrapper.java, writerWrapper.java))
+
+    def convert_with_services(self, readerWrapper: IntermodalReaderWrapper, writerWrapper: IntermodalWriterWrapper):
+        """ Each intermodal converter is expected to be able to convert from a reader to a writer including services
+        :param readerWrapper: to use
+        :param writerWrapper: to use
+        """
+
+        # construct java converter and perform conversion
+        self._create_java_converter(readerWrapper, writerWrapper).convert_with_services()
 
     #####################################
     #     READER FACTORY METHODS
@@ -156,13 +167,13 @@ class IntermodalConverter(_ConverterBase):
 
     @staticmethod
     def __create_osm_intermodal_reader(country: str) -> OsmIntermodalReaderWrapper:
-        java_intermodal_reader = GatewayState.python_2_java_gateway.jvm.org.goplanit.osm.converter.intermodal.\
+        java_intermodal_reader = GatewayState.python_2_java_gateway.jvm.org.goplanit.osm.converter.intermodal. \
             OsmIntermodalReaderFactory.create(country)
         return OsmIntermodalReaderWrapper(java_intermodal_reader)
 
     @staticmethod
     def __create_planit_intermodal_reader() -> PlanitIntermodalReaderWrapper:
-        java_intermodal_reader = GatewayState.python_2_java_gateway.jvm.org.goplanit.io.converter.intermodal.\
+        java_intermodal_reader = GatewayState.python_2_java_gateway.jvm.org.goplanit.io.converter.intermodal. \
             PlanitIntermodalReaderFactory.create()
         return PlanitIntermodalReaderWrapper(java_intermodal_reader)
 
@@ -173,8 +184,8 @@ class IntermodalConverter(_ConverterBase):
             raise Exception(
                 "GTFS intermodal reader expects a reference reader to be able to construct network and zoning")
 
-        java_intermodal_reader = \
-            GatewayState.python_2_java_gateway.jvm.org.goplanit.gtfs.converter.intermodal.GtfsIntermodalReaderFactory.create(country, reference_reader.java)
+        java_intermodal_reader = GatewayState.python_2_java_gateway.jvm.org.goplanit.gtfs.converter.intermodal. \
+            GtfsIntermodalReaderFactory.create(country, reference_reader.java)
         return GtfsIntermodalReaderWrapper(java_intermodal_reader)
 
     #####################################
@@ -193,11 +204,18 @@ class IntermodalConverter(_ConverterBase):
             PlanitIntermodalWriterFactory.create()
         return PlanitIntermodalWriterWrapper(java_network_writer)
 
+    @staticmethod
+    def __create_geoio_intermodal_writer() -> GeometryIntermodalWriterWrapper:
+        java_network_writer = GatewayState.python_2_java_gateway.jvm.org.goplanit.geoio.converter.intermodal. \
+            GeometryIntermodalWriterFactory.create()
+        return GeometryIntermodalWriterWrapper(java_network_writer)
+
     def create_reader(self,
                       intermodal_reader_type: IntermodalReaderType,
                       country: str = "Global",
                       reference_reader: IntermodalReaderWrapper = None) -> IntermodalReaderWrapper:
-        """ factory method to create an intermodal  reader compatible with this converter
+        """ factory method to create an intermodal  reader compatible with this converter.
+
         :param intermodal_reader_type: the type of reader to create
         :param country: optional argument specifying the country of the source network.
         Used by some readers to initialise default settings. If absent it defaults to "Global", i.e., no country
@@ -232,6 +250,8 @@ class IntermodalConverter(_ConverterBase):
             return IntermodalConverter.__create_matsim_intermodal_writer()
         elif intermodal_writer_type == IntermodalWriterType.PLANIT:
             return IntermodalConverter.__create_planit_intermodal_writer()
+        elif intermodal_writer_type == IntermodalWriterType.GEOIO:
+            return IntermodalConverter.__create_geoio_intermodal_writer()
         else:
             raise Exception("unsupported intermodal writer type provided, unable to instantiate")
 
@@ -247,22 +267,22 @@ class ConverterFactory:
         """
 
     def __create_network_converter(self) -> NetworkConverter:
-        """ Factory method to create a network converter proxy that allows the user to create readers and writers and exposes a convert method
-        that performs the actual conversion 
+        """ Factory method to create a network converter proxy that allows the user to create readers and writers and
+        exposes a convert method that performs the actual conversion
         """
         return NetworkConverter()
 
     def __create_zoning_converter(self) -> ZoningConverter:
-        """ Factory method to create a zoning converter proxy that allows the user to create readers and writers and exposes a convert method
-        that performs the actual conversion 
+        """ Factory method to create a zoning converter proxy that allows the user to create readers and writers and
+        exposes a convert method that performs the actual conversion
         """
 
         # TODO not made available publicly
         return ZoningConverter()
 
     def __create_intermodal_converter(self) -> IntermodalConverter:
-        """ Factory method to create an intermodal converter proxy that allows the user to create readers and writers and exposes a convert method
-        that performs the actual conversion 
+        """ Factory method to create an intermodal converter proxy that allows the user to create readers and writers
+        and exposes a convert method that performs the actual conversion
         """
         return IntermodalConverter()
 

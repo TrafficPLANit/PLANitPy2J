@@ -1,14 +1,15 @@
 import os
 import subprocess
 import traceback
+
 from py4j.java_gateway import JavaGateway
-from planit import Version
-from planit import GatewayUtils
-from planit import GatewayState
-from planit import GatewayConfig
+
 from planit import ConverterFactory
+from planit import GatewayConfig
+from planit import GatewayState
 from planit import PlanitProject
-from builtins import isinstance
+from planit import Version
+
 
 class Planit:
             

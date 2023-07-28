@@ -1,6 +1,8 @@
+import datetime
 import re
 import os
 import sys
+from enum import Enum
 
 from py4j.java_collections import SetConverter, MapConverter, ListConverter
 
@@ -56,19 +58,23 @@ class GatewayUtils(object):
     def convert_args_to_java(args):
         """ convert passed in arguments to java versions if needed. Required for containers which cannot be mapped one on
         one to Java. 1) Python List is converted to Java ArrayList.
-        :param args to convert where needed, assumed iterable
+
+        :param args: to convert where needed, assumed iterable
         :return converted args to use  
         """
         converted_args = []
         for arg in args:
             
-            # convert Python List to Java ArrayList. For some reason the built in converter does not work properly, 
-            # so we do it ourselves but along the same lines. Main difference is instantiation of the array list via gateway
+            # convert Python List to Java ArrayList. For some reason the built-in converter does not work properly,
+            # so we do it ourselves but along the same lines. Main difference is instantiation of the array list via
+            # gateway
             if isinstance(arg, list):
                 java_list = GatewayState.python_2_java_gateway.jvm.java.util.ArrayList()
                 for element in arg:
                     java_list.add(element)
                 arg = java_list
+            if isinstance(arg, datetime.time):
+                arg = GatewayUtils.to_java_local_time(arg)
             converted_args.append(arg)
         return converted_args
     
@@ -83,3 +89,22 @@ class GatewayUtils(object):
         for i in range(len(python_list)):
             java_array[i]=python_list[i]
         return java_array
+
+    @staticmethod
+    def to_java_local_time(time: datetime.time):
+        """ convert a Python datetime.time to a Java LocalTime
+        :param time: the python time instance
+        :return java LocalTime instance representing the same time as time
+        """
+        return GatewayState.python_2_java_gateway.jvm.java.time.LocalTime.of(
+            time.hour, time.minute, time.second, time.microsecond * 1000)
+
+    @staticmethod
+    def to_java_enum(python_planit_enum: Enum):
+        """ convert Python predefined enum to Java counterpart.
+
+        :param python_planit_enum: type to convert
+        :return java counterpart
+        """
+        return GatewayState.python_2_java_gateway.entry_point.createEnum(
+            python_planit_enum.java_class_name(), python_planit_enum.value)

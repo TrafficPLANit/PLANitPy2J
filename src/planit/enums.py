@@ -1,5 +1,7 @@
 from enum import Enum
 
+import planit as pl
+
 
 class ConverterType(Enum):
     """ Enum for the different converters that exist
@@ -9,6 +11,7 @@ class ConverterType(Enum):
     INTERMODAL = "IntermodalConverter"
     SERVICE_NETWORK = "ServiceNetworkConverter"
     ROUTED_SERVICES = "RoutedServicesConverter"
+
 
 class DayOfWeek(Enum):
     MONDAY = "MONDAY"
@@ -22,12 +25,29 @@ class DayOfWeek(Enum):
     def java_class_name(self) -> str:
         return "java.time.DayOfWeek"
 
+    @staticmethod
+    def from_java(java_enum) -> Enum:
+        return DayOfWeek[java_enum.name()] if java_enum is not None else None
+
+
 class GapFunction(Enum):
     """ Enum for the different gap functions that exist on supporting traffic assignments
     """
     LINK_BASED_RELATIVE = "org.goplanit.gap.LinkBasedRelativeGapFunction"
     NORM_BASED = "org.goplanit.gap.NormBasedGapFunction"
 
+
+class IdMapperType(Enum):
+    XML = "XML"
+    ID = "ID"
+    EXTERNAL_ID = "EXTERNAL_ID"
+
+    def java_class_name(self) -> str:
+        return "org.goplanit.converter.idmapping.IdMapperType"
+
+    @staticmethod
+    def from_java(java_enum) -> Enum:
+        return IdMapperType[java_enum.name()] if java_enum is not None else None
 
 class IntermodalReaderType(Enum):
     """ Enum for the different intermodal readers that are supported
@@ -42,6 +62,7 @@ class IntermodalWriterType(Enum):
     """
     MATSIM = "MatsimIntermodalWriter"
     PLANIT = "PlanitIntermodalWriter"
+    GEOIO = "GeometryIntermodalWriter"
 
 
 class Network(Enum):
@@ -57,18 +78,6 @@ class NetworkReaderType(Enum):
     """
     OSM = "OsmNetworkReader"
     PLANIT = "PlanitNetworkReader"
-
-
-class ServiceNetworkReaderType(Enum):
-    """ Enum for the different service network readers that exist compatible with a service network converter
-    """
-    PLANIT = "PlanitServiceNetworkReader"
-
-class RoutedServicesReaderType(Enum):
-    """ Enum for the different routed services readers that exist compatible with a routed services converter
-    """
-    PLANIT = "PlanitRoutedServicesReader"
-
 
 class NetworkWriterType(Enum):
     """ Enum for the different network writers that exist compatible with a network converter
@@ -172,14 +181,6 @@ class OutputType(Enum):
     def java_class_name(self) -> str:
         return "org.goplanit.output.enums.OutputType"
 
-
-class PhysicalCost(Enum):
-    """ Enum for the different physical costs the user can choose, they map to the Java equivalent class name for easy mapping
-    """
-    BPR = "org.goplanit.cost.physical.BPRLinkTravelTimeCost"
-    FREEFLOW = "org.goplanit.cost.physical.FreeFlowLinkTravelTimeCost"
-
-
 class PathIdType(Enum):
     LINK_SEGMENT_EXTERNAL_ID = "LINK_SEGMENT_EXTERNAL_ID"
     LINK_SEGMENT_XML_ID = "LINK_SEGMENT_XML_ID"
@@ -191,6 +192,46 @@ class PathIdType(Enum):
     def java_class_name(self) -> str:
         return "org.goplanit.output.enums.PathOutputIdentificationType"
 
+class PhysicalCost(Enum):
+    """ Enum for the different physical costs the user can choose, they map to the Java equivalent class name for easy mapping
+    """
+    BPR = "org.goplanit.cost.physical.BPRLinkTravelTimeCost"
+    FREEFLOW = "org.goplanit.cost.physical.FreeFlowLinkTravelTimeCost"
+
+class PredefinedModeType(Enum):
+    BICYCLE = "BICYCLE"
+    CUSTOM = "CUSTOM"
+    CAR = "CAR"
+    CAR_SHARE = "CAR_SHARE"
+    CAR_HIGH_OCCUPANCY = "CAR_HIGH_OCCUPANCY"
+    BUS = "BUS"
+    PEDESTRIAN = "PEDESTRIAN"
+    MOTOR_BIKE = "MOTOR_BIKE"
+    SUBWAY = "SUBWAY"
+    TRAIN = "TRAIN"
+    TRAM = "TRAM"
+    LIGHTRAIL = "LIGHTRAIL"
+    FERRY = "FERRY"
+    GOODS_VEHICLE = "GOODS_VEHICLE"        #non - articulated goods vehicle, up to 3.5 tonnes
+    HEAVY_GOODS_VEHICLE = "HEAVY_GOODS_VEHICLE"    # non - articulated goods vehicle, over to 3.5 tonnes
+    LARGE_HEAVY_GOODS_VEHICLE = "LARGE_HEAVY_GOODS_VEHICLE"
+
+    def java_class_name(self) -> str:
+        return "org.goplanit.utils.mode.PredefinedModeType"
+
+    @staticmethod
+    def from_java(java_enum) -> Enum:
+        return PredefinedModeType[java_enum.name()] if java_enum is not None else None
+
+class RoutedServicesReaderType(Enum):
+    """ Enum for the different routed services readers that exist compatible with a routed services converter
+    """
+    PLANIT = "PlanitRoutedServicesReader"
+
+class ServiceNetworkReaderType(Enum):
+    """ Enum for the different service network readers that exist compatible with a service network converter
+    """
+    PLANIT = "PlanitServiceNetworkReader"
 
 class Smoothing(Enum):
     """ Enum for the different smoothing options the user can choose, they map to the Java equivalent class name for easy mapping
