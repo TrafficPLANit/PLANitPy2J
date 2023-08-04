@@ -1,9 +1,14 @@
-from typing import Tuple, List, Set
+import datetime
+from typing import Tuple, List, Set, Union, Any, Dict
 
-from planit import DayOfWeek, IdMapperType, PredefinedModeType, GatewayUtils
+from py4j import java_collections
+
+from planit import DayOfWeek, IdMapperType, PredefinedModeType, GatewayUtils, TntpFileColumnType, SpeedUnits, TimeUnits, \
+    LengthUnits
 from planit import GatewayState
 from planit import BaseWrapper
 from planit import OsmEntityType
+
 
 class ConverterWrapper(BaseWrapper):
     """ Wrapper around a Java Converter class instance which in turn has more specific implementations for which
@@ -34,7 +39,7 @@ class ReaderWrapper(BaseWrapper):
         # we have a general wrapper for all settings instances exposed to the user, while not having to create
         # separate wrapper classes for each specific implementation (as long as the settings themselves do not expose
         # any other classes that need to be wrapper this will work
-        self._settings = ReaderSettingsWrapper(self.get_settings())
+        self._settings = ReaderSettingsWrapper(java_counterpart.getSettings())
 
     @property
     def settings(self) -> ReaderSettingsWrapper:
@@ -86,7 +91,8 @@ class IntermodalConverterWrapper(ConverterWrapper):
 
 
 class IntermodalReaderWrapper(ReaderWrapper):
-    """ Wrapper around the Java IntermodalReader class instance, derived implementation are more specific, e.g. OsmIntermodalReaderWrapper
+    """ Wrapper around the Java IntermodalReader class instance, derived implementation are more specific,
+    e.g. OsmIntermodalReaderWrapper
     """
 
     def __init__(self, java_counterpart):
@@ -94,7 +100,8 @@ class IntermodalReaderWrapper(ReaderWrapper):
 
 
 class IntermodalWriterWrapper(WriterWrapper):
-    """ Wrapper around the Java IntermodalWriter class instance, derived implementations are more specific, e.g. MatsimIntermodalWriterWrapper
+    """ Wrapper around the Java IntermodalWriter class instance, derived implementations are more specific,
+    e.g. MatsimIntermodalWriterWrapper
     """
 
     def __init__(self, java_counterpart):
@@ -115,24 +122,60 @@ class NetworkConverterWrapper(ConverterWrapper):
         super().__init__(java_counterpart)
 
 
-class NetworkReaderWrapper(ReaderWrapper):
-    """ Wrapper around the Java NetworkReader class instance, derived implementation are more specific, e.g. OsmNetworkReaderWrapper
-    """
-
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-
-
 class NetworkWriterWrapper(WriterWrapper):
-    """ Wrapper around the Java NetworkWriter class instance, derived implementations are more specific, e.g. MatsimNetworkWriterWrapper
+    """ Wrapper around the Java NetworkWriter class instance, derived implementations are more specific,
+    e.g. MatsimNetworkWriterWrapper
     """
 
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
 
-    ##########################################################
+
+class ZoningConverterWrapper(ConverterWrapper):
+    """ Wrapper around the Java ZoningConverter class instance
+    """
+
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
 
 
+class ZoningReaderWrapper(ReaderWrapper):
+    """ Wrapper around the Java NetworkReader class instance, derived implementation are more specific,
+    e.g. PlanitZoningReaderWrapper
+    """
+
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+
+class ZoningWriterWrapper(WriterWrapper):
+    """ Wrapper around the Java ZoningWriter class instance, derived implementations are more specific,
+    e.g. TntpZoningWriterWrapper
+    """
+
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+
+class DemandsReaderWrapper(ReaderWrapper):
+    """ Wrapper around the Java DemandsReader class instance, derived implementation are more specific,
+    e.g. TntpDemandsReaderWrapper
+    """
+
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+
+class DemandsWriterWrapper(WriterWrapper):
+    """ Wrapper around the Java DemandsWriter class instance, derived implementations are more specific,
+    e.g. PlanitDemandsWriterWrapper
+    """
+
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+
+##########################################################
 # Triple derived wrappers
 ##########################################################
 
@@ -182,8 +225,8 @@ class MatsimNetworkWriterWrapper(NetworkWriterWrapper):
 
 
 class OsmPublicTransportSettingsWrapper(ReaderSettingsWrapper):
-    """ Wrapper around pt settings for an OSM intermodal reader used by converter. Wrapper is needed to deal with the methods
-    that require enum parameters
+    """ Wrapper around pt settings for an OSM intermodal reader used by converter. Wrapper is needed to deal with the
+    methods that require enum parameters
     """
 
     def __init__(self, java_counterpart):
@@ -208,7 +251,8 @@ class OsmPublicTransportSettingsWrapper(ReaderSettingsWrapper):
             self, osm_waiting_area_id: int, osm_entity_type: OsmEntityType, mode_access: List[str]):
         _str_class = GatewayState.python_2_java_gateway.jvm.java.lang.String
         self.overwriteWaitingAreaModeAccess(
-            osm_waiting_area_id, GatewayUtils.to_java_enum(osm_entity_type), GatewayUtils.to_java_array(_str_class, mode_access))
+            osm_waiting_area_id, GatewayUtils.to_java_enum(osm_entity_type),
+            GatewayUtils.to_java_array(_str_class, mode_access))
 
     def get_overwritten_waiting_area_mode_Access(
             self, osm_waiting_area_id: int, osm_entity_type: OsmEntityType) -> List[str]:
@@ -319,6 +363,7 @@ class OsmHighwaySettingsWrapper(ReaderSettingsWrapper):
         result = self.java.getMappedOsmRoadModes(java_predefined_mode_type)
         return result
 
+
 class OsmRailwaySettingsWrapper(ReaderSettingsWrapper):
     """ Wrapper around the Java OsmRailwaySettingsWrapper.
      """
@@ -338,6 +383,7 @@ class OsmRailwaySettingsWrapper(ReaderSettingsWrapper):
         result = self.java.getMappedOsmRailModes(java_predefined_mode_type)
         return result
 
+
 class OsmWaterwaySettingsWrapper(ReaderSettingsWrapper):
     """ Wrapper around the Java OsmWaterwaySettingsWrapper.
      """
@@ -345,7 +391,8 @@ class OsmWaterwaySettingsWrapper(ReaderSettingsWrapper):
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
 
-    def get_overwritten_capacity_max_density_by_osm_waterway_route_type(self, osm_way_route_type: str) -> Tuple[float, float]:
+    def get_overwritten_capacity_max_density_by_osm_waterway_route_type(self, osm_way_route_type: str) -> Tuple[
+        float, float]:
         java_pair = self.java.getOverwrittenCapacityMaxDensityByOsmWaterwayRouteType(osm_way_route_type)
         return java_pair.first(), java_pair.second()  # capacity_pcu_h and max_density_pcu_km
 
@@ -358,7 +405,7 @@ class OsmWaterwaySettingsWrapper(ReaderSettingsWrapper):
         return result
 
 
-class OsmNetworkReaderWrapper(NetworkReaderWrapper):
+class OsmNetworkReaderWrapper(ZoningReaderWrapper):
     """ Wrapper around the Java PlanitOsmNetworkReader class
     """
 
@@ -379,27 +426,6 @@ class GtfsIntermodalReaderWrapper(IntermodalReaderWrapper):
 
         # replace regular reader settings by Gtfs intermodal reader settings
         self._settings = GtfsIntermodalReaderSettingsWrapper(self._settings.java)
-
-
-class GtfsIntermodalReaderSettingsWrapper(ReaderSettingsWrapper):
-    """ Wrapper around settings for a Gtfs intermodal reader used by converter
-    """
-
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-
-        # Gtfs intermodal reader settings allow access to network and pt settings component
-        # which in turns are settings
-        self._service_settings = GtfsServicesReaderSettingsWrapper(self.getServiceSettings())
-        self._zoning_settings = GtfsZoningReaderSettingsWrapper(self.getZoningSettings())
-
-    @property
-    def service_settings(self):
-        return self._service_settings
-
-    @property
-    def zoning_settings(self):
-        return self._zoning_settings
 
 
 class GtfsServicesReaderSettingsWrapper(ReaderSettingsWrapper):
@@ -427,6 +453,18 @@ class GtfsServicesReaderSettingsWrapper(ReaderSettingsWrapper):
     def day_of_week(self, value: DayOfWeek):
         self.java.setDayOfWeek(GtfsServicesReaderSettingsWrapper.__create_java_day_of_week(value))
 
+    def get_time_period_filters(self):
+        filters: java_collections.Set = self.java.getTimePeriodFilters()
+        if not filters:
+            return None
+        python_filters: Set[Tuple[datetime.time(), datetime.time()]] = set()
+        for entry in filters:
+            # entry contains Planit Pair of two Java LocalTime instances
+            start_time: datetime.time = GatewayUtils.to_python_datetime_time(entry.first());
+            end_time: datetime.time = GatewayUtils.to_python_datetime_time(entry.second());
+            python_filters.add((start_time, end_time))
+        return python_filters
+
 
 class GtfsZoningReaderSettingsWrapper(ReaderSettingsWrapper):
     """ Wrapper around settings for GTFS zoning used by converter
@@ -434,6 +472,62 @@ class GtfsZoningReaderSettingsWrapper(ReaderSettingsWrapper):
 
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
+
+    def add_overwrite_gtfs_stop_transfer_zone_mapping(
+            self, gtfs_stop_id: str, transfer_zone_id: Union[int, str], id_mapper_type: IdMapperType):
+        self.java.addOverwriteGtfsStopTransferZoneMapping(
+            gtfs_stop_id, transfer_zone_id, GatewayUtils.to_java_enum(id_mapper_type))
+
+    def get_overwritten_gtfs_stop_transfer_zone_mapping(self, gtfs_stop_id: str) -> List[
+        Tuple[Union[int, str], IdMapperType]]:
+        java_collection: java_collections.JavaList = self.java.getOverwrittenGtfsStopTransferZoneMapping(gtfs_stop_id)
+        python_list = []
+        for entry in java_collection:
+            # entry contains Java Planit Pair<object,IdMapperType>
+            transfer_zone_id: Union[int, str] = entry.first()
+            python_list.append((transfer_zone_id, IdMapperType.from_java(entry.second())))
+        return python_list
+
+    def get_overwritten_gtfs_stop_location(self, gtfs_stop_id: str) -> Tuple[float, float]:
+        """ collect the overwritten stop location.
+
+        :param gtfs_stop_id: stop id
+        :return coordinate tuple (lat/lon or equivalent projected coord)
+        """
+        java_coord = self.java.getOverwrittenGtfsStopLocation(gtfs_stop_id)  # jts coord
+        return java_coord.getY(), java_coord.getX()  # lat=Y,lon=X
+
+    def overwrite_gtfs_stop_to_link_mapping(
+            self, gtfs_stop_id: str, planit_link_id: Union[int, str], id_mapper_type: IdMapperType):
+        self.java.overwriteGtfsStopToLinkMapping(
+            gtfs_stop_id, planit_link_id, GatewayUtils.to_java_enum(id_mapper_type))
+
+    def get_overwritten_gtfs_stop_to_link_mapping(self, gtfs_stop_id: str) -> Tuple[Union[int, str], IdMapperType]:
+        java_planit_pair = self.java.getOverwrittenGtfsStopToLinkMapping(gtfs_stop_id)
+        planit_link_id: Union[int, str] = java_planit_pair.first()
+        id_mapper_type: IdMapperType = IdMapperType.from_java(java_planit_pair.second())
+        return planit_link_id, id_mapper_type
+
+
+class GtfsIntermodalReaderSettingsWrapper(ReaderSettingsWrapper):
+    """ Wrapper around settings for a Gtfs intermodal reader used by converter
+    """
+
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+        # Gtfs intermodal reader settings allow access to network and pt settings component
+        # which in turns are settings
+        self._service_settings = GtfsServicesReaderSettingsWrapper(self.getServiceSettings())
+        self._zoning_settings = GtfsZoningReaderSettingsWrapper(self.getZoningSettings())
+
+    @property
+    def service_settings(self) -> GtfsServicesReaderSettingsWrapper:
+        return self._service_settings
+
+    @property
+    def zoning_settings(self) -> GtfsZoningReaderSettingsWrapper:
+        return self._zoning_settings
 
 
 class PlanitIntermodalReaderSettingsWrapper(ReaderSettingsWrapper):
@@ -520,7 +614,7 @@ class PlanitIntermodalWriterWrapper(IntermodalWriterWrapper):
         self._settings = PlanitIntermodalWriterSettingsWrapper(self._settings.java)
 
 
-class PlanitNetworkReaderWrapper(NetworkReaderWrapper):
+class PlanitNetworkReaderWrapper(ZoningReaderWrapper):
     """ Wrapper around the Java native format based PlanitNetworkReader class
     """
 
@@ -529,15 +623,136 @@ class PlanitNetworkReaderWrapper(NetworkReaderWrapper):
 
 
 class PlanitNetworkWriterWrapper(NetworkWriterWrapper):
-    """ Wrapper around the Java native format based PlanitNetworkWriter class
+    """ Wrapper around the Java native format based PlanitNetworkWriter class.
     """
 
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
 
 
+class PlanitZoningWriterWrapper(ZoningWriterWrapper):
+    """ Wrapper around the Java native format based PlanitZoningWriter class.
+    """
+
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+
+class PlanitZoningReaderWrapper(ZoningReaderWrapper):
+    """ Wrapper around the Java native format based PlanitNetworkReader class
+    """
+
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+
+class PlanitDemandsReaderWrapper(DemandsReaderWrapper):
+    """ Wrapper around the Java native format based PlanitDemandsReader class
+    """
+
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+
+class PlanitDemandsWriterWrapper(DemandsWriterWrapper):
+    """ Wrapper around the Java native format based PlanitDemandsWriter class
+    """
+
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+
+class TntpNetworkReaderSettingsWrapper(ReaderSettingsWrapper):
+    """ Wrapper around settings for a TNTP network reader used by converter.
+    """
+
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+    def set_network_file_columns(self, network_file_columns: Dict[TntpFileColumnType, int]):
+        java_hash_map = GatewayUtils.get_package_jvm().java.util.HashMap()
+        for column_type, column_index in network_file_columns.items():
+            java_hash_map[GatewayUtils.to_java_enum(column_type)] = column_index
+        self.java.setNetworkFileColumns(java_hash_map)
+
+    def set_speed_units(self, speed_units: SpeedUnits):
+        self.java.setSpeedUnits(GatewayUtils.to_java_enum(speed_units))
+
+    def get_speed_units(self) -> SpeedUnits:
+        return SpeedUnits.from_java(self.java.getSpeedUnits())
+
+    def set_time_units(self, time_units: TimeUnits):
+        self.java.setTimeUnits(GatewayUtils.to_java_enum(time_units))
+
+    def get_time_units(self) -> TimeUnits:
+        return TimeUnits.from_java(self.java.getTimeUnits())
+
+    def set_length_units(self, length_units: LengthUnits):
+        self.java.setLengthUnits(GatewayUtils.to_java_enum(length_units))
+
+    def get_length_units(self) -> LengthUnits:
+        return LengthUnits.from_java(self.java.getLengthUnits())
+
+    def set_capacity_period(self, duration: float, time_units: TimeUnits):
+        self.java.setCapacityPeriod(duration, GatewayUtils.to_java_enum(time_units))
+
+    def get_capacity_period_units(self) -> TimeUnits:
+        return TimeUnits.from_java(self.java.getCapacityPeriodUnits())
+
+    def get_capacity_period_duration(self) -> float:
+        return self.java.getCapacityPeriodDuration()
+
+    def set_free_flow_travel_time_units(self, time_units: TimeUnits):
+        self.java.setFreeFlowTravelTimeUnits(GatewayUtils.to_java_enum(time_units))
+
+
+class TntpNetworkReaderWrapper(ZoningReaderWrapper):
+    """ Wrapper around the Java native format based TntpNetworkReader class.
+    """
+
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+        # replace regular writer settings by Tntp network reader settings
+        self._settings = TntpNetworkReaderSettingsWrapper(self._settings.java)
+
+
+class TntpZoningReaderWrapper(ZoningReaderWrapper):
+    """ Wrapper around the Java native format based TntpZoningReader class.
+    """
+
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+
+class TntpDemandsReaderSettingsWrapper(ReaderSettingsWrapper):
+    """ Wrapper around settings for a TNTP demands reader used by converter.
+    """
+
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+    def set_start_time_since_midnight(self, start_time, time_units):
+        bla = 4;
+        self.java.setStartTimeSinceMidnight(start_time, GatewayUtils.to_java_enum(time_units))
+
+    def set_time_period_duration(self, duration: Union[float,int], time_units: TimeUnits):
+        self.java.setTimePeriodDuration(duration, GatewayUtils.to_java_enum(time_units))
+
+
+class TntpDemandsReaderWrapper(DemandsReaderWrapper):
+    """ Wrapper around the Java native format based TntpDemandsReader class
+    """
+
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+        # replace regular writer settings by Geometry intermodal writer settings
+        self._settings = TntpDemandsReaderSettingsWrapper(self._settings.java)
+
+
 class GeometryIntermodalWriterWrapper(IntermodalWriterWrapper):
-    """ Wrapper around the Geometry (GIS) based formats for persisting
+    """ Wrapper around the Geometry (GIS) based formats for persisting.
     """
 
     def __init__(self, java_counterpart):

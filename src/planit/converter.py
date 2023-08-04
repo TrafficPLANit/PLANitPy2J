@@ -1,6 +1,10 @@
 from abc import abstractmethod
+from ctypes import Union
 
-from planit import ConverterType
+from planit import ConverterType, TntpNetworkReaderWrapper, GatewayUtils, ZoningReaderType, ZoningReaderWrapper, \
+    PlanitZoningReaderWrapper, TntpZoningReaderWrapper, ZoningWriterType, ZoningWriterWrapper, \
+    PlanitZoningWriterWrapper, DemandsReaderType, DemandsWriterType, PlanitDemandsReaderWrapper, \
+    TntpDemandsReaderWrapper, PlanitDemandsWriterWrapper, DemandsReaderWrapper, DemandsWriterWrapper
 from planit import GatewayState
 from planit import IntermodalConverterWrapper
 from planit import IntermodalReaderType
@@ -10,7 +14,7 @@ from planit import IntermodalWriterWrapper
 from planit import MatsimIntermodalWriterWrapper
 from planit import MatsimNetworkWriterWrapper
 from planit import NetworkReaderType
-from planit import NetworkReaderWrapper
+from planit import ZoningReaderWrapper
 from planit import NetworkWriterType
 from planit import NetworkWriterWrapper
 from planit import OsmIntermodalReaderWrapper
@@ -53,52 +57,56 @@ class NetworkConverter(_ConverterBase):
     def __init__(self):
         super().__init__()
 
-    def _create_java_converter(self, readerWrapper, writerWrapper):
+    def _create_java_converter(self, reader_wrapper, writer_wrapper):
         """ create java network converter with reader and writer wrapper provided
-        :param readerWrapper: to use
-        :param writerWrapper: to use
+        :param reader_wrapper: to use
+        :param writer_wrapper: to use
         :return created java network converter
         """
-        return GatewayState.python_2_java_gateway.jvm.org.goplanit.converter.network.NetworkConverterFactory.create(
-            readerWrapper.java, writerWrapper.java)
+        return GatewayUtils.get_package_jvm().org.goplanit.converter.network.NetworkConverterFactory.create(
+            reader_wrapper.java, writer_wrapper.java)
 
     #####################################
-    #     READER FACTORY METHODS
+    #     NETWORK READER FACTORY METHODS
     #####################################
 
     def __create_osm_network_reader(self, country: str) -> OsmNetworkReaderWrapper:
         java_network_reader = \
-            GatewayState.python_2_java_gateway.jvm.org.goplanit.osm.converter.network.OsmNetworkReaderFactory.create(
-                country)
+            GatewayUtils.get_package_jvm().org.goplanit.osm.converter.network.OsmNetworkReaderFactory.create(country)
         return OsmNetworkReaderWrapper(java_network_reader)
 
     def __create_planit_network_reader(self) -> PlanitNetworkReaderWrapper:
         java_network_reader = \
-            GatewayState.python_2_java_gateway.jvm.org.goplanit.io.converter.network.PlanitNetworkReaderFactory.create()
+            GatewayUtils.get_package_jvm().org.goplanit.io.converter.network.PlanitNetworkReaderFactory.create()
         return PlanitNetworkReaderWrapper(java_network_reader)
 
+    def __create_tntp_network_reader(self) -> TntpNetworkReaderWrapper:
+        java_network_reader = \
+            GatewayUtils.get_package_jvm().org.goplanit.tntp.converter.network.TntpNetworkReaderFactory.create()
+        return TntpNetworkReaderWrapper(java_network_reader)
+
     #####################################
-    #     WRITER FACTORY METHODS
+    #     NETWORK WRITER FACTORY METHODS
     #####################################
 
     def __create_matsim_network_writer(self) -> MatsimNetworkWriterWrapper:
         java_network_writer = \
-            GatewayState.python_2_java_gateway.jvm.org.goplanit.matsim.converter.MatsimNetworkWriterFactory.create()
+            GatewayUtils.get_package_jvm().org.goplanit.matsim.converter.MatsimNetworkWriterFactory.create()
         return MatsimNetworkWriterWrapper(java_network_writer)
 
     def __create_planit_network_writer(self) -> PlanitNetworkWriterWrapper:
         java_network_writer = \
-            GatewayState.python_2_java_gateway.jvm.org.goplanit.io.converter.network.PlanitNetworkWriterFactory.create()
+            GatewayUtils.get_package_jvm().org.goplanit.io.converter.network.PlanitNetworkWriterFactory.create()
         return PlanitNetworkWriterWrapper(java_network_writer)
 
-    def create_reader(self, network_reader_type: NetworkReaderType, country: str = "Global") -> NetworkReaderWrapper:
+    def create_reader(self, network_reader_type: NetworkReaderType, country: str = "Global") -> ZoningReaderWrapper:
         """ factory method to create a network reader compatible with this converter :param network_reader_type: the
         type of reader to create :param country: optional argument specifying the country of the source network. Used
         by some readers to initialise default settings. If absent but required it defaults to "Global", i.e.,
         no country specific information is used in initialising defaults if applicable
         """
         if not isinstance(network_reader_type, NetworkReaderType): raise Exception(
-            "network reader type provided is not of NetworkReaderType, unable to instantiate")
+            "Network reader type provided is not of NetworkReaderType, unable to instantiate")
 
         if network_reader_type == NetworkReaderType.OSM:
             # OSM requires country to initialise default settings
@@ -106,22 +114,26 @@ class NetworkConverter(_ConverterBase):
         elif network_reader_type == NetworkReaderType.PLANIT:
             # PLANit does not utilise country information
             return self.__create_planit_network_reader()
+        elif network_reader_type == NetworkReaderType.TNTP:
+            # TNTP does not utilise country information
+            return self.__create_tntp_network_reader()
         else:
-            raise Exception("unsupported network reader type provided, unable to instantiate")
+            raise Exception("Unsupported network reader type provided, unable to instantiate")
 
     def create_writer(self, network_writer_type: NetworkWriterType) -> NetworkWriterWrapper:
         """ factory method to create a network writer compatible with this converter
         :param network_writer_type: the type of writer to create
+        :return the created writer
         """
         if not isinstance(network_writer_type, NetworkWriterType): raise Exception(
-            "network writer type provided is not of NetworkWriterType, unable to instantiate")
+            "Network writer type provided is not of NetworkWriterType, unable to instantiate")
 
         if network_writer_type == NetworkWriterType.MATSIM:
             return self.__create_matsim_network_writer()
         elif network_writer_type == NetworkWriterType.PLANIT:
             return self.__create_planit_network_writer()
         else:
-            raise Exception("unsupported network writer type provided, unable to instantiate")
+            raise Exception("Unsupported network writer type provided, unable to instantiate")
 
 
 class ZoningConverter(_ConverterBase):
@@ -131,7 +143,153 @@ class ZoningConverter(_ConverterBase):
     def __init__(self):
         super().__init__()
 
-    # TODO
+    def _create_java_converter(self, reader_wrapper, writer_wrapper):
+        """ create java network converter with reader and writer wrapper provided
+        :param reader_wrapper: to reader use
+        :param writer_wrapper: to writer use
+        :return created java network converter
+        """
+        return GatewayUtils.get_package_jvm().org.goplanit.converter.zoning.ZoningConverterFactory.create(
+            reader_wrapper.java, writer_wrapper.java)
+
+    #####################################
+    #     ZONING READER FACTORY METHODS
+    #####################################
+
+    @staticmethod
+    def __create_planit_zoning_reader(reference_reader: ZoningReaderWrapper) -> PlanitZoningReaderWrapper:
+        java_zoning_reader = \
+            GatewayUtils.get_package_jvm().org.goplanit.io.converter.zoning.PlanitZoningReaderFactory.create(
+                reference_reader.java)
+        return PlanitZoningReaderWrapper(java_zoning_reader)
+
+    @staticmethod
+    def __create_tntp_zoning_reader(reference_reader: ZoningReaderWrapper) -> TntpZoningReaderWrapper:
+        java_zoning_reader = \
+            GatewayUtils.get_package_jvm().org.goplanit.tntp.converter.zoning.TntpZoningReaderFactory.create(
+                reference_reader.java)
+        return TntpZoningReaderWrapper(java_zoning_reader)
+
+    #####################################
+    #     ZONING WRITER FACTORY METHODS
+    #####################################
+
+    @staticmethod
+    def __create_planit_zoning_writer() -> PlanitZoningWriterWrapper:
+        java_zoning_writer = \
+            GatewayUtils.get_package_jvm().org.goplanit.io.converter.zoning.PlanitZoningWriterFactory.create()
+        return PlanitZoningWriterWrapper(java_zoning_writer)
+
+    def create_reader(self,
+                      zoning_reader_type: ZoningReaderType,
+                      reference_reader: ZoningReaderWrapper = None) -> ZoningReaderWrapper:
+        """ factory method to create a zoning reader compatible with this converter.
+
+        :param zoning_reader_type: the type of reader to create
+        :param reference_reader: specifying another intermodal reader that is used to construct network from
+        a different source than its own
+        :return created reader
+        """
+        if not isinstance(zoning_reader_type, ZoningReaderType):
+            raise Exception(
+                "Zoning reader type provided is not of ZoningReaderType, unable to instantiate")
+
+        elif zoning_reader_type == ZoningReaderType.PLANIT:
+            return ZoningConverter.__create_planit_zoning_reader(reference_reader)
+        elif zoning_reader_type == ZoningReaderType.TNTP:
+            return ZoningConverter.__create_tntp_zoning_reader(reference_reader)
+        else:
+            raise Exception("Unsupported zoning reader type provided, unable to instantiate")
+
+    def create_writer(self, zoning_writer_type: ZoningWriterType) -> ZoningWriterWrapper:
+        """ factory method to create a zoning reader compatible with this converter.
+
+        :param zoning_writer_type: the type of writer to create
+        :return created writer
+        """
+        if not isinstance(zoning_writer_type, ZoningWriterType):
+            raise Exception(
+                "Zoning reader type provided is not of ZoningReaderType, unable to instantiate")
+
+        elif zoning_writer_type == ZoningWriterType.PLANIT:
+            return ZoningConverter.__create_planit_zoning_writer()
+        else:
+            raise Exception("Unsupported zoning writer type provided, unable to instantiate")
+
+
+class DemandsConverter(_ConverterBase):
+    """ Expose the options to create demand reader and writers of supported types and perform conversion between them
+    """
+
+    def __init__(self):
+        super().__init__()
+
+    def _create_java_converter(self, reader_wrapper, writer_wrapper):
+        """ create java network converter with reader and writer wrapper provided
+        :param reader_wrapper: reader to use
+        :param writer_wrapper: writer to use
+        :return created java network converter
+        """
+        return GatewayUtils.get_package_jvm().org.goplanit.converter.demands.DemandsConverterFactory.create(
+            reader_wrapper.java, writer_wrapper.java)
+
+    #####################################
+    #     DEMANDS READER FACTORY METHODS
+    #####################################
+
+    @staticmethod
+    def __create_planit_demands_reader(reference_zoning_reader: ZoningReaderWrapper) -> PlanitDemandsReaderWrapper:
+        java_reader = \
+            GatewayUtils.get_package_jvm().org.goplanit.io.converter.demands.PlanitDemandsReaderFactory.create(
+                reference_zoning_reader.java)
+        return PlanitDemandsReaderWrapper(java_reader)
+
+    @staticmethod
+    def __create_tntp_demands_reader(reference_zoning_reader: ZoningReaderWrapper) -> TntpDemandsReaderWrapper:
+        java_reader = \
+            GatewayUtils.get_package_jvm().org.goplanit.tntp.converter.demands.TntpDemandsReaderFactory.create(
+                reference_zoning_reader.java)
+        return TntpDemandsReaderWrapper(java_reader)
+
+    #####################################
+    #     DEMANDS WRITER FACTORY METHODS
+    #####################################
+
+    @staticmethod
+    def __create_planit_demands_writer() -> PlanitDemandsWriterWrapper:
+        java_writer = \
+            GatewayUtils.get_package_jvm().org.goplanit.io.converter.demands.PlanitDemandsWriterFactory.create()
+        return PlanitDemandsWriterWrapper(java_writer)
+
+    def create_reader(self,
+                      demands_reader_type: DemandsReaderType, reference_zoning_reader: ZoningReaderWrapper = None) \
+            -> DemandsReaderWrapper:
+        """ factory method to create a demands reader compatible with this converter
+
+        :param demands_reader_type: the type of reader to create
+        :param reference_zoning_reader: the zoning reader related to these demands
+        """
+        if not isinstance(demands_reader_type, DemandsReaderType): raise Exception(
+            "Demands reader type provided is not of DemandsReaderType, unable to instantiate")
+        elif demands_reader_type == DemandsReaderType.PLANIT:
+            return DemandsConverter.__create_planit_demands_reader(reference_zoning_reader)
+        elif demands_reader_type == DemandsReaderType.TNTP:
+            return DemandsConverter.__create_tntp_demands_reader(reference_zoning_reader)
+        else:
+            raise Exception("Unsupported demands reader type provided, unable to instantiate")
+
+    def create_writer(self, demands_writer_type: DemandsWriterType) -> DemandsWriterWrapper:
+        """ factory method to create a demands writer compatible with this converter
+
+        :param demands_writer_type: the type of writer to create
+        :return the created writer
+        """
+        if not isinstance(demands_writer_type, DemandsWriterType): raise Exception(
+            "Demands writer type provided is not of DemandsWriterType, unable to instantiate")
+        elif demands_writer_type == DemandsWriterType.PLANIT:
+            return DemandsConverter.__create_planit_demands_writer()
+        else:
+            raise Exception("Unsupported demands writer type provided, unable to instantiate")
 
 
 class IntermodalConverter(_ConverterBase):
@@ -143,23 +301,23 @@ class IntermodalConverter(_ConverterBase):
         super().__init__()
 
     @staticmethod
-    def _create_java_converter(readerWrapper, writerWrapper) -> IntermodalConverterWrapper:
+    def _create_java_converter(reader_wrapper, writer_wrapper) -> IntermodalConverterWrapper:
         """ create java intermodal converter with reader and writer wrapper provided
-        :param readerWrapper: to use
-        :param writerWrapper: to use
+        :param reader_wrapper: the reader to use
+        :param writer_wrapper: the writer to use
         :return created java intermodal converter
         """
         return IntermodalConverterWrapper(GatewayState.python_2_java_gateway.jvm.org.goplanit.converter.intermodal.
-                                          IntermodalConverterFactory.create(readerWrapper.java, writerWrapper.java))
+                                          IntermodalConverterFactory.create(reader_wrapper.java, writer_wrapper.java))
 
-    def convert_with_services(self, readerWrapper: IntermodalReaderWrapper, writerWrapper: IntermodalWriterWrapper):
+    def convert_with_services(self, reader_wrapper: IntermodalReaderWrapper, writer_wrapper: IntermodalWriterWrapper):
         """ Each intermodal converter is expected to be able to convert from a reader to a writer including services
-        :param readerWrapper: to use
-        :param writerWrapper: to use
+        :param reader_wrapper: the reader to use
+        :param writer_wrapper: the writer to use
         """
 
         # construct java converter and perform conversion
-        self._create_java_converter(readerWrapper, writerWrapper).convert_with_services()
+        self._create_java_converter(reader_wrapper, writer_wrapper).convert_with_services()
 
     #####################################
     #     READER FACTORY METHODS
@@ -266,34 +424,44 @@ class ConverterFactory:
         """ initialise the converter, requires gateway to be up and running, if not throw exception
         """
 
-    def __create_network_converter(self) -> NetworkConverter:
+    @staticmethod
+    def __create_network_converter() -> NetworkConverter:
         """ Factory method to create a network converter proxy that allows the user to create readers and writers and
         exposes a convert method that performs the actual conversion
         """
         return NetworkConverter()
 
-    def __create_zoning_converter(self) -> ZoningConverter:
+    @staticmethod
+    def __create_zoning_converter() -> ZoningConverter:
         """ Factory method to create a zoning converter proxy that allows the user to create readers and writers and
         exposes a convert method that performs the actual conversion
         """
-
-        # TODO not made available publicly
         return ZoningConverter()
 
-    def __create_intermodal_converter(self) -> IntermodalConverter:
+    @staticmethod
+    def __create_intermodal_converter() -> IntermodalConverter:
         """ Factory method to create an intermodal converter proxy that allows the user to create readers and writers
         and exposes a convert method that performs the actual conversion
         """
         return IntermodalConverter()
 
+    @staticmethod
+    def __create_demands_converter() -> IntermodalConverter:
+        """ Factory method to create a demands converter proxy that allows the user to create readers and writers
+        and exposes a convert method that performs the actual conversion
+        """
+        return DemandsConverter()
+
     def create(self, converter_type: ConverterType) -> _ConverterBase:
         """ factory method to create a converter of a given type
         :param converter_type: the convert type to create
         :param reader: to use in the converter
-        :param writer: to use in the converter 
+        :param writer: to use in the converter
+
+        :return a network, zoning, or intermodal converter
         """
         if not GatewayState.gateway_is_running: raise Exception('A ConverterFactory can only be used when connection '
-                                                                'to JVM present, connectiond not available')
+                                                                'to JVM present, connection not available')
 
         if not isinstance(converter_type, ConverterType): raise Exception("Converter type provided is not of "
                                                                           "ConverterType, unable to instantiate")
@@ -302,6 +470,8 @@ class ConverterFactory:
             return self.__create_network_converter()
         elif converter_type == ConverterType.ZONING:
             return self.__create_zoning_converter()
+        elif converter_type == ConverterType.DEMANDS:
+            return self.__create_demands_converter()
         elif converter_type == ConverterType.INTERMODAL:
             return self.__create_intermodal_converter()
         else:

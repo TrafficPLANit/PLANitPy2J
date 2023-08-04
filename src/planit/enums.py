@@ -8,6 +8,7 @@ class ConverterType(Enum):
     """
     NETWORK = "NetworkConverter"
     ZONING = "ZoningConverter"
+    DEMANDS = "DemandsConverter"
     INTERMODAL = "IntermodalConverter"
     SERVICE_NETWORK = "ServiceNetworkConverter"
     ROUTED_SERVICES = "RoutedServicesConverter"
@@ -30,6 +31,18 @@ class DayOfWeek(Enum):
         return DayOfWeek[java_enum.name()] if java_enum is not None else None
 
 
+class DemandsReaderType(Enum):
+    """ Enum for the different Demands reader that are supported
+    """
+    PLANIT = "PlanitDemandsReader"
+    TNTP = "TntpDemandsReader"
+
+class DemandsWriterType(Enum):
+    """ Enum for the different Demands writers that are supported
+    """
+    PLANIT = "PlanitDemandsWriter"
+
+
 class GapFunction(Enum):
     """ Enum for the different gap functions that exist on supporting traffic assignments
     """
@@ -49,6 +62,7 @@ class IdMapperType(Enum):
     def from_java(java_enum) -> Enum:
         return IdMapperType[java_enum.name()] if java_enum is not None else None
 
+
 class IntermodalReaderType(Enum):
     """ Enum for the different intermodal readers that are supported
     """
@@ -65,6 +79,22 @@ class IntermodalWriterType(Enum):
     GEOIO = "GeometryIntermodalWriter"
 
 
+class LengthUnits(Enum):
+    """ Enum for the different length units (currently only used for TNTP configuration)
+    """
+    KM = "KM"
+    M = "M"
+    MILES = "MILES"
+    FEET = "FEET"
+
+    def java_class_name(self) -> str:
+        return "org.goplanit.tntp.enums.LengthUnits"
+
+    @staticmethod
+    def from_java(java_enum) -> Enum:
+        return LengthUnits[java_enum.name()] if java_enum is not None else None
+
+
 class Network(Enum):
     """ Enum for the different virtual costs the user can choose, they map to the Java equivalent class name for easy mapping
     """
@@ -78,6 +108,8 @@ class NetworkReaderType(Enum):
     """
     OSM = "OsmNetworkReader"
     PLANIT = "PlanitNetworkReader"
+    TNTP = "TntpNetworkReader"
+
 
 class NetworkWriterType(Enum):
     """ Enum for the different network writers that exist compatible with a network converter
@@ -181,6 +213,7 @@ class OutputType(Enum):
     def java_class_name(self) -> str:
         return "org.goplanit.output.enums.OutputType"
 
+
 class PathIdType(Enum):
     LINK_SEGMENT_EXTERNAL_ID = "LINK_SEGMENT_EXTERNAL_ID"
     LINK_SEGMENT_XML_ID = "LINK_SEGMENT_XML_ID"
@@ -192,11 +225,13 @@ class PathIdType(Enum):
     def java_class_name(self) -> str:
         return "org.goplanit.output.enums.PathOutputIdentificationType"
 
+
 class PhysicalCost(Enum):
     """ Enum for the different physical costs the user can choose, they map to the Java equivalent class name for easy mapping
     """
     BPR = "org.goplanit.cost.physical.BPRLinkTravelTimeCost"
     FREEFLOW = "org.goplanit.cost.physical.FreeFlowLinkTravelTimeCost"
+
 
 class PredefinedModeType(Enum):
     BICYCLE = "BICYCLE"
@@ -212,8 +247,8 @@ class PredefinedModeType(Enum):
     TRAM = "TRAM"
     LIGHTRAIL = "LIGHTRAIL"
     FERRY = "FERRY"
-    GOODS_VEHICLE = "GOODS_VEHICLE"        #non - articulated goods vehicle, up to 3.5 tonnes
-    HEAVY_GOODS_VEHICLE = "HEAVY_GOODS_VEHICLE"    # non - articulated goods vehicle, over to 3.5 tonnes
+    GOODS_VEHICLE = "GOODS_VEHICLE"  # non - articulated goods vehicle, up to 3.5 tonnes
+    HEAVY_GOODS_VEHICLE = "HEAVY_GOODS_VEHICLE"  # non - articulated goods vehicle, over to 3.5 tonnes
     LARGE_HEAVY_GOODS_VEHICLE = "LARGE_HEAVY_GOODS_VEHICLE"
 
     def java_class_name(self) -> str:
@@ -223,20 +258,79 @@ class PredefinedModeType(Enum):
     def from_java(java_enum) -> Enum:
         return PredefinedModeType[java_enum.name()] if java_enum is not None else None
 
+
 class RoutedServicesReaderType(Enum):
     """ Enum for the different routed services readers that exist compatible with a routed services converter
     """
     PLANIT = "PlanitRoutedServicesReader"
+
 
 class ServiceNetworkReaderType(Enum):
     """ Enum for the different service network readers that exist compatible with a service network converter
     """
     PLANIT = "PlanitServiceNetworkReader"
 
+
 class Smoothing(Enum):
     """ Enum for the different smoothing options the user can choose, they map to the Java equivalent class name for easy mapping
     """
     MSA = "org.goplanit.sdinteraction.smoothing.MSASmoothing"
+
+
+class SpeedUnits(Enum):
+    """ Enum for the different speed units (currently only used for TNTP configuration)
+    """
+    KM_H = "KM_H"
+    M_SEC = "M_SEC"
+    MILES_H = "MILES_H"
+    FEET_MIN = "FEET_MIN"
+
+    def java_class_name(self) -> str:
+        return "org.goplanit.tntp.enums.SpeedUnits"
+
+    @staticmethod
+    def from_java(java_enum) -> Enum:
+        return SpeedUnits[java_enum.name()] if java_enum is not None else None
+
+
+class TimeUnits(Enum):
+    """ Enum for the different time units (currently only used for TNTP configuration)
+    """
+    HOURS = "HOURS"
+    MINUTES = "MINUTES"
+    SECONDS = "SECONDS"
+
+    def java_class_name(self) -> str:
+        return "org.goplanit.tntp.enums.TimeUnits"
+
+    @staticmethod
+    def from_java(java_enum) -> Enum:
+        return TimeUnits[java_enum.name()] if java_enum is not None else None
+
+
+class TntpFileColumnType(Enum):
+    """ Enum for the different TNTP reader file columns the user may indicate are present, they map to the
+    Java equivalent class NetworkFileColumnType for easy mapping
+    """
+    UPSTREAM_NODE_ID = "UPSTREAM_NODE_ID"
+    DOWNSTREAM_NODE_ID = "DOWNSTREAM_NODE_ID"
+    CAPACITY_PER_LANE = "CAPACITY_PER_LANE"
+    LENGTH = "LENGTH"
+    MAXIMUM_SPEED = "MAXIMUM_SPEED"
+    LINK_TYPE = "LINK_TYPE"
+    B = "B"
+    POWER = "POWER"
+    TOLL = "TOLL"
+    FREE_FLOW_TRAVEL_TIME = "FREE_FLOW_TRAVEL_TIME"
+    CRITICAL_SPEED = "CRITICAL_SPEED"
+    NUMBER_OF_LANES = "NUMBER_OF_LANES"
+
+    def java_class_name(self) -> str:
+        return "org.goplanit.tntp.enums.NetworkFileColumnType"
+
+    @staticmethod
+    def from_java(java_enum) -> Enum:
+        return TntpFileColumnType[java_enum.name()] if java_enum is not None else None
 
 
 class TrafficAssignment(Enum):
@@ -267,3 +361,16 @@ class VirtualCost(Enum):
     """
     FIXED = "org.goplanit.cost.virtual.FixedConnectoidTravelTimeCost"
     SPEED = "org.goplanit.cost.virtual.SpeedConnectiodTravelTimeCost"
+
+
+class ZoningReaderType(Enum):
+    """ Enum for the different zoning readers that exist compatible with a zoning converter
+    """
+    PLANIT = "PlanitZoningReader"
+    TNTP = "TntpZoningReader"
+
+
+class ZoningWriterType(Enum):
+    """ Enum for the different (standalone) zoning writers that exist compatible with a zoning converter
+    """
+    PLANIT = "PlanitZoningWriter"

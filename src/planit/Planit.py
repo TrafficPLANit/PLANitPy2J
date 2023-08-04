@@ -4,7 +4,7 @@ import traceback
 
 from py4j.java_gateway import JavaGateway
 
-from planit import ConverterFactory
+from planit import ConverterFactory, GatewayUtils
 from planit import GatewayConfig
 from planit import GatewayState
 from planit import PlanitProject
@@ -28,6 +28,14 @@ class Planit:
             raise Exception('Standalone argument can only be true at this time, server mode not yet supported')  
         self.__start_java__()
 
+    def __get_package_jvm(self):
+        """ Convenience method to access jvm base to be supplemented with packages.
+
+        for example, get_package_jvm().java.lang.String
+
+        :return GatewayState.python_2_java_gateway.jvm.java
+        """
+        return GatewayUtils.get_package_jvm() if GatewayState.gateway_is_running else None
        
     def __start_java__(self):            
         """Start the gateway to Java 
