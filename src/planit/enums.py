@@ -76,7 +76,7 @@ class IntermodalWriterType(Enum):
     """
     MATSIM = "MatsimIntermodalWriter"
     PLANIT = "PlanitIntermodalWriter"
-    GEOIO = "GeometryIntermodalWriter"
+    SHAPE = "GeometryIntermodalWriter"
 
 
 class LengthUnits(Enum):
@@ -115,6 +115,7 @@ class NetworkWriterType(Enum):
     """ Enum for the different network writers that exist compatible with a network converter
     """
     MATSIM = "MatsimNetworkWriter"
+    SHAPE = "GeometryNetworkWriter"
     PLANIT = "PlanitNetworkWriter"
 
 
@@ -229,7 +230,7 @@ class PathIdType(Enum):
 class PhysicalCost(Enum):
     """ Enum for the different physical costs the user can choose, they map to the Java equivalent class name for easy mapping
     """
-    BPR = "org.goplanit.cost.physical.BPRLinkTravelTimeCost"
+    BPR = "org.goplanit.cost.physical.BprLinkTravelTimeCost"
     FREEFLOW = "org.goplanit.cost.physical.FreeFlowLinkTravelTimeCost"
 
 
@@ -374,3 +375,4 @@ class ZoningWriterType(Enum):
     """ Enum for the different (standalone) zoning writers that exist compatible with a zoning converter
     """
     PLANIT = "PlanitZoningWriter"
+    SHAPE = "GeometryZoningWriter"

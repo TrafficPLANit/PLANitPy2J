@@ -4,7 +4,8 @@ from ctypes import Union
 from planit import ConverterType, TntpNetworkReaderWrapper, GatewayUtils, ZoningReaderType, ZoningReaderWrapper, \
     PlanitZoningReaderWrapper, TntpZoningReaderWrapper, ZoningWriterType, ZoningWriterWrapper, \
     PlanitZoningWriterWrapper, DemandsReaderType, DemandsWriterType, PlanitDemandsReaderWrapper, \
-    TntpDemandsReaderWrapper, PlanitDemandsWriterWrapper, DemandsReaderWrapper, DemandsWriterWrapper
+    TntpDemandsReaderWrapper, PlanitDemandsWriterWrapper, DemandsReaderWrapper, DemandsWriterWrapper, \
+    NetworkReaderWrapper, GeometryZoningWriterWrapper, GeometryNetworkWriterWrapper
 from planit import GatewayState
 from planit import IntermodalConverterWrapper
 from planit import IntermodalReaderType
@@ -94,6 +95,11 @@ class NetworkConverter(_ConverterBase):
             GatewayUtils.get_package_jvm().org.goplanit.matsim.converter.MatsimNetworkWriterFactory.create()
         return MatsimNetworkWriterWrapper(java_network_writer)
 
+    def __create_geoio_network_writer(self) -> GeometryNetworkWriterWrapper:
+        java_network_writer = \
+            GatewayUtils.get_package_jvm().org.goplanit.geoio.converter.network.GeometryNetworkWriterFactory.create()
+        return GeometryNetworkWriterWrapper(java_network_writer)
+
     def __create_planit_network_writer(self) -> PlanitNetworkWriterWrapper:
         java_network_writer = \
             GatewayUtils.get_package_jvm().org.goplanit.io.converter.network.PlanitNetworkWriterFactory.create()
@@ -130,6 +136,8 @@ class NetworkConverter(_ConverterBase):
 
         if network_writer_type == NetworkWriterType.MATSIM:
             return self.__create_matsim_network_writer()
+        if network_writer_type == NetworkWriterType.SHAPE:
+            return self.__create_geoio_network_writer()
         elif network_writer_type == NetworkWriterType.PLANIT:
             return self.__create_planit_network_writer()
         else:
@@ -180,14 +188,20 @@ class ZoningConverter(_ConverterBase):
             GatewayUtils.get_package_jvm().org.goplanit.io.converter.zoning.PlanitZoningWriterFactory.create()
         return PlanitZoningWriterWrapper(java_zoning_writer)
 
+    @staticmethod
+    def __create_geoio_zoning_writer() -> GeometryZoningWriterWrapper:
+        java_zoning_writer = \
+            GatewayUtils.get_package_jvm().org.goplanit.geoio.converter.zoning.GeometryZoningWriterFactory.create()
+        return GeometryZoningWriterWrapper(java_zoning_writer)
+
     def create_reader(self,
                       zoning_reader_type: ZoningReaderType,
-                      reference_reader: ZoningReaderWrapper = None) -> ZoningReaderWrapper:
+                      reference_reader: NetworkReaderWrapper = None) -> ZoningReaderWrapper:
         """ factory method to create a zoning reader compatible with this converter.
 
         :param zoning_reader_type: the type of reader to create
-        :param reference_reader: specifying another intermodal reader that is used to construct network from
-        a different source than its own
+        :param reference_reader: specifying a reference reader that is used to construct network from
+        a different source than its own to be used when constructing the zoning
         :return created reader
         """
         if not isinstance(zoning_reader_type, ZoningReaderType):
@@ -213,6 +227,8 @@ class ZoningConverter(_ConverterBase):
 
         elif zoning_writer_type == ZoningWriterType.PLANIT:
             return ZoningConverter.__create_planit_zoning_writer()
+        elif zoning_writer_type == ZoningWriterType.SHAPE:
+            return ZoningConverter.__create_geoio_zoning_writer()
         else:
             raise Exception("Unsupported zoning writer type provided, unable to instantiate")
 
@@ -393,7 +409,7 @@ class IntermodalConverter(_ConverterBase):
         elif intermodal_reader_type == IntermodalReaderType.GTFS:
             return IntermodalConverter.__create_gtfs_intermodal_reader(country, reference_reader)
         else:
-            raise Exception(f"unsupported intermodal reader type provided {intermodal_reader_type}, "
+            raise Exception(f"Unsupported intermodal reader type provided {intermodal_reader_type}, "
                             f"unable to instantiate")
 
     def create_writer(self, intermodal_writer_type: IntermodalWriterType) -> IntermodalWriterWrapper:
@@ -408,10 +424,10 @@ class IntermodalConverter(_ConverterBase):
             return IntermodalConverter.__create_matsim_intermodal_writer()
         elif intermodal_writer_type == IntermodalWriterType.PLANIT:
             return IntermodalConverter.__create_planit_intermodal_writer()
-        elif intermodal_writer_type == IntermodalWriterType.GEOIO:
+        elif intermodal_writer_type == IntermodalWriterType.SHAPE:
             return IntermodalConverter.__create_geoio_intermodal_writer()
         else:
-            raise Exception("unsupported intermodal writer type provided, unable to instantiate")
+            raise Exception("Unsupported intermodal writer type provided, unable to instantiate")
 
 
 class ConverterFactory:

@@ -121,6 +121,14 @@ class NetworkConverterWrapper(ConverterWrapper):
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
 
+class NetworkReaderWrapper(ReaderWrapper):
+    """ Wrapper around the Java NetworkReader class instance, derived implementations are more specific,
+    e.g. PlanitNetworkReaderWrapper
+    """
+
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
 
 class NetworkWriterWrapper(WriterWrapper):
     """ Wrapper around the Java NetworkWriter class instance, derived implementations are more specific,
@@ -736,7 +744,7 @@ class TntpDemandsReaderSettingsWrapper(ReaderSettingsWrapper):
         bla = 4;
         self.java.setStartTimeSinceMidnight(start_time, GatewayUtils.to_java_enum(time_units))
 
-    def set_time_period_duration(self, duration: Union[float,int], time_units: TimeUnits):
+    def set_time_period_duration(self, duration: Union[float, int], time_units: TimeUnits):
         self.java.setTimePeriodDuration(duration, GatewayUtils.to_java_enum(time_units))
 
 
@@ -749,6 +757,21 @@ class TntpDemandsReaderWrapper(DemandsReaderWrapper):
 
         # replace regular writer settings by Geometry intermodal writer settings
         self._settings = TntpDemandsReaderSettingsWrapper(self._settings.java)
+
+
+class GeometryNetworkWriterWrapper(NetworkWriterWrapper):
+    """ Wrapper around the Java native format based GeometryNetworkWriter class.
+    """
+
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
+
+class GeometryZoningWriterWrapper(ZoningWriterWrapper):
+    """ Wrapper around the Shape file format based GeometryZoningWriter class.
+    """
+
+    def __init__(self, java_counterpart):
+        super().__init__(java_counterpart)
 
 
 class GeometryIntermodalWriterWrapper(IntermodalWriterWrapper):

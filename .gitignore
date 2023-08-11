@@ -9,5 +9,7 @@
 /doc
 /src/planit/__pycache__
 /src/test_utils/__pycache__
-/testcases/__pycache__
+/testdata/__pycache__
+/test_src/**/__pycache__
+/test_src/__pycache__
 /.idea

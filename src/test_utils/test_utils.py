@@ -17,13 +17,13 @@ class PlanItHelper:
             deactivate_file_output=False):
         """ Top-level method which runs unit tests.
 
-        :param planit PLANit object (with any required initial costs already defined
-        :param max_iterations the maximum number of iterations for the current unit test
-        :param epsilon the convergence epsilon for the current unit test
-        :param description the name to be used to identify input and output files
-        :param output_type_configuration_option used to specify which properties to remove from link output type configuration
-        :param project_path directory of XML input file (if omitted, defaults to None which will make methods use the current directory)
-        :param deactivate_file_output if True, deactivate the file output formatter and store results in memory only
+        :param planit: PLANit object (with any required initial costs already defined
+        :param max_iterations: the maximum number of iterations for the current unit test
+        :param epsilon: the convergence epsilon for the current unit test
+        :param description: the name to be used to identify input and output files
+        :param output_type_configuration_option: used to specify which properties to remove from link output type configuration
+        :param project_path: directory of XML input file (if omitted, defaults to None which will make methods use the current directory)
+        :param deactivate_file_output: if True, deactivate the file output formatter and store results in memory only
         """
         planit.set(TrafficAssignment.TRADITIONAL_STATIC)
         # TODO : Add a unit test which testsX plan_it.assigment.physical_cost.set_default_parameters()
@@ -63,14 +63,15 @@ class PlanItHelper:
     def run_test_with_zero_flow_outputs(plan_it: PlanitProject, max_iterations, epsilon, description,
                                         output_type_configuration_option, project_path=None,
                                         deactivate_file_output=False):
-        """Top-level method which runs unit tests with zero flow outputs included
-        :param plan_it PLANit object (with any required initial costs already defined
-        :param max_iterations the maximum number of iterations for the current unit test
-        :param epsilon the convergence epsilon for the current unit test
-        :param description the name to be used to identify input and output files
-        :param output_type_configuration_option used to specify which properties to remove from link output type configuration
-        :param project_path directory of XML input file (if omitted, defaults to None which will make methods use the current directory)
-        :param deactivate_file_output if True, deactivate the file output formatter and store results in memory only
+        """Top-level method which runs unit tests with zero flow outputs included.
+
+        :param plan_it: PLANit object (with any required initial costs already defined
+        :param max_iterations: the maximum number of iterations for the current unit test
+        :param epsilon: the convergence epsilon for the current unit test
+        :param description: the name to be used to identify input and output files
+        :param output_type_configuration_option: used to specify which properties to remove from link output type configuration
+        :param project_path: directory of XML input file (if omitted, defaults to None which will make methods use the current directory)
+        :param deactivate_file_output: if True, deactivate the file output formatter and store results in memory only
         """
         plan_it.set(TrafficAssignment.TRADITIONAL_STATIC)
         # TODO : Add a unit test which testsX plan_it.assigment.physical_cost.set_default_parameters()
@@ -103,7 +104,7 @@ class PlanItHelper:
         else:
             plan_it.output.set_xml_name_root(description)
             plan_it.output.set_csv_name_root(description)
-            if (project_path is not None):
+            if project_path is not None:
                 plan_it.output.set_output_directory(project_path)
         plan_it.run()
         return plan_it
@@ -150,7 +151,7 @@ class PlanItHelper:
         else:
             plan_it.output.set_xml_name_root(description)
             plan_it.output.set_csv_name_root(description)
-            if (project_path is not None):
+            if project_path is not None:
                 plan_it.output.set_output_directory(project_path)
 
         plan_it.run()
@@ -164,7 +165,7 @@ class PlanItHelper:
         :param description root name of the output file
         :param project_path directory of the output file
         """
-        if project_path == None:
+        if project_path is None:
             project_path = os.getcwd()
         full_file_name = PlanItHelper.create_full_file_name(output_type, project_path, description, file_name)
         os.remove(full_file_name)
