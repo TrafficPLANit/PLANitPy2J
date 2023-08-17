@@ -526,12 +526,12 @@ class GtfsIntermodalReaderSettingsWrapper(ReaderSettingsWrapper):
 
         # Gtfs intermodal reader settings allow access to network and pt settings component
         # which in turns are settings
-        self._service_settings = GtfsServicesReaderSettingsWrapper(self.getServiceSettings())
+        self._services_settings = GtfsServicesReaderSettingsWrapper(self.getServiceSettings())
         self._zoning_settings = GtfsZoningReaderSettingsWrapper(self.getZoningSettings())
 
     @property
-    def service_settings(self) -> GtfsServicesReaderSettingsWrapper:
-        return self._service_settings
+    def services_settings(self) -> GtfsServicesReaderSettingsWrapper:
+        return self._services_settings
 
     @property
     def zoning_settings(self) -> GtfsZoningReaderSettingsWrapper:

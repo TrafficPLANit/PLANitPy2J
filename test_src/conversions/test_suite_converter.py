@@ -316,22 +316,22 @@ class TestSuiteConverter(unittest.TestCase):
         assert zoning_settings.is_force_create_new_transfer_zone_for_gtfs_stop("gtfs_stop_id_13") is False
 
         # (transfer) zoning settings - new in v0.4.0
-        service_settings = gtfs_reader.settings.service_settings
-        service_settings.exclude_all_gtfs_routes_except_by_short_name(["431", "433"])
-        assert service_settings.is_gtfs_route_included_by_short_name("431") is True
-        assert service_settings.is_gtfs_route_included_by_short_name("433") is True
-        assert service_settings.is_gtfs_route_included_by_short_name("469") is False
-        service_settings.exclude_gtfs_routes_by_short_name(["433"])
-        assert service_settings.is_gtfs_route_included_by_short_name("433") is False
-        service_settings.activate_logging_for_gtfs_route_by_short_name("438x")
-        assert service_settings.is_activated_logging_for_gtfs_route_by_short_name("438x") is True
-        assert service_settings.is_activated_logging_for_gtfs_route_by_short_name("438") is False
+        services_settings = gtfs_reader.settings.services_settings
+        services_settings.exclude_all_gtfs_routes_except_by_short_name(["431", "433"])
+        assert services_settings.is_gtfs_route_included_by_short_name("431") is True
+        assert services_settings.is_gtfs_route_included_by_short_name("433") is True
+        assert services_settings.is_gtfs_route_included_by_short_name("469") is False
+        services_settings.exclude_gtfs_routes_by_short_name(["433"])
+        assert services_settings.is_gtfs_route_included_by_short_name("433") is False
+        services_settings.activate_logging_for_gtfs_route_by_short_name("438x")
+        assert services_settings.is_activated_logging_for_gtfs_route_by_short_name("438x") is True
+        assert services_settings.is_activated_logging_for_gtfs_route_by_short_name("438") is False
 
-        service_settings.add_time_period_filter(
+        services_settings.add_time_period_filter(
             datetime.time(hour=6, minute=0, second=0),
             datetime.time(hour=9, minute=59, second=59)
         )
-        time_period_filters: Set[Tuple[datetime.time, datetime.time]] = service_settings.get_time_period_filters()
+        time_period_filters: Set[Tuple[datetime.time, datetime.time]] = services_settings.get_time_period_filters()
         assert len(time_period_filters) == 1
         time_period_filter = time_period_filters.pop()
         assert time_period_filter[0].hour == 6
@@ -341,17 +341,17 @@ class TestSuiteConverter(unittest.TestCase):
         assert time_period_filter[1].minute == 59
         assert time_period_filter[1].second == 59
 
-        service_settings.day_of_week = DayOfWeek.THURSDAY
-        assert gtfs_reader.settings.service_settings.day_of_week == DayOfWeek.THURSDAY
+        services_settings.day_of_week = DayOfWeek.THURSDAY
+        assert gtfs_reader.settings.services_settings.day_of_week == DayOfWeek.THURSDAY
 
-        service_settings.set_group_identical_gtfs_trips(False)
-        assert service_settings.is_group_identical_gtfs_trips() is False
-        service_settings.set_include_partial_gtfs_trips_if_stops_in_time_period(False)
-        assert service_settings.is_include_partial_gtfs_trips_if_stops_in_time_period() is False
-        service_settings.add_log_gtfs_stop_routes(["gtfs_stop_x", "gtfs_stop_y"])
-        assert service_settings.is_log_gtfs_stop_route("gtfs_stop_x") is True
-        assert service_settings.is_log_gtfs_stop_route("gtfs_stop_y") is True
-        assert service_settings.is_log_gtfs_stop_route("gtfs_stop_z") is False
+        services_settings.set_group_identical_gtfs_trips(False)
+        assert services_settings.is_group_identical_gtfs_trips() is False
+        services_settings.set_include_partial_gtfs_trips_if_stops_in_time_period(False)
+        assert services_settings.is_include_partial_gtfs_trips_if_stops_in_time_period() is False
+        services_settings.add_log_gtfs_stop_routes(["gtfs_stop_x", "gtfs_stop_y"])
+        assert services_settings.is_log_gtfs_stop_route("gtfs_stop_x") is True
+        assert services_settings.is_log_gtfs_stop_route("gtfs_stop_y") is True
+        assert services_settings.is_log_gtfs_stop_route("gtfs_stop_z") is False
 
         gc.collect()
 
@@ -760,7 +760,6 @@ class TestSuiteConverter(unittest.TestCase):
 
         # no correspondence to Java test as we explicitly test non-failure of Python code to instantiate converters
         planit = Planit()
-        jvm = GatewayUtils.get_package_jvm()
 
         # intermodal converter
         intermodal_converter = planit.converter_factory.create(ConverterType.INTERMODAL)
@@ -786,7 +785,7 @@ class TestSuiteConverter(unittest.TestCase):
 
         minimise_gtfs_sydney_warnings(gtfs_reader.settings.zoning_settings, gtfs_reader.settings.service_settings)
 
-        # planit writer
+        # PLANit writer
         planit_writer = intermodal_converter.create_writer(IntermodalWriterType.PLANIT)
         planit_writer.settings.set_output_directory(OUTPUT_PATH)
         planit_writer.settings.set_country(AUSTRALIA)
