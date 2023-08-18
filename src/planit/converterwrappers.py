@@ -255,14 +255,14 @@ class OsmPublicTransportSettingsWrapper(ReaderSettingsWrapper):
         return self.hasWaitingAreaNominatedOsmWayForStopLocation(
             osm_waiting_area_id, GatewayUtils.to_java_enum(osm_entity_type))
 
-    def overwrite_waiting_area_mode_Access(
+    def overwrite_waiting_area_mode_access(
             self, osm_waiting_area_id: int, osm_entity_type: OsmEntityType, mode_access: List[str]):
         _str_class = GatewayState.python_2_java_gateway.jvm.java.lang.String
         self.overwriteWaitingAreaModeAccess(
             osm_waiting_area_id, GatewayUtils.to_java_enum(osm_entity_type),
             GatewayUtils.to_java_array(_str_class, mode_access))
 
-    def get_overwritten_waiting_area_mode_Access(
+    def get_overwritten_waiting_area_mode_access(
             self, osm_waiting_area_id: int, osm_entity_type: OsmEntityType) -> List[str]:
         return self.getOverwrittenWaitingAreaModeAccess(
             osm_waiting_area_id, GatewayUtils.to_java_enum(osm_entity_type))
@@ -467,7 +467,7 @@ class GtfsServicesReaderSettingsWrapper(ReaderSettingsWrapper):
             return None
         python_filters: Set[Tuple[datetime.time(), datetime.time()]] = set()
         for entry in filters:
-            # entry contains Planit Pair of two Java LocalTime instances
+            # entry contains PLANit Pair of two Java LocalTime instances
             start_time: datetime.time = GatewayUtils.to_python_datetime_time(entry.first());
             end_time: datetime.time = GatewayUtils.to_python_datetime_time(entry.second());
             python_filters.add((start_time, end_time))

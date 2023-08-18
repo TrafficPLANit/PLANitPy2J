@@ -204,7 +204,7 @@ class TestSuiteConverter(unittest.TestCase):
         planit = Planit()
 
         # OSM reader
-        osm_reader = planit.converter_factory.create(ConverterType.INTERMODAL).create_reader(
+        osm_reader: OsmIntermodalReaderWrapper = planit.converter_factory.create(ConverterType.INTERMODAL).create_reader(
             IntermodalReaderType.OSM, AUSTRALIA)
 
         pt_settings = osm_reader.settings.pt_settings
@@ -238,8 +238,8 @@ class TestSuiteConverter(unittest.TestCase):
         assert pt_settings.is_connect_dangling_ferry_stop_to_nearby_ferry_route() is True
         pt_settings.set_ferry_stop_to_ferry_route_search_radius_meters(40)
         assert round(pt_settings.get_ferry_stop_to_ferry_route_search_radius_meters(), 0) == 40
-        pt_settings.overwrite_waiting_area_mode_Access(1234, OsmEntityType.WAY, ["tram"])
-        assert "tram" in pt_settings.get_overwritten_waiting_area_mode_Access(1234, OsmEntityType.WAY)
+        pt_settings.overwrite_waiting_area_mode_access(1234, OsmEntityType.WAY, ["tram"])
+        assert "tram" in pt_settings.get_overwritten_waiting_area_mode_access(1234, OsmEntityType.WAY)
 
         # ensure planit connection is reset
         gc.collect()
@@ -261,7 +261,7 @@ class TestSuiteConverter(unittest.TestCase):
         gtfs_reader.settings.set_input_file(SYDNEY_GTFS_FILE_PATH)
 
         # (transfer) zoning settings - new in v0.4.0
-        zoning_settings = gtfs_reader.settings.zoning_settings
+        zoning_settings: GtfsZoningReaderSettingsWrapper = gtfs_reader.settings.zoning_settings
         zoning_settings.set_gtfs_stop_to_transfer_zone_search_radius_meters(40)
         assert round(zoning_settings.get_gtfs_stop_to_transfer_zone_search_radius_meters(), 0) == 40
         zoning_settings.set_gtfs_stop_to_link_search_radius_meters(20)
@@ -302,7 +302,7 @@ class TestSuiteConverter(unittest.TestCase):
             zoning_settings.get_overwritten_gtfs_stop_to_link_mapping("gtfs_stop_id_3")
         assert overwritten_mapping[0] == "planit_link_external_osm_id"
         assert overwritten_mapping[1] is IdMapperType.EXTERNAL_ID
-        zoning_settings.addLogGtfsStopToLinkMapping(["gtfs_stop_id_7", "gtfs_stop_id_8"])
+        zoning_settings.add_log_gtfs_stop_to_link_mapping(["gtfs_stop_id_7", "gtfs_stop_id_8"])
         assert zoning_settings.is_log_gtfs_stop_to_link_mapping("gtfs_stop_id_1") is False
         assert zoning_settings.is_log_gtfs_stop_to_link_mapping("gtfs_stop_id_7") is True
         assert zoning_settings.is_log_gtfs_stop_to_link_mapping("gtfs_stop_id_8") is True
@@ -775,10 +775,10 @@ class TestSuiteConverter(unittest.TestCase):
             intermodal_converter.create_reader(IntermodalReaderType.GTFS, AUSTRALIA, osm_reader)
         gtfs_reader.settings.set_input_file(SYDNEY_GTFS_FILE_PATH)
 
-        gtfs_reader.settings.service_settings.day_of_week = DayOfWeek.THURSDAY
-        assert gtfs_reader.settings.service_settings.day_of_week == DayOfWeek.THURSDAY
+        gtfs_reader.settings.services_settings.day_of_week = DayOfWeek.THURSDAY
+        assert gtfs_reader.settings.services_settings.day_of_week == DayOfWeek.THURSDAY
 
-        gtfs_reader.settings.service_settings.add_time_period_filter(
+        gtfs_reader.settings.services_settings.add_time_period_filter(
             datetime.time(hour=6, minute=0, second=0),
             datetime.time(hour=9, minute=59, second=59)
         )
