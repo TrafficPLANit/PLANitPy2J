@@ -111,15 +111,11 @@ class TestSuiteConverter(unittest.TestCase):
         # added v0.4.0
         osm_modes = osm_reader.settings.highway_settings.collect_allowed_osm_highway_modes("primary")
         assert osm_reader.settings.highway_settings.get_default_speed_limit_by_osm_highway_type("primary") == 60.0
-        assert osm_reader.settings.highway_settings.is_speed_limit_defaults_based_on_urban_area() is True
         assert osm_reader.settings.highway_settings.is_osm_highway_type_deactivated("primary") is True
         assert osm_reader.settings.highway_settings.is_osm_highway_type_activated("primary") is False
+        assert osm_reader.settings.highway_settings.is_speed_limit_defaults_based_on_urban_area() is True
 
         osm_reader.settings.highway_settings.activate_osm_highway_type("primary")
-        cap, max_density = \
-            osm_reader.settings.highway_settings.get_overwritten_capacity_max_density_by_osm_highway_type("primary")
-        assert round(cap, 0) == 2000
-        assert round(max_density, 0) == 150
         osm_reader.settings.highway_settings.set_speed_limit_defaults_based_on_urban_area(True)
         osm_reader.settings.highway_settings.remove_all_road_modes()
         assert osm_reader.settings.is_highway_parser_active() is True
@@ -131,6 +127,11 @@ class TestSuiteConverter(unittest.TestCase):
         assert planit_pedestrian_mode is PredefinedModeType.PEDESTRIAN
         assert "foot" in \
                osm_reader.settings.highway_settings.get_mapped_osm_road_modes(planit_pedestrian_mode)
+
+        cap, max_density = \
+            osm_reader.settings.highway_settings.get_overwritten_capacity_max_density_by_osm_highway_type("primary") # not yet documented
+        assert round(cap, 0) == 2000
+        assert round(max_density, 0) == 150
 
         # railway settings
         osm_reader.settings.railway_settings.activate_all_osm_railway_types()
@@ -148,9 +149,9 @@ class TestSuiteConverter(unittest.TestCase):
         assert osm_reader.settings.railway_settings.is_osm_railway_type_activated("rail") is False
         osm_reader.settings.railway_settings.activate_osm_railway_type("rail")
         assert True is osm_reader.settings.railway_settings. \
-            is_default_capacity_or_max_density_overwritten_by_osm_railway_type("rail")
+            is_default_capacity_or_max_density_overwritten_by_osm_railway_type("rail") # not documented yet
         cap, max_density = \
-            osm_reader.settings.railway_settings.get_overwritten_capacity_max_density_by_osm_railway_type("rail")
+            osm_reader.settings.railway_settings.get_overwritten_capacity_max_density_by_osm_railway_type("rail") # not documented yet
         assert round(cap, 0) == 100000
         assert round(max_density, 0) == 100
         osm_reader.settings.railway_settings.get_default_speed_limit_by_osm_railway_type("rail")
@@ -182,20 +183,21 @@ class TestSuiteConverter(unittest.TestCase):
         assert osm_reader.settings.waterway_settings.is_osm_waterway_type_deactivated("primary") is True
         assert osm_reader.settings.waterway_settings.is_osm_waterway_type_activated("primary") is False
         osm_reader.settings.waterway_settings.activate_osm_waterway_type("primary")
+        osm_reader.settings.waterway_settings.get_default_speed_limit_by_osm_waterway_type("primary")
+
         assert True is osm_reader.settings.waterway_settings. \
-            is_default_capacity_or_max_density_overwritten_by_osm_waterway_route_type("primary")
+            is_default_capacity_or_max_density_overwritten_by_osm_waterway_route_type("primary") # Not yet documented in Python docs
         cap, max_density = \
             osm_reader.settings.waterway_settings.get_overwritten_capacity_max_density_by_osm_waterway_route_type(
-                "primary")
+                "primary")  # Not yet documented in Python docs
         assert round(cap, 0) == 2000
         assert round(max_density, 0) == 150
-        osm_reader.settings.waterway_settings.get_default_speed_limit_by_osm_waterway_type("primary")
 
         # lane configuration
         osm_reader.settings.lane_configuration.set_default_directional_lanes_by_highway_type("primary", 4)
         osm_reader.settings.lane_configuration.set_default_directional_railway_tracks(2)
 
-        # ensure planit connection is reset
+        # ensure PLANit connection is reset
         gc.collect()
 
     def test_converter_osm_reader_all_properties(self):
@@ -783,7 +785,7 @@ class TestSuiteConverter(unittest.TestCase):
             datetime.time(hour=9, minute=59, second=59)
         )
 
-        minimise_gtfs_sydney_warnings(gtfs_reader.settings.zoning_settings, gtfs_reader.settings.service_settings)
+        minimise_gtfs_sydney_warnings(gtfs_reader.settings.zoning_settings, gtfs_reader.settings.services_settings)
 
         # PLANit writer
         planit_writer = intermodal_converter.create_writer(IntermodalWriterType.PLANIT)
@@ -867,6 +869,7 @@ class TestSuiteConverter(unittest.TestCase):
         converter.convert(planit_zon_reader, planit_writer)
         # result should be the same file, although we do not test this here automatically yet
         gc.collect()
+
 
     def test_intermodal_converter_planit2planit(self):
         OUTPUT_PATH = os.path.join(PLANIT_PATH, 'output', 'planit')
