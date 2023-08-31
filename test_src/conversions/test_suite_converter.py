@@ -409,6 +409,8 @@ class TestSuiteConverter(unittest.TestCase):
         # geo writer
         geoio_writer: GeometryIntermodalWriterWrapper = planit.converter_factory.create(
             ConverterType.INTERMODAL).create_writer(IntermodalWriterType.SHAPE)
+        geoio_writer.settings.set_output_directory(OUTPUT_PATH)
+        geoio_writer.settings.set_country(AUSTRALIA)
 
         ########
         # Network settings
@@ -853,11 +855,13 @@ class TestSuiteConverter(unittest.TestCase):
         planit_net_reader: PlanitNetworkReaderWrapper = \
             plan_it.converter_factory.create(ConverterType.NETWORK).create_reader(NetworkReaderType.PLANIT)
         planit_net_reader.settings.set_input_directory(PLANIT_INPUT_PATH)
+
         # zoning converter
         converter: ZoningConverter = plan_it.converter_factory.create(ConverterType.ZONING)
 
         # PLANit reader
-        planit_zon_reader: PlanitZoningReaderWrapper = converter.create_reader(ZoningReaderType.PLANIT, planit_net_reader)
+        planit_zon_reader: PlanitZoningReaderWrapper = (
+            converter.create_reader(ZoningReaderType.PLANIT, planit_net_reader))
         planit_zon_reader.settings.set_input_directory(PLANIT_INPUT_PATH)
 
         # PLANit writer

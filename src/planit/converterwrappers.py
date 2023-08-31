@@ -740,8 +740,7 @@ class TntpDemandsReaderSettingsWrapper(ReaderSettingsWrapper):
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
 
-    def set_start_time_since_midnight(self, start_time, time_units):
-        bla = 4;
+    def set_start_time_since_midnight(self, start_time: Union[float, int], time_units: TimeUnits):
         self.java.setStartTimeSinceMidnight(start_time, GatewayUtils.to_java_enum(time_units))
 
     def set_time_period_duration(self, duration: Union[float, int], time_units: TimeUnits):
