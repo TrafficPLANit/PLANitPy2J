@@ -640,6 +640,8 @@ class TestSuiteConverter(unittest.TestCase):
         matsim_writer.settings.set_output_directory(OUTPUT_PATH)
         matsim_writer.settings.set_country(AUSTRALIA)
 
+        #todo: add pt services settings
+
         # perform conversion
         intermodal_converter.convert(osm_reader, matsim_writer)
         gc.collect()
