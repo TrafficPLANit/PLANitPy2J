@@ -50,7 +50,7 @@ setup(
     data_files=[(RESOURCE_DIR, RESOURCE_JAR_FILE_NAMES)],
     install_requires=[
         # python installation for py4j
-        'py4j>=' + __py4j_version__,
+        'py4j>=' + vs.__py4j_version__,
         'pandas',
         'pytest',
       ],    

@@ -15,7 +15,7 @@ If you want to use PLANit-Python as a user, please refer to the online documenta
 
 # Dependency on Java Projects
 
-There is a directory "share" which holds JAR files for the Java projects this repositry relies on.  The "share/planit" directory contains a single JAR file compiling all PLANit-Java resources needed for PLANitPy2J to work. the "share/py4j" directory contains the Py4J jar required to setup the interface between PLANit-Java and PLANit-Python.
+There is a directory "share" which holds JAR files for the Java projects this repository relies on.  The "share/planit" directory contains a single JAR file compiling all PLANit-Java resources needed for PLANitPy2J to work. the "share/py4j" directory contains the Py4J jar required to setup the interface between PLANit-Java and PLANit-Python.
 
 Any changes to any of the PLANit-Java projects to support the Python side require you to recompile the Java project and place the updated jar in this directory for it to be available to PLANit-Python.
 
@@ -34,7 +34,10 @@ Failing to do this will cause the runs to fail.
 
 # Py4J
 
-PLANitPy2J relies on Py4J for its interface with the underlying PLANit code which is programmed in Java. The Py4J code gateway and entry point are hidden from the user via the PLANit class which instantiates the Java gateway server by invoking an external subprocess call. The functionality of the gateway is provided in the Py4J jar file which is included in the "rsc" directory.
+PLANitPy2J relies on Py4J for its interface with the underlying PLANit code which is programmed in Java. 
+The Py4J code gateway and entry point are hidden from the user via the PLANit class which instantiates 
+the Java gateway server by invoking an external subprocess call. The functionality of the gateway is provided 
+in the Py4J jar file which is included in the "share" directory.
 
 For more information on Py4J, please see [www.py4j.org](www.py4j.org)
 
@@ -121,9 +124,11 @@ How to install Python can be found on <https://www.python.org/downloads/>. We ar
 
 ## Testing and running PLANitPy2J in Python
 
-If PLANitPy2J is to be run from the command line, Python must be installed on the computer.  If it is to be run from Eclipse, the PyDev plugin must also be installed.
+If PLANitPy2J is to be run from the command line, Python must be installed on the computer.  
+If it is to be run from Eclipse, the PyDev plugin must also be installed.
 
-Make sure that the py4j version used in J2Py and this project are the same as the one used in your local python installation when you intend to run planit-python scripts outside of your IDE.
+Make sure that the py4j version used in J2Py and this project are the same as the one used in your 
+local python installation when you intend to run planit-python scripts outside of your IDE.
 
 The Python code uses the following Python libraries:
 
@@ -132,21 +137,32 @@ The Python code uses the following Python libraries:
 * unittest
 * traceback
 
-Install these onto your computer using Python's "pip install" facility if you have not already done so. Similarly, install pip if you haven't already done so.
+Install these onto your computer using Python's "pip install" facility if you have not already done so. 
+Similarly, install pip if you haven't already done so.
 
-An example is made available under src/examples/basic/basic.py.  It uses src/examples/basic/input as it project directory, and a macroscopicinput.xml input file is located in this directory. It contains a very simple network with three origins and destinations without any route choice, shaped in the form of a triangle (Tipi). It can be used to test if the PLANitPython interface is setup correctly.
+An example is made available under src/examples/basic/basic.py.  
 
-The files `test_suite_XXXX.py` in the testcases/ dir of the project runs several Python unit tests. This script uses the `test_utils.py file` (in the test_util package) to set up PLANit assignment runs from Python.  
+It uses src/examples/basic/input as it project directory, and a macroscopicinput.xml input file 
+is located in this directory. It contains a very simple network with three origins and destinations
+without any route choice, shaped in the form of a triangle (Tipi). It can be used to test if the PLANitPython 
+interface is setup correctly.
 
-To run `test_suite_XXXX.py` from Eclipse using PyDev, right-click it and select Run as/Python unit-test.  To run from the command prompt, navigate to the directory where it is stored (<path_of_project>/src/tests) and enter "python test_suite.py".
+The files `test_suite_XXXX.py` in the testcases/ dir of the project runs several Python unit tests. 
+This script uses the `test_utils.py file` (in the test_util package) to set up PLANit assignment runs from Python.  
 
-Some tests in test_suite.py use XML input files and CSV comparison files in  sub-directories of the directory "testcases".  A subset of test cases are equivalent to the Java test cases. Whereas the Java unit tests are intended to verify that the model results are correct for a variety of inputs, the Python unit tests exists to verify that the Python interface sends the correct values and/or calls to the Java side.
+To run `test_suite_XXXX.py` from Eclipse using PyDev, right-click it and select Run as/Python unit-test.  
+To run from the command prompt, navigate to the directory where it is stored (<path_of_project>/src/tests) and enter "python test_suite.py".
+
+Some tests in test_suite.py use XML input files and CSV comparison files in  sub-directories of the directory "testcases".  
+A subset of test cases are equivalent to the Java test cases. Whereas the Java unit tests are intended to verify that the model results are correct for a variety of inputs, the Python unit tests exists to verify that the Python interface sends the correct values and/or calls to the Java side.
 
 The `__init__()` method of the PLANit.py class can take an argument project_path which tells it where to find the XML input file and put the CSV output files. If the project_path argument is omitted, the current directory (i.e. where the PLANit.py file is located) is used.
 
 # Creating a Setup
 
-A separate readme is created to guide developers on how to create a new setup/installer for PLANit-Python. It is unlikely anyone else that contributors to the project will ever need to look at it, but the interested reader can find it under `SETUP_README.md`
+A separate readme is created to guide developers on how to create a new setup/installer for PLANit-Python. It is unlikely 
+anyone else that contributors to the project will ever need to look at it, but the interested reader can find 
+it under `SETUP_README.md`
 
 # Git Branching model
 

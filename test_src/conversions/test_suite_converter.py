@@ -419,6 +419,7 @@ class TestSuiteConverter(unittest.TestCase):
         assert network_settings.is_persist_links() is False
         network_settings.set_persist_nodes(False)
         assert network_settings.is_persist_nodes() is False
+        # todo: add support for persisting link segments on/off
         network_settings.set_links_file_name("links_file_name")
         assert network_settings.get_links_file_name() == "links_file_name"
         network_settings.set_nodes_file_name("nodes_file_name")
@@ -535,10 +536,15 @@ class TestSuiteConverter(unittest.TestCase):
         planit_writer.settings.zoning_settings.set_file_name("zoning.xml")
 
         # service network settings
+        planit_writer.settings.service_network_settings.set_output_directory(OUTPUT_PATH)
         planit_writer.settings.service_network_settings.set_file_name("service_network.xml")
 
         # routed services settings
+        planit_writer.settings.routed_services_settings.set_output_directory(OUTPUT_PATH)
         planit_writer.settings.routed_services_settings.set_file_name("routed_services.xml")
+        planit_writer.settings.routed_services_settings.set_log_services_without_trips(False)
+        # not yet documented/supported
+        # planit_writer.settings.routed_services_settings.set_trip_frequency_time_unit(...)
 
         # ensure planit connection is reset
         gc.collect()
@@ -568,6 +574,7 @@ class TestSuiteConverter(unittest.TestCase):
         # perform conversion
         network_converter.convert(osm_reader, matsim_writer)
         gc.collect()
+
 
     def test_network_converter_osm2matsim_file(self):
         OUTPUT_PATH = os.path.join(OSM_PATH, 'output', 'matsim', 'file')
@@ -817,6 +824,8 @@ class TestSuiteConverter(unittest.TestCase):
         geo_writer = intermodal_converter.create_writer(IntermodalWriterType.SHAPE)
         geo_writer.settings.set_output_directory(OUTPUT_PATH)
         geo_writer.settings.set_country(AUSTRALIA)
+        geo_writer.settings.network_settings.set_persist_nodes(True)
+        geo_writer.settings.network_settings.set_persist_links(True)
 
         geo_writer.settings.zoning_settings.persist_virtual_network = True
         geo_writer.set_id_mapper_type(IdMapperType.XML)
