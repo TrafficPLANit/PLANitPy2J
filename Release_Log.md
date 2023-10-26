@@ -2,6 +2,19 @@
 
 PLANitPy2J releases.  The Python interface for PLANit.
 
+## 0.4.0
+
+* [GENERAL] Restructuring of test dir structure for improved modularity + added tests for converters
+* #20 Add support for automatic datetime.time to Localtime conversion (Python to Java) in gateway utils
+* #19 Add support for Geometry/GIS writer(s)
+* #18 Add support for GTFS reader(s)
+* #17 Add support for CI development by adding github actions and auto testing upon push commits
+* #16 Add support for zoning converters and demand converters
+* #15 Log planit version with every run
+* #14 Add support for MATSim zoning writer to activate generation of CSV output for MatrixBasedPtRouter on zoning/intermodal settings 
+* #13 Add support for routed services, either in accessing parsed ones in a project or through converters documentation
+* #12 Add support for service networks, either in accessing parsed ones in a project or through converters
+
 ## 0.3.0
 
 * Rename PLANit() to Planit() to keep things simple #6
