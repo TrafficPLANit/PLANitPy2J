@@ -1,7 +1,5 @@
 from setuptools import setup                                                # setuptools is our method for building the module
 from setuptools import find_packages
-import planit.version as vs
-
 from glob import glob
 
 import os
@@ -10,7 +8,8 @@ import os
 # parse the __planit_version__ variable from python script
 VERSION_PATH = os.path.join("src", "planit", "version.py")
 exec(compile(open(VERSION_PATH).read(),VERSION_PATH, "exec"))
-VERSION = vs.__planit_version__
+PLANIT_VERSION = __planit_version__
+PY4J_VERSION = __py4j_version__
 LICENSE_LOCATION = "http://www.goplanit.org/docs/licenses/"
 
 # RESOURCES
@@ -20,7 +19,7 @@ RESOURCE_JAR_FILE_NAMES = glob(RESOURCE_DIR+'/**')
 
 setup(
     name="PLANit-Python",
-    version= VERSION,
+    version= PLANIT_VERSION,
     description="Python API for traffic assignment using PLANit",
     long_description="PLANit-Python enables Python programs running in "
                      "a Python interpreter to configure and run "
@@ -50,7 +49,7 @@ setup(
     data_files=[(RESOURCE_DIR, RESOURCE_JAR_FILE_NAMES)],
     install_requires=[
         # python installation for py4j
-        'py4j>=' + vs.__py4j_version__,
+        'py4j>=' + PY4J_VERSION,
         'pandas',
         'pytest',
       ],    
