@@ -56,7 +56,7 @@ class Planit:
                 os.path.join(GatewayConfig.VENV_RELEASE_SHARE_PATH,GatewayConfig.PLANIT_SHARE),                
                 os.path.join(GatewayConfig.RELEASE_SHARE_PATH,GatewayConfig.PY4J_SHARE),
                 os.path.join(GatewayConfig.VENV_RELEASE_SHARE_PATH, GatewayConfig.PY4J_SHARE)}
-            dependencySeparator = ';'
+            dependencySeparator = os.pathsep
             fullString = dependencySeparator.join(dependencySet)
             
             cmd = ['java', '-classpath', fullString, GatewayConfig.JAVA_GATEWAY_WRAPPER_CLASS]
