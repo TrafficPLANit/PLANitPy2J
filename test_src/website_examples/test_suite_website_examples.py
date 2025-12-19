@@ -15,8 +15,8 @@ class TestSuiteWebsiteExamples(unittest.TestCase):
 
     def test_getting_started(self):
         project_path = os.path.join(ABSOLUTE_PATH_TEST_DATA_WEBSITE, 'getting_started')
-        plan_it = Planit()
-        planit_project = plan_it.create_project(project_path)
+        planit = Planit()
+        planit_project = planit.create_project(project_path)
 
         # COMPONENTS
         planit_project.set(TrafficAssignment.TRADITIONAL_STATIC)
@@ -35,6 +35,8 @@ class TestSuiteWebsiteExamples(unittest.TestCase):
 
         # RUN ASSIGNMENT
         planit_project.run()
+
+        planit.force_stop_java()
         gc.collect()
 
 if __name__ == '__main__':

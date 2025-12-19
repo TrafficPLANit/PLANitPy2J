@@ -16,7 +16,8 @@ class Planit:
     def __init__(self, debug_info=False, standalone=True):
         """Constructor of PLANit python wrapper which acts as an interface to the underlying PLANit Java code
         :param project_path the path location of the XML input file(s) to be used by PLANitIO
-        :param standalone when true this PLANit instance bootstraps a java gateway and closes it upon completion of the scripts when false <to be implemented>
+        :param standalone when true this PLANit instance bootstraps a java gateway and closes it upon completion of
+          the scripts when false <to be implemented>
         """  
         # explicitly set uninitialized member variables to None
         self.assignment_project = None                     
@@ -108,7 +109,7 @@ class Planit:
                 traceback.print_exc()        
                 
     def force_stop_java(self):
-        """ force the java connectoind to be ended, only use when you are certain you no longer are using this Planit instance
+        """ force the java connectoin to be ended, only use when you are certain you no longer are using this Planit instance
         """
         self.__stop_java__()
                 
