@@ -57,6 +57,7 @@ class TestSuiteConverterProperties(unittest.TestCase):
         osm_reader.settings.set_discard_dangling_networks_below(10)
         osm_reader.settings.set_input_file(SYDNEY_OSM_PBF_FILE_PATH)
         osm_reader.settings.set_remove_dangling_subnetworks(True)
+        assert osm_reader.settings.is_remove_dangling_subnetworks() is True
         osm_reader.settings.set_bounding_box(1.2, 3, 4.5, 6)
         osm_reader.settings.set_keep_osm_ways_outside_bounding_box([1, 2, 3.4])
 
@@ -163,7 +164,10 @@ class TestSuiteConverterProperties(unittest.TestCase):
 
         # lane configuration
         osm_reader.settings.lane_configuration.set_default_directional_lanes_by_highway_type("primary", 4)
+        assert osm_reader.settings.lane_configuration.get_default_directional_lanes_by_highway_type("primary") is 4
         osm_reader.settings.lane_configuration.set_default_directional_railway_tracks(2)
+        assert osm_reader.settings.lane_configuration.get_default_directional_railway_tracks() is 2
+        assert osm_reader.settings.lane_configuration.get_default_directional_waterway_lanes() > 0
 
         # ensure PLANit connection is reset
         planit.force_stop_java()
