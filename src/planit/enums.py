@@ -119,12 +119,14 @@ class NetworkWriterType(Enum):
     PLANIT = "PlanitNetworkWriter"
 
 
-class OdSkimSubOutputType(Enum):
+class SkimSubOutputType(Enum):
     NONE = "NONE"
+    TRAVEL_TIME = "TRAVEL_TIME"
+    DISTANCE = "DISTANCE"
     COST = "COST"
 
     def java_class_name(self) -> str:
-        return "org.goplanit.output.enums.OdSkimSubOutputType"
+        return "org.goplanit.output.enums.SkimSubOutputType"
 
 
 class OsmEntityType(Enum):
