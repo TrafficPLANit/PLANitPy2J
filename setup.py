@@ -36,11 +36,13 @@ setup(
         "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "Programming Language :: Java",
         "Topic :: Scientific/Engineering",        
     ],
+    python_requires=">=3.11",
     # we only include these packages
     packages=["planit", "test_utils"],
     # indicate the ./src directory is where to find packages rather than this ""

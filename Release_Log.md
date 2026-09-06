@@ -2,6 +2,11 @@
 
 PLANitPy2J releases.  The Python interface for PLANit.
 
+## 0.5.0
+
+* [GENERAL] Updated Py4J bridge dependency to 0.10.9.9
+* [GENERAL] Updated required Python version to 3.11 or newer
+
 ## 0.4.0
 
 * [GENERAL] Restructuring of test dir structure for improved modularity + added tests for converters

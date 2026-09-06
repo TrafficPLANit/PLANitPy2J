@@ -139,8 +139,8 @@ public Enum createEnum(String enumCanonicalName, String EnumEntryName) throws Cl
 
 How to install Py4j as a module on your Python installation is discussed in detail on <https://www.py4j.org/install.html>
 
-How to install Python can be found on <https://www.python.org/downloads/>. We are currently using Python version 3.7, 
-but the code has been tested on Python 3.6.
+How to install Python can be found on <https://www.python.org/downloads/>. PLANitPy2J requires Python 3.11 or newer.
+For the 0.5.0 release, the intended supported/tested Python versions are 3.11, 3.12, and 3.13.
 
 ## Testing and running PLANitPy2J in Python
 
