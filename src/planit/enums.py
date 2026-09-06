@@ -56,7 +56,7 @@ class IdMapperType(Enum):
     EXTERNAL_ID = "EXTERNAL_ID"
 
     def java_class_name(self) -> str:
-        return "org.goplanit.converter.idmapping.IdMapperType"
+        return "org.goplanit.utils.id.IdMapperType"
 
     @staticmethod
     def from_java(java_enum) -> Enum:
