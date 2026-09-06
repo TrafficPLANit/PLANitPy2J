@@ -8,6 +8,14 @@ from planit import DayOfWeek, IdMapperType, PredefinedModeType, GatewayUtils, Tn
 from planit import GatewayState
 from planit import BaseWrapper
 from planit import OsmEntityType
+from planit.osm_converter_utils import OsmConverterUtils
+
+
+class OsmBoundingAreaSettingsMixin:
+    """Compatibility layer for the pre-v0.5.0 Python OSM bounding-box API."""
+
+    def set_bounding_box(self, x1, x2, y1, y2):
+        self.java.setBoundingArea(OsmConverterUtils.create_osm_boundary_from_bounding_box(x1, x2, y1, y2))
 
 
 class ConverterWrapper(BaseWrapper):
@@ -232,7 +240,7 @@ class MatsimNetworkWriterWrapper(NetworkWriterWrapper):
         super().__init__(java_counterpart)
 
 
-class OsmPublicTransportSettingsWrapper(ReaderSettingsWrapper):
+class OsmPublicTransportSettingsWrapper(OsmBoundingAreaSettingsMixin, ReaderSettingsWrapper):
     """ Wrapper around pt settings for an OSM intermodal reader used by converter. Wrapper is needed to deal with the
     methods that require enum parameters
     """
@@ -268,7 +276,7 @@ class OsmPublicTransportSettingsWrapper(ReaderSettingsWrapper):
             osm_waiting_area_id, GatewayUtils.to_java_enum(osm_entity_type))
 
 
-class OsmIntermodalReaderSettingsWrapper(ReaderSettingsWrapper):
+class OsmIntermodalReaderSettingsWrapper(OsmBoundingAreaSettingsMixin, ReaderSettingsWrapper):
     """ Wrapper around settings for an OSM intermodal reader used by converter
     """
 
@@ -300,7 +308,7 @@ class OsmIntermodalReaderWrapper(IntermodalReaderWrapper):
         self._settings = OsmIntermodalReaderSettingsWrapper(self._settings.java)
 
 
-class OsmNetworkReaderSettingsWrapper(ReaderSettingsWrapper):
+class OsmNetworkReaderSettingsWrapper(OsmBoundingAreaSettingsMixin, ReaderSettingsWrapper):
     """ Wrapper around settings for an OSM network reader used by converter
     to keep things simpler compared to Java side, we always provide access to highway, railway, and waterway settings.
     In case the respective parsers are deactivated, it is assumed the user
