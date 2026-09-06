@@ -12,7 +12,6 @@ from planit import PhysicalCost
 from planit import VirtualCost
 from planit import Smoothing
 from _decimal import Decimal
-from numpy import string_
 
 class AssignmentWrapper(BaseWrapper):
     """ Wrapper around the Java traffic assignment builder class instance

@@ -3,8 +3,6 @@ import os
 from py4j.java_gateway import get_field
 from planit import GatewayUtils
 
-from numpy import string_
-
 
 class BaseWrapper(object):
     """ Base wrapper class which always holds a java counter part instance and a generic way to pass on method calls to the encapsulated 
