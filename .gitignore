@@ -13,3 +13,10 @@
 /test_src/**/__pycache__
 /test_src/__pycache__
 /.idea
+# Generated test outputs compared against checked-in reference outputs
+/Link_RunId_*
+/Origin-Destination_RunId_*
+/Path_RunId_*
+/Simulation_RunId_*
+/test_src/assignment/*_RunId_*
+/testcases/
