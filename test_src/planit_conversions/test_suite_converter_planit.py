@@ -91,17 +91,18 @@ class TestSuiteConverterPlanit(unittest.TestCase):
         planit_net_reader: PlanitNetworkReaderWrapper = \
             planit.converter_factory.create(ConverterType.NETWORK).create_reader(NetworkReaderType.PLANIT)
         planit_net_reader.settings.set_input_directory(PLANIT_INPUT_PATH)
+        reference_network = planit_net_reader.read()
 
         # zoning converter
         converter: ZoningConverter = planit.converter_factory.create(ConverterType.ZONING)
 
         # PLANit reader
         planit_zon_reader: PlanitZoningReaderWrapper = (
-            converter.create_reader(ZoningReaderType.PLANIT, planit_net_reader))
+            converter.create_reader(ZoningReaderType.PLANIT, reference_network))
         planit_zon_reader.settings.set_input_directory(PLANIT_INPUT_PATH)
 
         # PLANit writer
-        planit_writer: PlanitZoningWriterWrapper = converter.create_writer(ZoningWriterType.PLANIT)
+        planit_writer: PlanitZoningWriterWrapper = converter.create_writer(ZoningWriterType.PLANIT, reference_network)
         planit_writer.settings.set_output_directory(OUTPUT_PATH)
         planit_writer.settings.set_country(AUSTRALIA)
 

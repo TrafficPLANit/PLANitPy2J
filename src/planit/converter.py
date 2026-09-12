@@ -92,7 +92,7 @@ class NetworkConverter(_ConverterBase):
 
     def __create_matsim_network_writer(self) -> MatsimNetworkWriterWrapper:
         java_network_writer = \
-            GatewayUtils.get_package_jvm().org.goplanit.matsim.converter.MatsimNetworkWriterFactory.create()
+            GatewayUtils.get_package_jvm().org.goplanit.matsim.converter.network.MatsimNetworkWriterFactory.create()
         return MatsimNetworkWriterWrapper(java_network_writer)
 
     def __create_geoio_network_writer(self) -> GeometryNetworkWriterWrapper:
@@ -165,10 +165,12 @@ class ZoningConverter(_ConverterBase):
     #####################################
 
     @staticmethod
-    def __create_planit_zoning_reader(reference_reader: ZoningReaderWrapper) -> PlanitZoningReaderWrapper:
+    def __create_planit_zoning_reader(reference_network) -> PlanitZoningReaderWrapper:
+        java_settings = \
+            GatewayUtils.get_package_jvm().org.goplanit.io.converter.zoning.PlanitZoningReaderSettings()
         java_zoning_reader = \
             GatewayUtils.get_package_jvm().org.goplanit.io.converter.zoning.PlanitZoningReaderFactory.create(
-                reference_reader.java)
+                java_settings, reference_network)
         return PlanitZoningReaderWrapper(java_zoning_reader)
 
     @staticmethod
@@ -183,9 +185,10 @@ class ZoningConverter(_ConverterBase):
     #####################################
 
     @staticmethod
-    def __create_planit_zoning_writer() -> PlanitZoningWriterWrapper:
+    def __create_planit_zoning_writer(reference_network) -> PlanitZoningWriterWrapper:
         java_zoning_writer = \
-            GatewayUtils.get_package_jvm().org.goplanit.io.converter.zoning.PlanitZoningWriterFactory.create()
+            GatewayUtils.get_package_jvm().org.goplanit.io.converter.zoning.PlanitZoningWriterFactory.create(
+                reference_network)
         return PlanitZoningWriterWrapper(java_zoning_writer)
 
     @staticmethod
@@ -196,12 +199,11 @@ class ZoningConverter(_ConverterBase):
 
     def create_reader(self,
                       zoning_reader_type: ZoningReaderType,
-                      reference_reader: NetworkReaderWrapper = None) -> ZoningReaderWrapper:
+                      reference_network=None) -> ZoningReaderWrapper:
         """ factory method to create a zoning reader compatible with this converter.
 
         :param zoning_reader_type: the type of reader to create
-        :param reference_reader: specifying a reference reader that is used to construct network from
-        a different source than its own to be used when constructing the zoning
+        :param reference_network: reference network to be used when constructing the zoning
         :return created reader
         """
         if not isinstance(zoning_reader_type, ZoningReaderType):
@@ -209,16 +211,17 @@ class ZoningConverter(_ConverterBase):
                 "Zoning reader type provided is not of ZoningReaderType, unable to instantiate")
 
         elif zoning_reader_type == ZoningReaderType.PLANIT:
-            return ZoningConverter.__create_planit_zoning_reader(reference_reader)
+            return ZoningConverter.__create_planit_zoning_reader(reference_network)
         elif zoning_reader_type == ZoningReaderType.TNTP:
-            return ZoningConverter.__create_tntp_zoning_reader(reference_reader)
+            return ZoningConverter.__create_tntp_zoning_reader(reference_network)
         else:
             raise Exception("Unsupported zoning reader type provided, unable to instantiate")
 
-    def create_writer(self, zoning_writer_type: ZoningWriterType) -> ZoningWriterWrapper:
+    def create_writer(self, zoning_writer_type: ZoningWriterType, reference_network=None) -> ZoningWriterWrapper:
         """ factory method to create a zoning reader compatible with this converter.
 
         :param zoning_writer_type: the type of writer to create
+        :param reference_network: reference network to be used when writing the zoning
         :return created writer
         """
         if not isinstance(zoning_writer_type, ZoningWriterType):
@@ -226,7 +229,7 @@ class ZoningConverter(_ConverterBase):
                 "Zoning reader type provided is not of ZoningReaderType, unable to instantiate")
 
         elif zoning_writer_type == ZoningWriterType.PLANIT:
-            return ZoningConverter.__create_planit_zoning_writer()
+            return ZoningConverter.__create_planit_zoning_writer(reference_network)
         elif zoning_writer_type == ZoningWriterType.SHAPE:
             return ZoningConverter.__create_geoio_zoning_writer()
         else:
