@@ -3,9 +3,9 @@ import sys
 import time
 from pathlib import Path
 
-from planit.converter import DemandsConverter
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '../..', 'src'))
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../..', 'src'))
+from planit.converter import DemandsConverter
 
 ABSOLUTE_PATH = os.path.dirname(__file__)
 ABSOLUTE_PATH_TEST_DATA = os.path.join(ABSOLUTE_PATH, '..', '..', 'testdata')
@@ -71,7 +71,6 @@ class TestSuiteConverterProperties(unittest.TestCase):
         osm_reader.settings.highway_settings.activate_osm_road_mode("bus")
         osm_reader.settings.highway_settings.deactivate_osm_road_mode("bus")
         osm_reader.settings.highway_settings.deactivate_osm_highway_type("primary")
-        osm_reader.settings.highway_settings.set_default_when_osm_highway_type_unsupported("primary")
         osm_reader.settings.highway_settings.overwrite_capacity_max_density_defaults("primary", 2000, 150)
 
         # added v0.4.0

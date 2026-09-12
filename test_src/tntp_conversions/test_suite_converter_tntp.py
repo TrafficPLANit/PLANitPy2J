@@ -2,9 +2,9 @@ import os
 import sys
 from pathlib import Path
 
-from planit.converter import DemandsConverter
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '../..', 'src'))
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../..', 'src'))
+from planit.converter import DemandsConverter
 
 ABSOLUTE_PATH = os.path.dirname(__file__)
 ABSOLUTE_PATH_TEST_DATA = os.path.join(ABSOLUTE_PATH, '..', '..', 'testdata')
