@@ -136,7 +136,9 @@ class TestSuiteConverterPlanit(unittest.TestCase):
         planit_writer.settings.set_output_directory(OUTPUT_PATH)
         planit_writer.settings.set_country(AUSTRALIA)
 
-        # perform planit_conversions, test that running conversion twice does not cause problems
+        # Reuse the same PLANit reader across both calls. This exercises the Java-side contract that
+        # factory-created intermodal readers own their to-populate entities and therefore create fresh
+        # entities for each read, rather than attempting to populate the objects from the previous pass.
         intermodal_converter.convert(planit_reader, planit_writer)
         intermodal_converter.convert_with_services(planit_reader, planit_writer)
 
