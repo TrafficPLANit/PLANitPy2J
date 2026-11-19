@@ -1,5 +1,9 @@
 from abc import abstractmethod
 from ctypes import Union
+from typing import List
+
+from py4j import java_collections
+from py4j.java_gateway import JavaObject
 
 from planit import ConverterType, TntpNetworkReaderWrapper, GatewayUtils, ZoningReaderType, ZoningReaderWrapper, \
     PlanitZoningReaderWrapper, TntpZoningReaderWrapper, ZoningWriterType, ZoningWriterWrapper, \
@@ -26,6 +30,28 @@ from planit import PlanitIntermodalWriterWrapper
 from planit import PlanitNetworkReaderWrapper
 from planit import PlanitNetworkWriterWrapper
 from planit import GeometryIntermodalWriterWrapper
+
+
+def _to_java_settings_sources(settings_files: List[str]) -> java_collections.JavaList:
+    """ the Java settings sources read from settings files, in the same order
+    :param settings_files: a list of at least one settings file
+    :return java list of settings sources
+    """
+    if not settings_files or isinstance(settings_files, str):
+        raise ValueError("Settings files are given as a list of at least one file")
+    return GatewayUtils.to_java_list([
+        GatewayUtils.get_package_jvm().org.goplanit.utils.settings.SettingsSource.ofFile(
+            GatewayUtils.to_java_path(settings_file)) for settings_file in settings_files])
+
+
+def _write_default_settings_file(java_default_settings: JavaObject, settings_file_path: str) -> None:
+    """ write Java settings made on their defaults to a settings file, every key with its description
+    :param java_default_settings: settings made on their defaults
+    :param settings_file_path: the settings file to write
+    """
+    java_default_settings.writeSettingsFile(
+        GatewayUtils.to_java_path(settings_file_path),
+        GatewayUtils.get_package_jvm().org.goplanit.utils.settings.SettingsFileContent.ALL_KEYS, True)
 
 
 class _ConverterBase():
@@ -71,9 +97,12 @@ class NetworkConverter(_ConverterBase):
     #     NETWORK READER FACTORY METHODS
     #####################################
 
-    def __create_osm_network_reader(self, country: str) -> OsmNetworkReaderWrapper:
+    def __create_osm_network_reader(self, settings_files: List[str]) -> OsmNetworkReaderWrapper:
+        java_settings = GatewayUtils.get_package_jvm().org.goplanit.osm.converter.settings.OsmReaderSettingsFactory. \
+            createNetworkReaderSettingsFromYaml(_to_java_settings_sources(settings_files))
         java_network_reader = \
-            GatewayUtils.get_package_jvm().org.goplanit.osm.converter.network.OsmNetworkReaderFactory.create(country)
+            GatewayUtils.get_package_jvm().org.goplanit.osm.converter.network.OsmNetworkReaderFactory.create(
+                java_settings)
         return OsmNetworkReaderWrapper(java_network_reader)
 
     def __create_planit_network_reader(self) -> PlanitNetworkReaderWrapper:
@@ -92,7 +121,7 @@ class NetworkConverter(_ConverterBase):
 
     def __create_matsim_network_writer(self) -> MatsimNetworkWriterWrapper:
         java_network_writer = \
-            GatewayUtils.get_package_jvm().org.goplanit.matsim.converter.MatsimNetworkWriterFactory.create()
+            GatewayUtils.get_package_jvm().org.goplanit.matsim.converter.network.MatsimNetworkWriterFactory.create()
         return MatsimNetworkWriterWrapper(java_network_writer)
 
     def __create_geoio_network_writer(self) -> GeometryNetworkWriterWrapper:
@@ -106,25 +135,52 @@ class NetworkConverter(_ConverterBase):
         return PlanitNetworkWriterWrapper(java_network_writer)
 
     def create_reader(self, network_reader_type: NetworkReaderType, country: str = "Global") -> ZoningReaderWrapper:
-        """ factory method to create a network reader compatible with this converter :param network_reader_type: the
-        type of reader to create :param country: optional argument specifying the country of the source network. Used
-        by some readers to initialise default settings. If absent but required it defaults to "Global", i.e.,
-        no country specific information is used in initialising defaults if applicable
+        """ factory method to create a network reader compatible with this converter, for a reader not made from
+        settings files; the OSM reader is made with create_yaml_based_reader
+        :param network_reader_type: the type of reader to create
+        :param country: optional argument specifying the country of the source network. Used by some readers to
+        initialise default settings. If absent but required it defaults to "Global", i.e., no country specific
+        information is used in initialising defaults if applicable
+        :return the created reader
         """
         if not isinstance(network_reader_type, NetworkReaderType): raise Exception(
             "Network reader type provided is not of NetworkReaderType, unable to instantiate")
 
         if network_reader_type == NetworkReaderType.OSM:
-            # OSM requires country to initialise default settings
-            return self.__create_osm_network_reader(country)
+            raise ValueError("An OSM reader is made from settings files, with create_yaml_based_reader")
         elif network_reader_type == NetworkReaderType.PLANIT:
-            # PLANit does not utilise country information
             return self.__create_planit_network_reader()
         elif network_reader_type == NetworkReaderType.TNTP:
-            # TNTP does not utilise country information
             return self.__create_tntp_network_reader()
         else:
             raise Exception("Unsupported network reader type provided, unable to instantiate")
+
+    def create_yaml_based_reader(self, network_reader_type: NetworkReaderType, settings_files: List[str]) \
+            -> OsmNetworkReaderWrapper:
+        """ factory method to create a network reader compatible with this converter, made from settings files. So far
+        only the OSM reader is made this way
+        :param network_reader_type: the type of reader to create
+        :param settings_files: applied in order, a later file winning; the country is the key country of the files
+        :return the created reader
+        """
+        if network_reader_type == NetworkReaderType.OSM:
+            return self.__create_osm_network_reader(settings_files)
+        raise ValueError(f"No settings files for the {network_reader_type} reader yet, it is made with create_reader")
+
+    def write_default_settings_file(self, network_reader_type: NetworkReaderType, settings_file_path: str,
+                                    country: str = "Global") -> None:
+        """ write a settings file with every key at its default, with descriptions, to edit and give to
+        create_yaml_based_reader. So far only for the OSM reader. Keys without a default, such as the input source,
+        are written commented out, to fill in
+        :param network_reader_type: the type of reader whose settings to write
+        :param settings_file_path: the settings file to write
+        :param country: whose defaults to write, written as the key country of the file
+        """
+        if network_reader_type != NetworkReaderType.OSM:
+            raise ValueError(f"No settings files for the {network_reader_type} reader yet")
+        _write_default_settings_file(
+            GatewayUtils.get_package_jvm().org.goplanit.osm.converter.settings.OsmReaderSettingsFactory.
+            createNetworkReaderSettings(country), settings_file_path)
 
     def create_writer(self, network_writer_type: NetworkWriterType) -> NetworkWriterWrapper:
         """ factory method to create a network writer compatible with this converter
@@ -340,9 +396,11 @@ class IntermodalConverter(_ConverterBase):
     #####################################
 
     @staticmethod
-    def __create_osm_intermodal_reader(country: str) -> OsmIntermodalReaderWrapper:
+    def __create_osm_intermodal_reader(settings_files: List[str]) -> OsmIntermodalReaderWrapper:
+        java_settings = GatewayState.python_2_java_gateway.jvm.org.goplanit.osm.converter.settings. \
+            OsmReaderSettingsFactory.createIntermodalReaderSettingsFromYaml(_to_java_settings_sources(settings_files))
         java_intermodal_reader = GatewayState.python_2_java_gateway.jvm.org.goplanit.osm.converter.intermodal. \
-            OsmIntermodalReaderFactory.create(country)
+            OsmIntermodalReaderFactory.create(java_settings)
         return OsmIntermodalReaderWrapper(java_intermodal_reader)
 
     @staticmethod
@@ -388,7 +446,8 @@ class IntermodalConverter(_ConverterBase):
                       intermodal_reader_type: IntermodalReaderType,
                       country: str = "Global",
                       reference_reader: IntermodalReaderWrapper = None) -> IntermodalReaderWrapper:
-        """ factory method to create an intermodal  reader compatible with this converter.
+        """ factory method to create an intermodal  reader compatible with this converter, for a reader not made from
+        settings files; the OSM reader is made with create_yaml_based_reader
 
         :param intermodal_reader_type: the type of reader to create
         :param country: optional argument specifying the country of the source network.
@@ -396,14 +455,14 @@ class IntermodalConverter(_ConverterBase):
         specific information is used in initialising defaults if applicable
         :param reference_reader: specifying another intermodal reader that is used to construct network and zoning from
         a different source than its own (only relevant for GTFS based reader currently)
+        :return the created reader
         """
 
         if not isinstance(intermodal_reader_type, IntermodalReaderType): raise Exception(
             "Reader type provided is not of IntermodalReaderType, unable to instantiate")
 
         if intermodal_reader_type == IntermodalReaderType.OSM:
-            # OSM requires country to initialise default settings
-            return IntermodalConverter.__create_osm_intermodal_reader(country)
+            raise ValueError("An OSM reader is made from settings files, with create_yaml_based_reader")
         elif intermodal_reader_type == IntermodalReaderType.PLANIT:
             return IntermodalConverter.__create_planit_intermodal_reader()
         elif intermodal_reader_type == IntermodalReaderType.GTFS:
@@ -411,6 +470,34 @@ class IntermodalConverter(_ConverterBase):
         else:
             raise Exception(f"Unsupported intermodal reader type provided {intermodal_reader_type}, "
                             f"unable to instantiate")
+
+    def create_yaml_based_reader(self, intermodal_reader_type: IntermodalReaderType, settings_files: List[str]) \
+            -> OsmIntermodalReaderWrapper:
+        """ factory method to create an intermodal reader compatible with this converter, made from settings files. So
+        far only the OSM reader is made this way
+        :param intermodal_reader_type: the type of reader to create
+        :param settings_files: applied in order, a later file winning; the country is the key country of the files
+        :return the created reader
+        """
+        if intermodal_reader_type == IntermodalReaderType.OSM:
+            return IntermodalConverter.__create_osm_intermodal_reader(settings_files)
+        raise ValueError(
+            f"No settings files for the {intermodal_reader_type} reader yet, it is made with create_reader")
+
+    def write_default_settings_file(self, intermodal_reader_type: IntermodalReaderType, settings_file_path: str,
+                                    country: str = "Global") -> None:
+        """ write a settings file with every key at its default, with descriptions, to edit and give to
+        create_yaml_based_reader. So far only for the OSM reader. Keys without a default, such as the input source,
+        are written commented out, to fill in
+        :param intermodal_reader_type: the type of reader whose settings to write
+        :param settings_file_path: the settings file to write
+        :param country: whose defaults to write, written as the key country of the file
+        """
+        if intermodal_reader_type != IntermodalReaderType.OSM:
+            raise ValueError(f"No settings files for the {intermodal_reader_type} reader yet")
+        _write_default_settings_file(
+            GatewayUtils.get_package_jvm().org.goplanit.osm.converter.settings.OsmReaderSettingsFactory.
+            createIntermodalReaderSettings(country), settings_file_path)
 
     def create_writer(self, intermodal_writer_type: IntermodalWriterType) -> IntermodalWriterWrapper:
         """ factory method to create an intermodal writer compatible with this converter

@@ -1,7 +1,10 @@
 import os
 import sys
+import tempfile
 import time
 from pathlib import Path
+
+from py4j.protocol import Py4JJavaError
 
 from planit.converter import DemandsConverter
 
@@ -19,7 +22,12 @@ AUSTRALIA = "Australia"
 
 OSM_PATH = os.path.join(ABSOLUTE_PATH_TEST_DATA_CONVERTER, 'osm')
 OSM_INPUT_PATH = os.path.join(OSM_PATH, 'input')
-SYDNEY_OSM_PBF_FILE_PATH = os.path.join(OSM_INPUT_PATH, "sydneycbd_2023.osm.pbf")
+SYDNEY_OSM_SETTINGS_FILE_PATH = os.path.join(OSM_INPUT_PATH, "osm_settings_sydney_cbd.yaml")
+
+OSM_SETTINGS_PATH = os.path.join(ABSOLUTE_PATH, 'settings')
+OSM_SETTINGS_BASE_FILE_PATH = os.path.join(OSM_SETTINGS_PATH, "osm_settings_base.yaml")
+OSM_SETTINGS_CORRECTIONS_FILE_PATH = os.path.join(OSM_SETTINGS_PATH, "osm_settings_corrections.yaml")
+OSM_SETTINGS_BASE_AND_CORRECTIONS_FILE_PATH = os.path.join(OSM_SETTINGS_PATH, "osm_settings_base_and_corrections.yaml")
 
 GTFS_PATH = os.path.join(ABSOLUTE_PATH_TEST_DATA_CONVERTER, 'gtfs')
 GTFS_INPUT_PATH = os.path.join(GTFS_PATH, 'input')
@@ -29,195 +37,105 @@ PLANIT_PATH = os.path.join(ABSOLUTE_PATH_TEST_DATA_CONVERTER, 'planit')
 PLANIT_INPUT_PATH = os.path.join(PLANIT_PATH, 'input')
 
 
+def write_osm_reader_settings_differing_from_defaults(osm_reader: OsmIntermodalReaderWrapper,
+                                                      settings_file_path: str) -> None:
+    """ write the settings of an OSM reader, the keys differing from their defaults, without descriptions. Through its
+    Java settings, as Python does not read settings back"""
+    settings_file_content = GatewayUtils.get_package_jvm().org.goplanit.utils.settings.SettingsFileContent
+    osm_reader.java.getSettings().writeSettingsFile(
+        GatewayUtils.to_java_path(settings_file_path), settings_file_content.KEYS_DIFFERING_FROM_DEFAULTS, False)
+
+
 class TestSuiteConverterProperties(unittest.TestCase):
     """ We are testing here if planit_conversions are runnable. We do not actually test the validity of the results
         as this is being done on the Java side. Here, we just make sure the properties can be set as expected and
         the run does not yield any errors/exceptions
     """
 
-    def test_network_converter_osm_reader_all_properties(self):
-        # no correspondence to Java test as we explicitly test non-failure of Python code to test all properties
-        # are accessible on the OSM reader based on the documentation
+    def test_osm_reader_later_settings_file_wins(self):
+        # made from a base file and its corrections, an OSM reader holds the same settings as one made from a single
+        # file holding both, and not those of the base file alone
         planit = Planit()
 
-        # network converter
-        network_converter = planit.converter_factory.create(ConverterType.NETWORK)
+        intermodal_converter = planit.converter_factory.create(ConverterType.INTERMODAL)
+        base_reader = intermodal_converter.create_yaml_based_reader(
+            IntermodalReaderType.OSM, [OSM_SETTINGS_BASE_FILE_PATH])
+        stacked_reader = intermodal_converter.create_yaml_based_reader(
+            IntermodalReaderType.OSM, [OSM_SETTINGS_BASE_FILE_PATH, OSM_SETTINGS_CORRECTIONS_FILE_PATH])
+        single_file_reader = intermodal_converter.create_yaml_based_reader(
+            IntermodalReaderType.OSM, [OSM_SETTINGS_BASE_AND_CORRECTIONS_FILE_PATH])
 
-        # osm reader        
-        osm_reader = network_converter.create_reader(NetworkReaderType.OSM, AUSTRALIA)
-
-        # global settings
-        osm_reader.settings.activate_highway_parser(True)
-        osm_reader.settings.activate_railway_parser(True)
-        osm_reader.settings.deactivate_all_osm_way_types_except(["primary"])
-        osm_reader.settings.exclude_osm_ways_from_parsing([12345])
-        osm_reader.settings.overwrite_mode_access_by_osm_way_id(123, ["foot"])
-        osm_reader.settings.set_always_keep_largest_subnetwork(True)
-        osm_reader.settings.set_discard_dangling_networks_above(20)
-        osm_reader.settings.set_discard_dangling_networks_below(10)
-        osm_reader.settings.set_input_file(SYDNEY_OSM_PBF_FILE_PATH)
-        osm_reader.settings.set_remove_dangling_subnetworks(True)
-        assert osm_reader.settings.is_remove_dangling_subnetworks() is True
-        osm_reader.settings.set_bounding_box(1.2, 3, 4.5, 6)
-        osm_reader.settings.set_keep_osm_ways_outside_bounding_box([1, 2, 3.4])
-
-        # highway settings
-        osm_reader.settings.highway_settings.activate_all_osm_highway_types()
-        osm_reader.settings.highway_settings.activate_osm_highway_types(["primary"])
-        osm_reader.settings.highway_settings.add_allowed_osm_highway_modes("primary", ["bus", "foot"])
-        osm_reader.settings.highway_settings.deactivate_all_osm_road_modes_except(["bus"])
-        osm_reader.settings.highway_settings.deactivate_all_osm_highway_types_except(["primary"])
-        osm_reader.settings.highway_settings.deactivate_osm_road_modes(["bus"])
-        osm_reader.settings.highway_settings.activate_osm_road_mode("bus")
-        osm_reader.settings.highway_settings.deactivate_osm_road_mode("bus")
-        osm_reader.settings.highway_settings.deactivate_osm_highway_type("primary")
-        osm_reader.settings.highway_settings.set_default_when_osm_highway_type_unsupported("primary")
-        osm_reader.settings.highway_settings.overwrite_capacity_max_density_defaults("primary", 2000, 150)
-
-        # added v0.4.0
-        osm_modes = osm_reader.settings.highway_settings.collect_allowed_osm_highway_modes("primary")
-        assert osm_reader.settings.highway_settings.get_default_speed_limit_by_osm_highway_type("primary") == 60.0
-        assert osm_reader.settings.highway_settings.is_osm_highway_type_deactivated("primary") is True
-        assert osm_reader.settings.highway_settings.is_osm_highway_type_activated("primary") is False
-        assert osm_reader.settings.highway_settings.is_speed_limit_defaults_based_on_urban_area() is True
-
-        osm_reader.settings.highway_settings.activate_osm_highway_type("primary")
-        osm_reader.settings.highway_settings.set_speed_limit_defaults_based_on_urban_area(True)
-        osm_reader.settings.highway_settings.remove_all_road_modes()
-        assert osm_reader.settings.is_highway_parser_active() is True
-
-        planit_pedestrian_mode = osm_reader.settings.highway_settings.get_mapped_planit_road_mode("foot")
-        assert planit_pedestrian_mode is None
-        osm_reader.settings.highway_settings.activate_osm_road_mode("foot")
-        planit_pedestrian_mode = osm_reader.settings.highway_settings.get_mapped_planit_road_mode("foot")
-        assert planit_pedestrian_mode is PredefinedModeType.PEDESTRIAN
-        assert "foot" in \
-               osm_reader.settings.highway_settings.get_mapped_osm_road_modes(planit_pedestrian_mode)
-
-        cap, max_density = \
-            osm_reader.settings.highway_settings.get_overwritten_capacity_max_density_by_osm_highway_type(
-                "primary")  # not yet documented
-        assert round(cap, 0) == 2000
-        assert round(max_density, 0) == 150
-
-        # railway settings
-        osm_reader.settings.railway_settings.activate_all_osm_railway_types()
-        osm_reader.settings.railway_settings.activate_osm_railway_types(["rail", "funicular"])
-        osm_reader.settings.railway_settings.deactivate_all_osm_railway_types()
-        osm_reader.settings.railway_settings.deactivate_all_osm_railway_types_except(["rail", "monorail"])
-        osm_reader.settings.railway_settings.deactivate_all_osm_rail_modes_except(["train", "tram"])
-        osm_reader.settings.railway_settings.deactivate_osm_railway_type("rail")
-        osm_reader.settings.railway_settings.deactivate_osm_rail_modes(["train", "subway"])
-        osm_reader.settings.railway_settings.overwrite_capacity_max_density_defaults("rail", 100000, 100)
-
-        # added v0.4.0
-        assert osm_reader.settings.is_railway_parser_active() is True
-        assert osm_reader.settings.railway_settings.is_osm_railway_type_deactivated("rail") is True
-        assert osm_reader.settings.railway_settings.is_osm_railway_type_activated("rail") is False
-        osm_reader.settings.railway_settings.activate_osm_railway_type("rail")
-        assert True is osm_reader.settings.railway_settings. \
-            is_default_capacity_or_max_density_overwritten_by_osm_railway_type("rail")  # not documented yet
-        cap, max_density = \
-            osm_reader.settings.railway_settings.get_overwritten_capacity_max_density_by_osm_railway_type(
-                "rail")  # not documented yet
-        assert round(cap, 0) == 100000
-        assert round(max_density, 0) == 100
-        osm_reader.settings.railway_settings.get_default_speed_limit_by_osm_railway_type("rail")
-        osm_reader.settings.railway_settings.deactivate_all_osm_rail_modes()
-        osm_reader.settings.railway_settings.activate_osm_rail_mode("train")
-        osm_reader.settings.railway_settings.deactivate_osm_rail_mode("train")
-
-        planit_train_mode = osm_reader.settings.railway_settings.get_mapped_planit_rail_mode("train")
-        assert planit_train_mode is None
-        osm_reader.settings.railway_settings.activate_osm_rail_mode("train")
-        planit_train_mode = osm_reader.settings.railway_settings.get_mapped_planit_rail_mode("train")
-        assert planit_train_mode is PredefinedModeType.TRAIN
-        assert "train" in osm_reader.settings.railway_settings.get_mapped_osm_rail_modes(planit_train_mode)
-
-        # waterway settings (new in v0.4.0)
-        assert osm_reader.settings.is_waterway_parser_active() is False
-        osm_reader.settings.activate_waterway_parser(True)
-        osm_reader.settings.waterway_settings.activate_all_osm_waterway_types()
-        assert osm_reader.settings.waterway_settings.is_osm_waterway_type_deactivated("primary") is False
-        osm_reader.settings.waterway_settings.activate_osm_waterway_types(["primary", "secondary"])
-        osm_reader.settings.waterway_settings.deactivate_all_osm_water_modes_except(["ferry"])
-        osm_reader.settings.waterway_settings.deactivate_all_osm_waterway_types_except(["primary"])
-        osm_reader.settings.waterway_settings.deactivate_all_osm_water_modes()
-        osm_reader.settings.waterway_settings.deactivate_osm_water_modes(["ferry"])
-        osm_reader.settings.waterway_settings.activate_osm_water_mode("ferry")
-        osm_reader.settings.waterway_settings.deactivate_osm_water_mode("ferry")
-        osm_reader.settings.waterway_settings.deactivate_osm_waterway_type("primary")
-        osm_reader.settings.waterway_settings.overwrite_capacity_max_density_defaults("primary", 2000, 150)
-        assert osm_reader.settings.waterway_settings.is_osm_waterway_type_deactivated("primary") is True
-        assert osm_reader.settings.waterway_settings.is_osm_waterway_type_activated("primary") is False
-        osm_reader.settings.waterway_settings.activate_osm_waterway_type("primary")
-        osm_reader.settings.waterway_settings.get_default_speed_limit_by_osm_waterway_type("primary")
-
-        assert True is osm_reader.settings.waterway_settings. \
-            is_default_capacity_or_max_density_overwritten_by_osm_waterway_route_type(
-            "primary")  # Not yet documented in Python docs
-        cap, max_density = \
-            osm_reader.settings.waterway_settings.get_overwritten_capacity_max_density_by_osm_waterway_route_type(
-                "primary")  # Not yet documented in Python docs
-        assert round(cap, 0) == 2000
-        assert round(max_density, 0) == 150
-
-        # lane configuration
-        osm_reader.settings.lane_configuration.set_default_directional_lanes_by_highway_type("primary", 4)
-        assert osm_reader.settings.lane_configuration.get_default_directional_lanes_by_highway_type("primary") is 4
-        osm_reader.settings.lane_configuration.set_default_directional_railway_tracks(2)
-        assert osm_reader.settings.lane_configuration.get_default_directional_railway_tracks() is 2
-        assert osm_reader.settings.lane_configuration.get_default_directional_waterway_lanes() > 0
+        with tempfile.TemporaryDirectory() as output_dir:
+            written_settings = {}
+            for name, reader in [("base", base_reader), ("stacked", stacked_reader), ("single", single_file_reader)]:
+                settings_file_path = os.path.join(output_dir, name + ".yaml")
+                write_osm_reader_settings_differing_from_defaults(reader, settings_file_path)
+                written_settings[name] = Path(settings_file_path).read_text()
+            assert written_settings["stacked"] == written_settings["single"]
+            assert written_settings["stacked"] != written_settings["base"]
 
         # ensure PLANit connection is reset
         planit.force_stop_java()
         gc.collect()
 
-    def test_converter_osm_reader_all_properties(self):
-        # no correspondence to Java test as we explicitly test non-failure of Python code to test all properties
-        # are accessible on the OSM reader based on the documentation
+    def test_osm_reader_refuses_unknown_key(self):
         planit = Planit()
 
-        # OSM reader
-        osm_reader: OsmIntermodalReaderWrapper = planit.converter_factory.create(
-            ConverterType.INTERMODAL).create_reader(
-            IntermodalReaderType.OSM, AUSTRALIA)
+        intermodal_converter = planit.converter_factory.create(ConverterType.INTERMODAL)
+        with tempfile.TemporaryDirectory() as settings_dir:
+            settings_file_path = os.path.join(settings_dir, "osm_settings_unknown_key.yaml")
+            Path(settings_file_path).write_text("planitOsmConverterSettings: 1\nnetwork:\n  noSuchKey: true\n")
+            with self.assertRaises(Py4JJavaError):
+                intermodal_converter.create_yaml_based_reader(IntermodalReaderType.OSM, [settings_file_path])
 
-        pt_settings = osm_reader.settings.pt_settings
-        pt_settings.exclude_osm_nodes_by_id([1234, 5678])
-        pt_settings.exclude_osm_ways_by_id([1234, 5678])
-        pt_settings.overwrite_waiting_area_of_stop_location(1234, OsmEntityType.WAY, 56789)
-        assert pt_settings.is_overwrite_waiting_area_of_stop_location(1234) is True
-        pt_settings.overwrite_waiting_area_nominated_osm_way_for_stop_location(
-            1234, OsmEntityType.WAY, 56789)  # changed in v0.4.0
-        assert pt_settings.has_waiting_area_nominated_osm_way_for_stop_location(
-            1234, OsmEntityType.WAY) is True
-        pt_settings.set_remove_dangling_transfer_zone_groups(False)
-        assert pt_settings.is_remove_dangling_transfer_zone_groups() is False
-        pt_settings.set_station_to_waiting_area_search_radius_meters(50)
-        assert round(pt_settings.get_station_to_waiting_area_search_radius_meters(), 0) == 50
-        pt_settings.set_stop_to_waiting_area_search_radius_meters(50)
-        assert round(pt_settings.get_stop_to_waiting_area_search_radius_meters(), 0) == 50
-        pt_settings.set_station_to_parallel_tracks_search_radius_meters(50)
-        assert round(pt_settings.get_station_to_parallel_tracks_search_radius_meters(), 0) == 50
+        # ensure PLANit connection is reset
+        planit.force_stop_java()
+        gc.collect()
 
-        # v0.4.0
-        pt_settings.exclude_osm_node_by_id(1234)
-        pt_settings.exclude_osm_way_by_id(1234)
-        assert pt_settings.is_excluded_osm_node(1234) is True
-        assert pt_settings.is_excluded_osm_way(1234) is True
-        pt_settings.set_remove_dangling_transfer_zone_groups(True)
-        assert pt_settings.is_remove_dangling_transfer_zone_groups() is True
-        pt_settings.suppress_osm_relation_stop_area_logging([1234, 5678, 91011])
-        assert pt_settings.is_suppress_osm_relation_stop_area_logging(1234) is True
-        pt_settings.set_connect_dangling_ferry_stop_to_nearby_ferry_route(True)
-        assert pt_settings.is_connect_dangling_ferry_stop_to_nearby_ferry_route() is True
-        pt_settings.set_ferry_stop_to_ferry_route_search_radius_meters(40)
-        assert round(pt_settings.get_ferry_stop_to_ferry_route_search_radius_meters(), 0) == 40
-        pt_settings.overwrite_waiting_area_mode_access(1234, OsmEntityType.WAY, ["tram"])
-        assert "tram" in pt_settings.get_overwritten_waiting_area_mode_access(1234, OsmEntityType.WAY)
+    def test_osm_reader_from_settings_files_only(self):
+        # an OSM reader is made from a list of settings files only, its country the key country of the files; the
+        # other readers are not made from settings files yet
+        planit = Planit()
 
-        # ensure planit connection is reset
+        network_converter = planit.converter_factory.create(ConverterType.NETWORK)
+        with self.assertRaises(ValueError):
+            network_converter.create_reader(NetworkReaderType.OSM, AUSTRALIA)
+        with self.assertRaises(ValueError):
+            network_converter.create_yaml_based_reader(NetworkReaderType.OSM, [])
+        with self.assertRaises(ValueError):
+            network_converter.create_yaml_based_reader(NetworkReaderType.OSM, SYDNEY_OSM_SETTINGS_FILE_PATH)
+        with self.assertRaises(ValueError):
+            network_converter.create_yaml_based_reader(NetworkReaderType.PLANIT, [SYDNEY_OSM_SETTINGS_FILE_PATH])
+
+        intermodal_converter = planit.converter_factory.create(ConverterType.INTERMODAL)
+        with self.assertRaises(ValueError):
+            intermodal_converter.create_reader(IntermodalReaderType.OSM, AUSTRALIA)
+        with self.assertRaises(ValueError):
+            intermodal_converter.create_yaml_based_reader(IntermodalReaderType.GTFS, [SYDNEY_OSM_SETTINGS_FILE_PATH])
+
+        # ensure PLANit connection is reset
+        planit.force_stop_java()
+        gc.collect()
+
+    def test_osm_default_settings_file_makes_a_reader(self):
+        # the defaults file is written to edit offline and give back as a settings file
+        planit = Planit()
+
+        network_converter = planit.converter_factory.create(ConverterType.NETWORK)
+        intermodal_converter = planit.converter_factory.create(ConverterType.INTERMODAL)
+        with tempfile.TemporaryDirectory() as settings_dir:
+            network_settings_file_path = os.path.join(settings_dir, "osm_network_defaults.yaml")
+            network_converter.write_default_settings_file(NetworkReaderType.OSM, network_settings_file_path, AUSTRALIA)
+            assert network_converter.create_yaml_based_reader(
+                NetworkReaderType.OSM, [network_settings_file_path]) is not None
+
+            intermodal_settings_file_path = os.path.join(settings_dir, "osm_intermodal_defaults.yaml")
+            intermodal_converter.write_default_settings_file(
+                IntermodalReaderType.OSM, intermodal_settings_file_path, AUSTRALIA)
+            assert intermodal_converter.create_yaml_based_reader(
+                IntermodalReaderType.OSM, [intermodal_settings_file_path]) is not None
+
+        # ensure PLANit connection is reset
         planit.force_stop_java()
         gc.collect()
 
@@ -229,8 +147,8 @@ class TestSuiteConverterProperties(unittest.TestCase):
         intermodal_converter = planit.converter_factory.create(ConverterType.INTERMODAL)
 
         # OSM reader (to feed to GTFS reader) - new in v0.4.0
-        osm_reader = intermodal_converter.create_reader(IntermodalReaderType.OSM, AUSTRALIA)
-        osm_reader.settings.set_input_file(SYDNEY_OSM_PBF_FILE_PATH)
+        osm_reader = intermodal_converter.create_yaml_based_reader(
+            IntermodalReaderType.OSM, [SYDNEY_OSM_SETTINGS_FILE_PATH])
 
         #############
         # GTFS reader - new in v0.4.0

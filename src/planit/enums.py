@@ -56,7 +56,7 @@ class IdMapperType(Enum):
     EXTERNAL_ID = "EXTERNAL_ID"
 
     def java_class_name(self) -> str:
-        return "org.goplanit.converter.idmapping.IdMapperType"
+        return "org.goplanit.utils.id.IdMapperType"
 
     @staticmethod
     def from_java(java_enum) -> Enum:
@@ -125,17 +125,6 @@ class OdSkimSubOutputType(Enum):
 
     def java_class_name(self) -> str:
         return "org.goplanit.output.enums.OdSkimSubOutputType"
-
-
-class OsmEntityType(Enum):
-    """ Enum for the different OSM entities that the user can differentiate between in the OSM converters
-    """
-    NODE = "Node"
-    WAY = "Way"
-    RELATION = "Relation"
-
-    def java_class_name(self) -> str:
-        return "de.topobyte.osm4j.core.model.iface.EntityType"
 
 
 class OutputFormatter(Enum):
@@ -251,6 +240,8 @@ class PredefinedModeType(Enum):
     GOODS_VEHICLE = "GOODS_VEHICLE"  # non - articulated goods vehicle, up to 3.5 tonnes
     HEAVY_GOODS_VEHICLE = "HEAVY_GOODS_VEHICLE"  # non - articulated goods vehicle, over to 3.5 tonnes
     LARGE_HEAVY_GOODS_VEHICLE = "LARGE_HEAVY_GOODS_VEHICLE"
+    TAXI = "TAXI"  # non-shared payment taxi
+    RIDE_SHARE = "RIDE_SHARE"  # shared payment ride, such as uber or didi
 
     def java_class_name(self) -> str:
         return "org.goplanit.utils.mode.PredefinedModeType"

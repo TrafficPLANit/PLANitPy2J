@@ -1,0 +1,9 @@
+planitOsmConverterSettings: 1
+country: Germany
+inputSource: https://api.openstreetmap.org/api/0.6/map?bbox=13.465661,52.504055,13.469817,52.506204
+network:
+  highway:
+    types: [footway]
+    modes: [foot]
+  railway:
+    active: false

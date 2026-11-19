@@ -6,6 +6,7 @@ from builtins import staticmethod
 from enum import Enum
 
 from py4j import java_collections
+from py4j.java_gateway import JavaObject
 
 
 class GatewayConfig(object):
@@ -62,15 +63,8 @@ class GatewayUtils(object):
         """
         converted_args = []
         for arg in args:
-
-            # convert Python List to Java ArrayList. For some reason the built-in converter does not work properly,
-            # so we do it ourselves but along the same lines. Main difference is instantiation of the array list via
-            # gateway
             if isinstance(arg, list):
-                java_list = GatewayState.python_2_java_gateway.jvm.java.util.ArrayList()
-                for element in arg:
-                    java_list.add(element)
-                arg = java_list
+                arg = GatewayUtils.to_java_list(arg)
             if isinstance(arg, datetime.time):
                 arg = GatewayUtils.to_java_local_time(arg)
             converted_args.append(arg)
@@ -97,6 +91,26 @@ class GatewayUtils(object):
         for i in range(len(python_list)):
             java_array[i] = python_list[i]
         return java_array
+
+    @staticmethod
+    def to_java_list(python_list: list) -> java_collections.JavaList:
+        """ convert a Python list to a Java ArrayList. For some reason the built-in converter does not work properly,
+        so we do it ourselves but along the same lines. Main difference is instantiation of the array list via gateway
+        :param python_list: to populate the Java list with
+        :return java ArrayList created in Python with the contents of the Python list
+        """
+        java_list = GatewayState.python_2_java_gateway.jvm.java.util.ArrayList()
+        for element in python_list:
+            java_list.add(element)
+        return java_list
+
+    @staticmethod
+    def to_java_path(file_path: str) -> JavaObject:
+        """ convert a file path to a Java Path
+        :param file_path: absolute, or relative to the working folder
+        :return java Path of the file
+        """
+        return GatewayState.python_2_java_gateway.jvm.java.io.File(file_path).toPath()
 
     @staticmethod
     def to_python_list(java_list: java_collections.JavaList):

@@ -1,0 +1,6 @@
+planitOsmConverterSettings: 1
+network:
+  osmWayLaneOverrides:
+    501: {lanesBackward: 1, lanesForward: 2}
+publicTransport:
+  stopToWaitingAreaSearchRadiusMeters: 40

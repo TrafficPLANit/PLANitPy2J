@@ -3,11 +3,9 @@ from typing import Tuple, List, Set, Union, Any, Dict
 
 from py4j import java_collections
 
-from planit import DayOfWeek, IdMapperType, PredefinedModeType, GatewayUtils, TntpFileColumnType, SpeedUnits, TimeUnits, \
-    LengthUnits
+from planit import DayOfWeek, IdMapperType, GatewayUtils, TntpFileColumnType, SpeedUnits, TimeUnits, LengthUnits
 from planit import GatewayState
 from planit import BaseWrapper
-from planit import OsmEntityType
 
 
 class ConverterWrapper(BaseWrapper):
@@ -232,197 +230,20 @@ class MatsimNetworkWriterWrapper(NetworkWriterWrapper):
         super().__init__(java_counterpart)
 
 
-class OsmPublicTransportSettingsWrapper(ReaderSettingsWrapper):
-    """ Wrapper around pt settings for an OSM intermodal reader used by converter. Wrapper is needed to deal with the
-    methods that require enum parameters
-    """
-
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-
-    def overwrite_waiting_area_of_stop_location(
-            self, osm_stop_location_id: int, osm_entity_type: OsmEntityType, osm_waiting_area_id: int):
-        self.overwriteWaitingAreaOfStopLocation(
-            osm_stop_location_id, GatewayUtils.to_java_enum(osm_entity_type), osm_waiting_area_id)
-
-    def overwrite_waiting_area_nominated_osm_way_for_stop_location(
-            self, osm_waiting_area_id: int, osm_entity_type: OsmEntityType, osm_way_id):
-        self.overwriteWaitingAreaNominatedOsmWayForStopLocation(
-            osm_waiting_area_id, GatewayUtils.to_java_enum(osm_entity_type), osm_way_id)
-
-    def has_waiting_area_nominated_osm_way_for_stop_location(
-            self, osm_waiting_area_id: int, osm_entity_type: OsmEntityType) -> bool:
-        return self.hasWaitingAreaNominatedOsmWayForStopLocation(
-            osm_waiting_area_id, GatewayUtils.to_java_enum(osm_entity_type))
-
-    def overwrite_waiting_area_mode_access(
-            self, osm_waiting_area_id: int, osm_entity_type: OsmEntityType, mode_access: List[str]):
-        _str_class = GatewayState.python_2_java_gateway.jvm.java.lang.String
-        self.overwriteWaitingAreaModeAccess(
-            osm_waiting_area_id, GatewayUtils.to_java_enum(osm_entity_type),
-            GatewayUtils.to_java_array(_str_class, mode_access))
-
-    def get_overwritten_waiting_area_mode_access(
-            self, osm_waiting_area_id: int, osm_entity_type: OsmEntityType) -> List[str]:
-        return self.getOverwrittenWaitingAreaModeAccess(
-            osm_waiting_area_id, GatewayUtils.to_java_enum(osm_entity_type))
-
-
-class OsmIntermodalReaderSettingsWrapper(ReaderSettingsWrapper):
-    """ Wrapper around settings for an OSM intermodal reader used by converter
-    """
-
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-
-        # OSM intermodal reader settings allow access to network and pt settings component
-        # which in turns are settings 
-        self._network_settings = OsmNetworkReaderSettingsWrapper(self.getNetworkSettings())
-        self._pt_settings = OsmPublicTransportSettingsWrapper(self.getPublicTransportSettings())
-
-    @property
-    def network_settings(self):
-        return self._network_settings
-
-    @property
-    def pt_settings(self):
-        return self._pt_settings
-
-
 class OsmIntermodalReaderWrapper(IntermodalReaderWrapper):
-    """ Wrapper around the Java OsmIntermodalReader class
+    """ Wrapper around the Java OsmIntermodalReader class, its settings made from settings files only
     """
 
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
-
-        # replace regular reader settings by OSM intermodal reader settings
-        self._settings = OsmIntermodalReaderSettingsWrapper(self._settings.java)
-
-
-class OsmNetworkReaderSettingsWrapper(ReaderSettingsWrapper):
-    """ Wrapper around settings for an OSM network reader used by converter
-    to keep things simpler compared to Java side, we always provide access to highway, railway, and waterway settings.
-    In case the respective parsers are deactivated, it is assumed the user
-    wants them activated since it is unlikely they would want to change settings for them otherwise,
-    so we automatically activate the parser when the property is accessed and update the java counterpart
-    in the wrapper
-    """
-
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-
-        # OSM network reader settings allow access to network/railway/waterway settings components
-        self._highway_settings = OsmHighwaySettingsWrapper(self.get_highway_settings())
-        self._railway_settings = OsmRailwaySettingsWrapper(self.get_railway_settings())
-        self._waterway_settings = OsmWaterwaySettingsWrapper(self.get_waterway_settings())
-
-        # lane configuration is also wrapped in a reader settings wrapper and accessed via property
-        self._lane_configuration = ReaderSettingsWrapper(self.get_lane_configuration())
-
-    @property
-    def highway_settings(self):
-        if not self.is_highway_parser_active() or not self._highway_settings._java_counterpart:
-            self.activate_highway_parser(True)
-            self._highway_settings = OsmHighwaySettingsWrapper(self.get_highway_settings())
-        return self._highway_settings
-
-    @property
-    def railway_settings(self):
-        if not self.is_railway_parser_active() or not self._railway_settings._java_counterpart:
-            self.activate_railway_parser(True)
-            self._railway_settings = OsmRailwaySettingsWrapper(self.get_railway_settings())
-        return self._railway_settings
-
-    @property
-    def waterway_settings(self):
-        if not self.is_waterway_parser_active() or not self._waterway_settings._java_counterpart:
-            self.activate_waterway_parser(True)
-            self._waterway_settings = OsmWaterwaySettingsWrapper(self.get_waterway_settings())
-        return self._waterway_settings
-
-    @property
-    def lane_configuration(self):
-        return self._lane_configuration
-
-    def set_keep_osm_ways_outside_bounding_box(self, osm_way_ids):
-        """ delegate to equivalent Java method, but because we only expose the option to set a bounding box
-        rather than a bounding polygon, we renamed the method on the Python side to avoid confusion
-        """
-        self.set_keep_osm_ways_outside_bounding_polygon(osm_way_ids)
-
-
-class OsmHighwaySettingsWrapper(ReaderSettingsWrapper):
-    """ Wrapper around the Java OsmHighwaySettingsWrapper.
-     """
-
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-
-    def get_overwritten_capacity_max_density_by_osm_highway_type(self, osm_highway_type: str) -> Tuple[float, float]:
-        java_pair = self.java.getOverwrittenCapacityMaxDensityByOsmHighwayType(osm_highway_type)
-        return java_pair.first(), java_pair.second()  # capacity_pcu_h and max_density_pcu_km
-
-    def get_mapped_planit_road_mode(self, osm_mode: str) -> PredefinedModeType:
-        return PredefinedModeType.from_java(self.java.getMappedPlanitRoadMode(osm_mode))
-
-    def get_mapped_osm_road_modes(self, predefined_mode_type: PredefinedModeType) -> Set[str]:
-        java_predefined_mode_type = GatewayUtils.to_java_enum(predefined_mode_type)
-        result = self.java.getMappedOsmRoadModes(java_predefined_mode_type)
-        return result
-
-
-class OsmRailwaySettingsWrapper(ReaderSettingsWrapper):
-    """ Wrapper around the Java OsmRailwaySettingsWrapper.
-     """
-
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-
-    def get_overwritten_capacity_max_density_by_osm_railway_type(self, osm_highway_type: str) -> Tuple[float, float]:
-        java_pair = self.java.getOverwrittenCapacityMaxDensityByOsmRailwayType(osm_highway_type)
-        return java_pair.first(), java_pair.second()  # capacity_pcu_h and max_density_pcu_km
-
-    def get_mapped_planit_rail_mode(self, osm_mode: str) -> PredefinedModeType:
-        return PredefinedModeType.from_java(self.java.getMappedPlanitRailMode(osm_mode))
-
-    def get_mapped_osm_rail_modes(self, predefined_mode_type: PredefinedModeType) -> Set[str]:
-        java_predefined_mode_type = GatewayUtils.to_java_enum(predefined_mode_type)
-        result = self.java.getMappedOsmRailModes(java_predefined_mode_type)
-        return result
-
-
-class OsmWaterwaySettingsWrapper(ReaderSettingsWrapper):
-    """ Wrapper around the Java OsmWaterwaySettingsWrapper.
-     """
-
-    def __init__(self, java_counterpart):
-        super().__init__(java_counterpart)
-
-    def get_overwritten_capacity_max_density_by_osm_waterway_route_type(self, osm_way_route_type: str) -> Tuple[
-        float, float]:
-        java_pair = self.java.getOverwrittenCapacityMaxDensityByOsmWaterwayRouteType(osm_way_route_type)
-        return java_pair.first(), java_pair.second()  # capacity_pcu_h and max_density_pcu_km
-
-    def get_mapped_planit_water_mode(self, osm_mode: str) -> PredefinedModeType:
-        return PredefinedModeType.from_java(self.java.getMappedPlanitWaterMode(osm_mode))
-
-    def get_mapped_osm_water_modes(self, predefined_mode_type: PredefinedModeType) -> Set[str]:
-        java_predefined_mode_type = GatewayUtils.to_java_enum(predefined_mode_type)
-        result = self.java.getMappedOsmWaterModes(java_predefined_mode_type)
-        return result
 
 
 class OsmNetworkReaderWrapper(ZoningReaderWrapper):
-    """ Wrapper around the Java PlanitOsmNetworkReader class
+    """ Wrapper around the Java OsmNetworkReader class, its settings made from settings files only
     """
 
     def __init__(self, java_counterpart):
         super().__init__(java_counterpart)
-
-        # OSM network reader settings allow access to highway and railway settings component
-        # requiring a dedicated wrapper -> use this wrapper instead of generic settings wrapper
-        self._settings = OsmNetworkReaderSettingsWrapper(self.settings.java)
 
 
 class GtfsIntermodalReaderWrapper(IntermodalReaderWrapper):

@@ -19,7 +19,8 @@ GERMANY = "Germany"
 
 OSM_PATH = os.path.join(ABSOLUTE_PATH_TEST_DATA_CONVERTER, 'osm')
 OSM_INPUT_PATH = os.path.join(OSM_PATH, 'input')
-SYDNEY_OSM_PBF_FILE_PATH = os.path.join(OSM_INPUT_PATH, "sydneycbd_2023.osm.pbf")
+SYDNEY_OSM_SETTINGS_FILE_PATH = os.path.join(OSM_INPUT_PATH, "osm_settings_sydney_cbd.yaml")
+BERLIN_FOOTWAYS_CLOUD_OSM_SETTINGS_FILE_PATH = os.path.join(OSM_INPUT_PATH, "osm_settings_berlin_footways_cloud.yaml")
 
 GTFS_PATH = os.path.join(ABSOLUTE_PATH_TEST_DATA_CONVERTER, 'gtfs')
 GTFS_INPUT_PATH = os.path.join(GTFS_PATH, 'input')
@@ -37,12 +38,14 @@ def minimise_gtfs_sydney_warnings(zoning_settings: GtfsZoningReaderSettingsWrapp
     gtfs_test_package.SydneyGtfsServicesSettingsUtils.minimiseVerifiedWarnings(services_settings.java)
 
 
-def minimise_osm_sydney_warnings(network_settings: OsmNetworkReaderSettingsWrapper,
-                                 pt_settings: OsmPublicTransportSettingsWrapper):
+def minimise_osm_sydney_warnings(osm_reader: OsmIntermodalReaderWrapper) -> None:
     """ access Java utility to minimise warnings for these specific test cases"""
     osm_test_package = GatewayUtils.get_package_jvm().org.goplanit.osm.test
-    osm_test_package.OsmNetworkSettingsTestCaseUtils.sydney2023MinimiseVerifiedWarnings(network_settings.java)
-    osm_test_package.OsmPtSettingsTestCaseUtils.sydney2023MinimiseVerifiedWarnings(pt_settings.java)
+    java_settings = osm_reader.java.getSettings()
+    osm_test_package.OsmNetworkSettingsTestCaseUtils.sydney2023MinimiseVerifiedWarnings(
+        java_settings.getNetworkSettings())
+    osm_test_package.OsmPtSettingsTestCaseUtils.sydney2023MinimiseVerifiedWarnings(
+        java_settings.getPublicTransportSettings())
 
 class TestSuiteConverterOsmGtfs(unittest.TestCase):
     """ We are testing here if planit_conversions are runnable. We do not actually test the validity of the results
@@ -51,8 +54,6 @@ class TestSuiteConverterOsmGtfs(unittest.TestCase):
     """
 
     def test_network_converter_osm2matsim_cloud(self):
-        OSM_URL = "https://api.openstreetmap.org/api/0.6/map?bbox=13.465661,52.504055,13.469817,52.506204"
-
         OUTPUT_PATH = os.path.join(OSM_PATH, 'output', 'matsim', 'cloud')
 
         # no correspondence to Java test as we explicitly test non-failure of Python code to instantiate converters
@@ -61,11 +62,9 @@ class TestSuiteConverterOsmGtfs(unittest.TestCase):
         # network converter
         network_converter = planit.converter_factory.create(ConverterType.NETWORK)
 
-        # OSM reader
-        osm_reader = network_converter.create_reader(NetworkReaderType.OSM, GERMANY)
-        osm_reader.settings.set_input_source(OSM_URL)
-        osm_reader.settings.deactivate_all_osm_way_types_except(["footway"])
-        osm_reader.settings.highway_settings.deactivate_all_osm_road_modes_except(["foot"])
+        # OSM reader, its input on the OSM API
+        osm_reader = network_converter.create_yaml_based_reader(
+            NetworkReaderType.OSM, [BERLIN_FOOTWAYS_CLOUD_OSM_SETTINGS_FILE_PATH])
 
         # MATSim writer
         matsim_writer = network_converter.create_writer(NetworkWriterType.MATSIM)
@@ -89,8 +88,7 @@ class TestSuiteConverterOsmGtfs(unittest.TestCase):
         network_converter = planit.converter_factory.create(ConverterType.NETWORK)
 
         # OSM reader
-        osm_reader = network_converter.create_reader(NetworkReaderType.OSM, AUSTRALIA)
-        osm_reader.settings.set_input_file(SYDNEY_OSM_PBF_FILE_PATH)
+        osm_reader = network_converter.create_yaml_based_reader(NetworkReaderType.OSM, [SYDNEY_OSM_SETTINGS_FILE_PATH])
 
         # MATSim writer
         matsim_writer = network_converter.create_writer(NetworkWriterType.MATSIM)
@@ -113,8 +111,7 @@ class TestSuiteConverterOsmGtfs(unittest.TestCase):
         network_converter = planit.converter_factory.create(ConverterType.NETWORK)
 
         # OSM reader
-        osm_reader = network_converter.create_reader(NetworkReaderType.OSM, AUSTRALIA)
-        osm_reader.settings.set_input_file(SYDNEY_OSM_PBF_FILE_PATH)
+        osm_reader = network_converter.create_yaml_based_reader(NetworkReaderType.OSM, [SYDNEY_OSM_SETTINGS_FILE_PATH])
 
         # PLANit writer
         planit_writer = network_converter.create_writer(NetworkWriterType.PLANIT)
@@ -137,10 +134,10 @@ class TestSuiteConverterOsmGtfs(unittest.TestCase):
         intermodal_converter = planit.converter_factory.create(ConverterType.INTERMODAL)
 
         # OSM reader
-        osm_reader = intermodal_converter.create_reader(IntermodalReaderType.OSM, AUSTRALIA)
-        osm_reader.settings.set_input_file(SYDNEY_OSM_PBF_FILE_PATH)
+        osm_reader = intermodal_converter.create_yaml_based_reader(
+            IntermodalReaderType.OSM, [SYDNEY_OSM_SETTINGS_FILE_PATH])
 
-        minimise_osm_sydney_warnings(osm_reader.settings.network_settings, osm_reader.settings.pt_settings)
+        minimise_osm_sydney_warnings(osm_reader)
 
         # MATSim writer
         matsim_writer = intermodal_converter.create_writer(IntermodalWriterType.MATSIM)
@@ -172,10 +169,10 @@ class TestSuiteConverterOsmGtfs(unittest.TestCase):
         intermodal_converter = planit.converter_factory.create(ConverterType.INTERMODAL)
 
         # OSM reader
-        osm_reader = intermodal_converter.create_reader(IntermodalReaderType.OSM, AUSTRALIA)
-        osm_reader.settings.set_input_file(SYDNEY_OSM_PBF_FILE_PATH)
+        osm_reader = intermodal_converter.create_yaml_based_reader(
+            IntermodalReaderType.OSM, [SYDNEY_OSM_SETTINGS_FILE_PATH])
 
-        minimise_osm_sydney_warnings(osm_reader.settings.network_settings, osm_reader.settings.pt_settings)
+        minimise_osm_sydney_warnings(osm_reader)
 
         # PLANit writer
         planit_writer = intermodal_converter.create_writer(IntermodalWriterType.PLANIT)
@@ -199,10 +196,10 @@ class TestSuiteConverterOsmGtfs(unittest.TestCase):
         intermodal_converter = planit.converter_factory.create(ConverterType.INTERMODAL)
 
         # OSM reader
-        osm_reader = intermodal_converter.create_reader(IntermodalReaderType.OSM, AUSTRALIA)
-        osm_reader.settings.set_input_file(SYDNEY_OSM_PBF_FILE_PATH)
+        osm_reader = intermodal_converter.create_yaml_based_reader(
+            IntermodalReaderType.OSM, [SYDNEY_OSM_SETTINGS_FILE_PATH])
 
-        minimise_osm_sydney_warnings(osm_reader.settings.network_settings, osm_reader.settings.pt_settings)
+        minimise_osm_sydney_warnings(osm_reader)
 
         # GTFS reader
         gtfs_reader: GtfsIntermodalReaderWrapper = \

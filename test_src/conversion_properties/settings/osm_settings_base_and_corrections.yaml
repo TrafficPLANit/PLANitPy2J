@@ -1,0 +1,10 @@
+planitOsmConverterSettings: 1
+country: Australia
+inputSource: ../../../testdata/converter/osm/input/sydneycbd_2023.osm.pbf
+network:
+  highway:
+    types: [primary, secondary]
+  osmWayLaneOverrides:
+    501: {lanesBackward: 1, lanesForward: 2}
+publicTransport:
+  stopToWaitingAreaSearchRadiusMeters: 40
