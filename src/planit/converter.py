@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import List, Union
+from typing import List, Optional, Union
 
 from py4j import java_collections
 from py4j.java_gateway import JavaObject
@@ -55,26 +55,35 @@ def _write_default_settings_file(java_default_settings: JavaObject, settings_fil
         GatewayUtils.get_package_jvm().org.goplanit.utils.settings.SettingsFileContentType.ALL_KEYS, True)
 
 
+def _country_or_global(country: Optional[str]) -> str:
+    """ the country given, or, when none is given, PLANit's name for no country in particular (CountryNames.GLOBAL),
+    whose defaults are not those of any one country
+    :param country: the country given, None for none
+    :return the country to give the Java settings
+    """
+    return GatewayUtils.get_package_jvm().org.goplanit.utils.locale.CountryNames.GLOBAL if country is None else country
+
+
 def _write_default_reader_settings_file(java_default_settings: JavaObject, settings_file_path: str,
-                                        country: str) -> None:
+                                        country: Optional[str]) -> None:
     """ write reader settings made on their defaults to a settings file, for a reader whose settings have no country
     :param java_default_settings: settings made on their defaults
     :param settings_file_path: the settings file to write
-    :param country: only the default one is taken
+    :param country: only none, or the global one, is taken
     """
-    if country != "Global":
+    if _country_or_global(country) != _country_or_global(None):
         raise ValueError(f"These reader settings have no country, {country} is not taken")
     _write_default_settings_file(java_default_settings, settings_file_path)
 
 
 def _write_default_writer_settings_file(java_default_settings: JavaObject, settings_file_path: str,
-                                        country: str) -> None:
+                                        country: Optional[str]) -> None:
     """ write writer settings made on their defaults to a settings file, with the country given
     :param java_default_settings: settings made on their defaults
     :param settings_file_path: the settings file to write
-    :param country: written as the key country of the file
+    :param country: written as the key country of the file, the global one when none is given
     """
-    java_default_settings.setCountry(country)
+    java_default_settings.setCountry(_country_or_global(country))
     _write_default_settings_file(java_default_settings, settings_file_path)
 
 
@@ -182,13 +191,13 @@ class NetworkConverter(_ConverterBase):
             GatewayUtils.get_package_jvm().org.goplanit.matsim.converter.network.MatsimNetworkWriterFactory.create(
                 java_settings))
 
-    def create_reader(self, network_reader_type: NetworkReaderType, country: str = "Global") -> ZoningReaderWrapper:
+    def create_reader(self, network_reader_type: NetworkReaderType,
+                      country: Optional[str] = None) -> ZoningReaderWrapper:
         """ factory method to create a network reader compatible with this converter, for a reader not made from
         settings files; the OSM reader is made with create_yaml_based_reader
         :param network_reader_type: the type of reader to create
         :param country: optional argument specifying the country of the source network. Used by some readers to
-        initialise default settings. If absent but required it defaults to "Global", i.e., no country specific
-        information is used in initialising defaults if applicable
+        initialise default settings. If absent, no country specific information is used in initialising defaults
         :return the created reader
         """
         if not isinstance(network_reader_type, NetworkReaderType): raise Exception(
@@ -233,19 +242,19 @@ class NetworkConverter(_ConverterBase):
         raise ValueError(f"No settings files for the {network_writer_type} writer yet, it is made with create_writer")
 
     def write_default_settings_file(self, reader_or_writer_type: Union[NetworkReaderType, NetworkWriterType],
-                                    settings_file_path: str, country: str = "Global") -> None:
+                                    settings_file_path: str, country: Optional[str] = None) -> None:
         """ write a settings file with every key at its default, with descriptions, to edit and give to
         create_yaml_based_reader or create_yaml_based_writer: for the OSM and PLANit readers and the PLANit and MATSim
         writers. Keys without a default, such as the input source, are written commented out, to fill in
         :param reader_or_writer_type: the type of reader or writer whose settings to write
         :param settings_file_path: the settings file to write
-        :param country: whose defaults to write, written as the key country of the file; a reader without a country
-        takes only the default
+        :param country: whose defaults to write, written as the key country of the file, the global ones when absent;
+        a reader without a country takes none
         """
         if reader_or_writer_type == NetworkReaderType.OSM:
             _write_default_settings_file(
                 GatewayUtils.get_package_jvm().org.goplanit.osm.converter.settings.OsmReaderSettingsFactory.
-                createNetworkReaderSettings(country), settings_file_path)
+                createNetworkReaderSettings(_country_or_global(country)), settings_file_path)
         elif reader_or_writer_type == NetworkReaderType.PLANIT:
             _write_default_reader_settings_file(
                 GatewayUtils.get_package_jvm().org.goplanit.io.converter.network.PlanitNetworkReaderSettings(),
@@ -395,15 +404,15 @@ class ZoningConverter(_ConverterBase):
         raise ValueError(f"No settings files for the {zoning_writer_type} writer yet, it is made with create_writer")
 
     def write_default_settings_file(self, reader_or_writer_type: Union[ZoningReaderType, ZoningWriterType],
-                                    settings_file_path: str, country: str = "Global") -> None:
+                                    settings_file_path: str, country: Optional[str] = None) -> None:
         """ write a settings file with every key at its default, with descriptions, to edit and give to
         create_yaml_based_reader or create_yaml_based_writer: for the PLANit reader and writer. Keys without a default,
         such as the input source, are written commented out, to fill in
 
         :param reader_or_writer_type: the type of reader or writer whose settings to write
         :param settings_file_path: the settings file to write
-        :param country: written as the key country of a writer's file; a reader without a country takes only the
-        default
+        :param country: written as the key country of a writer's file, the global one when absent; a reader without a
+        country takes none
         """
         if reader_or_writer_type == ZoningReaderType.PLANIT:
             _write_default_reader_settings_file(
@@ -542,15 +551,15 @@ class DemandsConverter(_ConverterBase):
         raise ValueError(f"No settings files for the {demands_writer_type} writer yet, it is made with create_writer")
 
     def write_default_settings_file(self, reader_or_writer_type: Union[DemandsReaderType, DemandsWriterType],
-                                    settings_file_path: str, country: str = "Global") -> None:
+                                    settings_file_path: str, country: Optional[str] = None) -> None:
         """ write a settings file with every key at its default, with descriptions, to edit and give to
         create_yaml_based_reader or create_yaml_based_writer: for the PLANit reader and writer. Keys without a default,
         such as the input source, are written commented out, to fill in
 
         :param reader_or_writer_type: the type of reader or writer whose settings to write
         :param settings_file_path: the settings file to write
-        :param country: written as the key country of a writer's file; a reader without a country takes only the
-        default
+        :param country: written as the key country of a writer's file, the global one when absent; a reader without a
+        country takes none
         """
         if reader_or_writer_type == DemandsReaderType.PLANIT:
             _write_default_reader_settings_file(
@@ -632,14 +641,14 @@ class IntermodalConverter(_ConverterBase):
                 java_settings))
 
     @staticmethod
-    def __create_gtfs_intermodal_reader(country: str,
+    def __create_gtfs_intermodal_reader(country: Optional[str],
                                         reference_reader: IntermodalReaderWrapper) -> PlanitIntermodalReaderWrapper:
         if not reference_reader:
             raise Exception(
                 "GTFS intermodal reader expects a reference reader to be able to construct network and zoning")
 
         java_intermodal_reader = GatewayState.python_2_java_gateway.jvm.org.goplanit.gtfs.converter.intermodal. \
-            GtfsIntermodalReaderFactory.create(country, reference_reader.java)
+            GtfsIntermodalReaderFactory.create(_country_or_global(country), reference_reader.java)
         return GtfsIntermodalReaderWrapper(java_intermodal_reader)
 
     #####################################
@@ -684,15 +693,15 @@ class IntermodalConverter(_ConverterBase):
 
     def create_reader(self,
                       intermodal_reader_type: IntermodalReaderType,
-                      country: str = "Global",
+                      country: Optional[str] = None,
                       reference_reader: IntermodalReaderWrapper = None) -> IntermodalReaderWrapper:
         """ factory method to create an intermodal  reader compatible with this converter, for a reader not made from
         settings files; the OSM reader is made with create_yaml_based_reader
 
         :param intermodal_reader_type: the type of reader to create
         :param country: optional argument specifying the country of the source network.
-        Used by some readers to initialise default settings. If absent it defaults to "Global", i.e., no country
-        specific information is used in initialising defaults if applicable
+        Used by some readers to initialise default settings. If absent, no country specific information is used in
+        initialising defaults
         :param reference_reader: specifying another intermodal reader that is used to construct network and zoning from
         a different source than its own (only relevant for GTFS based reader currently)
         :return the created reader
@@ -743,19 +752,19 @@ class IntermodalConverter(_ConverterBase):
             f"No settings files for the {intermodal_writer_type} writer yet, it is made with create_writer")
 
     def write_default_settings_file(self, reader_or_writer_type: Union[IntermodalReaderType, IntermodalWriterType],
-                                    settings_file_path: str, country: str = "Global") -> None:
+                                    settings_file_path: str, country: Optional[str] = None) -> None:
         """ write a settings file with every key at its default, with descriptions, to edit and give to
         create_yaml_based_reader or create_yaml_based_writer: for the OSM and PLANit readers and the PLANit and MATSim
         writers. Keys without a default, such as the input source, are written commented out, to fill in
         :param reader_or_writer_type: the type of reader or writer whose settings to write
         :param settings_file_path: the settings file to write
-        :param country: whose defaults to write, written as the key country of the file; a reader without a country
-        takes only the default
+        :param country: whose defaults to write, written as the key country of the file, the global ones when absent;
+        a reader without a country takes none
         """
         if reader_or_writer_type == IntermodalReaderType.OSM:
             _write_default_settings_file(
                 GatewayUtils.get_package_jvm().org.goplanit.osm.converter.settings.OsmReaderSettingsFactory.
-                createIntermodalReaderSettings(country), settings_file_path)
+                createIntermodalReaderSettings(_country_or_global(country)), settings_file_path)
         elif reader_or_writer_type == IntermodalReaderType.PLANIT:
             _write_default_reader_settings_file(
                 GatewayUtils.get_package_jvm().org.goplanit.io.converter.intermodal.PlanitIntermodalReaderSettings(),

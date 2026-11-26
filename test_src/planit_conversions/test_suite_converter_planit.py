@@ -4,6 +4,8 @@ import time
 from pathlib import Path
 from typing import List
 
+from py4j.java_gateway import JavaObject
+
 from planit.converter import DemandsConverter
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../..', 'src'))
@@ -22,8 +24,6 @@ GEOIO_PATH = os.path.join(ABSOLUTE_PATH_TEST_DATA_CONVERTER, 'geoio')
 
 PLANIT_PATH = os.path.join(ABSOLUTE_PATH_TEST_DATA_CONVERTER, 'planit')
 PLANIT_INPUT_PATH = os.path.join(PLANIT_PATH, 'input')
-# the folder the writer settings files name as their output directory
-PLANIT_OUTPUT_PATH = os.path.join(PLANIT_PATH, 'output', 'planit')
 
 SETTINGS_PATH = os.path.join(ABSOLUTE_PATH, '..', 'conversion_properties', 'settings')
 PLANIT_READER_SETTINGS_FILE_PATH = os.path.join(SETTINGS_PATH, "planit_reader_input.yaml")
@@ -33,14 +33,14 @@ PLANIT_INTERMODAL_WRITER_SETTINGS_FILE_PATH = os.path.join(SETTINGS_PATH, "plani
 MATSIM_INTERMODAL_WRITER_SETTINGS_FILE_PATH = os.path.join(SETTINGS_PATH, "matsim_intermodal_writer.yaml")
 
 
-def written_since(file_names: List[str], start_time: float) -> bool:
-    """ whether each file of the PLANit output folder was written since the given time
-    :param file_names: of the files in the PLANit output folder
+def written_since(java_writer_settings: List[JavaObject], start_time: float) -> bool:
+    """ whether the file each PLANit writer's settings name, in their output directory, was written since the given time
+    :param java_writer_settings: of PLANit writers of one file each, giving the output directory and the file name
     :param start_time: in seconds since the epoch
     :return true when each was written since
     """
-    return all(os.path.getmtime(os.path.join(PLANIT_OUTPUT_PATH, file_name)) >= start_time
-               for file_name in file_names)
+    return all(os.path.getmtime(os.path.join(settings.getOutputDirectory(), settings.getFileName())) >= start_time
+               for settings in java_writer_settings)
 
 
 class TestSuiteConverterPlanit(unittest.TestCase):
@@ -78,7 +78,7 @@ class TestSuiteConverterPlanit(unittest.TestCase):
         planit.force_stop_java()
         gc.collect()
 
-    def test_intermodal_converter_with_services_planit2geoio_from_settings_file(self):
+    def test_intermodal_converter_with_services_planit2geoio_from_settings_file(self) -> None:
         OUTPUT_PATH = os.path.join(PLANIT_PATH, 'output', 'geoio')
 
         planit = Planit()
@@ -86,7 +86,7 @@ class TestSuiteConverterPlanit(unittest.TestCase):
         # intermodal converter
         intermodal_converter = planit.converter_factory.create(ConverterType.INTERMODAL)
 
-        # PLANit reader, made from a settings file naming the file of each part
+        # PLANit reader, made from a settings file naming the file of each of its nested settings
         planit_reader = intermodal_converter.create_yaml_based_reader(
             IntermodalReaderType.PLANIT, PLANIT_INTERMODAL_READER_SETTINGS_FILE_PATH)
 
@@ -101,13 +101,13 @@ class TestSuiteConverterPlanit(unittest.TestCase):
         planit.force_stop_java()
         gc.collect()
 
-    def test_intermodal_converter_with_services_planit2matsim_from_settings_file(self):
+    def test_intermodal_converter_with_services_planit2matsim_from_settings_file(self) -> None:
         start_time = time.time()
         planit = Planit()
 
         intermodal_converter = planit.converter_factory.create(ConverterType.INTERMODAL)
 
-        # PLANit reader and MATSim writer, each made from a settings file naming the file of each part
+        # PLANit reader and MATSim writer, each made from a settings file naming the file of each of its nested settings
         planit_reader = intermodal_converter.create_yaml_based_reader(
             IntermodalReaderType.PLANIT, PLANIT_INTERMODAL_READER_SETTINGS_FILE_PATH)
         matsim_writer = intermodal_converter.create_yaml_based_writer(
@@ -125,7 +125,7 @@ class TestSuiteConverterPlanit(unittest.TestCase):
         planit.force_stop_java()
         gc.collect()
 
-    def test_zoning_converter_planit2planit_from_settings_files(self):
+    def test_zoning_converter_planit2planit_from_settings_files(self) -> None:
         start_time = time.time()
         planit = Planit()
 
@@ -142,18 +142,18 @@ class TestSuiteConverterPlanit(unittest.TestCase):
 
         # perform conversion
         converter.convert(planit_zon_reader, planit_writer)
-        assert written_since(["zoning.xml"], start_time)
+        assert written_since([planit_writer.java.getSettings()], start_time)
 
         planit.force_stop_java()
         gc.collect()
 
-    def test_intermodal_converter_planit2planit_from_settings_files(self):
+    def test_intermodal_converter_planit2planit_from_settings_files(self) -> None:
         start_time = time.time()
         planit = Planit()
 
         intermodal_converter = planit.converter_factory.create(ConverterType.INTERMODAL)
 
-        # PLANit reader and writer, each made from a settings file naming the file of each part
+        # PLANit reader and writer, each made from a settings file naming the file of each of its nested settings
         planit_reader = intermodal_converter.create_yaml_based_reader(
             IntermodalReaderType.PLANIT, PLANIT_INTERMODAL_READER_SETTINGS_FILE_PATH)
         planit_writer = intermodal_converter.create_yaml_based_writer(
@@ -161,7 +161,10 @@ class TestSuiteConverterPlanit(unittest.TestCase):
 
         # perform conversion
         intermodal_converter.convert_with_services(planit_reader, planit_writer)
-        assert written_since(["network.xml", "zoning.xml", "service_network.xml", "routed_services.xml"], start_time)
+        java_settings = planit_writer.java.getSettings()
+        assert written_since([java_settings.getNetworkSettings(), java_settings.getZoningSettings(),
+                              java_settings.getServiceNetworkSettings(), java_settings.getRoutedServicesSettings()],
+                             start_time)
 
         planit.force_stop_java()
         gc.collect()
@@ -221,7 +224,7 @@ class TestSuiteConverterPlanit(unittest.TestCase):
         planit.force_stop_java()
         gc.collect()
 
-    def test_intermodal_converter_planit2planit(self):
+    def test_intermodal_converter_planit2planit(self) -> None:
         OUTPUT_PATH = os.path.join(PLANIT_PATH, 'output', 'planit')
 
         # no correspondence to Java test as we explicitly test non-failure of Python code to instantiate converters

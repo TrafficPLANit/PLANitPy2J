@@ -55,7 +55,7 @@ def write_settings_differing_from_defaults(reader_or_writer, settings_file_path:
 
 def written_settings_differing_from_defaults(reader_or_writer, output_dir: str) -> Dict[str, str]:
     """ the settings files written for a reader or writer, the keys differing from their defaults, by file name: its
-    own file, and for an intermodal reader or writer those of its parts next to it
+    own file, and for an intermodal reader or writer those of its nested settings next to it
     :param reader_or_writer: whose settings to write
     :param output_dir: a folder not there yet, to write the files in
     :return the text of each file written, by file name
@@ -71,7 +71,7 @@ class TestSuiteConverterProperties(unittest.TestCase):
         the run does not yield any errors/exceptions
     """
 
-    def test_osm_reader_later_settings_file_wins(self):
+    def test_osm_reader_later_settings_file_wins(self) -> None:
         # made from a base file and its corrections, an OSM reader holds the same settings as one made from a single
         # file holding both, and not those of the base file alone
         planit = Planit()
@@ -111,7 +111,7 @@ class TestSuiteConverterProperties(unittest.TestCase):
         planit.force_stop_java()
         gc.collect()
 
-    def test_osm_reader_from_settings_files_only(self):
+    def test_osm_reader_from_settings_files_only(self) -> None:
         # an OSM reader is made from one settings file or a list of them only, its country the key country of the
         # files; a TNTP reader is not made from settings files yet
         planit = Planit()
@@ -158,7 +158,7 @@ class TestSuiteConverterProperties(unittest.TestCase):
         planit.force_stop_java()
         gc.collect()
 
-    def test_planit_reader_from_one_settings_file_or_a_list(self):
+    def test_planit_reader_from_one_settings_file_or_a_list(self) -> None:
         # one settings file given as a path makes the same PLANit reader as a list holding only that file
         planit = Planit()
 
@@ -181,7 +181,7 @@ class TestSuiteConverterProperties(unittest.TestCase):
         planit.force_stop_java()
         gc.collect()
 
-    def test_planit_zoning_and_demands_readers_from_settings_files(self):
+    def test_planit_zoning_and_demands_readers_from_settings_files(self) -> None:
         # made from a settings file, the zoning and demands readers take the reference reader they take otherwise
         planit = Planit()
 
@@ -199,7 +199,7 @@ class TestSuiteConverterProperties(unittest.TestCase):
         planit.force_stop_java()
         gc.collect()
 
-    def test_planit_writers_from_settings_files(self):
+    def test_planit_writers_from_settings_files(self) -> None:
         # PLANit writers made from a settings file hold its settings, the zoning and demands writers too, made before
         # anything is read; a writer without settings files is refused
         planit = Planit()
@@ -225,7 +225,7 @@ class TestSuiteConverterProperties(unittest.TestCase):
         planit.force_stop_java()
         gc.collect()
 
-    def test_planit_writer_later_settings_file_wins(self):
+    def test_planit_writer_later_settings_file_wins(self) -> None:
         # made from the files of the output folder and of a file name, the writer holds both, the later file adding
         # its file name
         planit = Planit()
@@ -239,7 +239,7 @@ class TestSuiteConverterProperties(unittest.TestCase):
         planit.force_stop_java()
         gc.collect()
 
-    def test_planit_default_settings_files_make_a_reader_and_a_writer(self):
+    def test_planit_default_settings_files_make_a_reader_and_a_writer(self) -> None:
         # the defaults files of a PLANit reader and writer each make one; a writer's holds the country given, a reader
         # has no country
         planit = Planit()
@@ -265,9 +265,10 @@ class TestSuiteConverterProperties(unittest.TestCase):
         planit.force_stop_java()
         gc.collect()
 
-    def test_matsim_writers_from_one_settings_file_or_a_list(self):
+    def test_matsim_writers_from_one_settings_file_or_a_list(self) -> None:
         # a MATSim network or intermodal writer made from one settings file given as a path holds the settings of its
-        # files, the intermodal file naming those of its parts, and so does one made from a list holding only that file
+        # files, the intermodal file naming those of its nested settings, and so does one made from a list holding only
+        # that file
         planit = Planit()
 
         with tempfile.TemporaryDirectory() as output_dir:
@@ -291,7 +292,7 @@ class TestSuiteConverterProperties(unittest.TestCase):
         planit.force_stop_java()
         gc.collect()
 
-    def test_matsim_default_settings_files_make_writers(self):
+    def test_matsim_default_settings_files_make_writers(self) -> None:
         # the defaults files of the MATSim network and intermodal writers each make a writer, holding the country given
         planit = Planit()
 
@@ -423,7 +424,7 @@ class TestSuiteConverterProperties(unittest.TestCase):
         planit.force_stop_java()
         gc.collect()
 
-    def test_converter_matsim_writer_all_properties(self):
+    def test_converter_matsim_writer_all_properties(self) -> None:
         OUTPUT_PATH = os.path.join(OSM_PATH, 'output', 'matsim')
 
         # no correspondence to Java test as we explicitly test non-failure of Python code to test all properties
