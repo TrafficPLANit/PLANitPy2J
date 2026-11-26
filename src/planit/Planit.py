@@ -50,15 +50,16 @@ class Planit:
             #    - the IDE run, 
             #    - the RELEASE environment
             #    - a venv (virtual python) environment (which contains a bug that requires us to use a different path)
-            dependencySet = {
+            # in this order, so the jars of the IDE run come first wherever other jars are found too
+            dependencies = [
                 os.path.join(dir_path, GatewayConfig.IDE_SHARE_PATH,GatewayConfig.PLANIT_SHARE),
                 os.path.join(dir_path, GatewayConfig.IDE_SHARE_PATH, GatewayConfig.PY4J_SHARE),
                 os.path.join(GatewayConfig.RELEASE_SHARE_PATH, GatewayConfig.PLANIT_SHARE),
                 os.path.join(GatewayConfig.VENV_RELEASE_SHARE_PATH,GatewayConfig.PLANIT_SHARE),                
                 os.path.join(GatewayConfig.RELEASE_SHARE_PATH,GatewayConfig.PY4J_SHARE),
-                os.path.join(GatewayConfig.VENV_RELEASE_SHARE_PATH, GatewayConfig.PY4J_SHARE)}
+                os.path.join(GatewayConfig.VENV_RELEASE_SHARE_PATH, GatewayConfig.PY4J_SHARE)]
             dependencySeparator = ';'
-            fullString = dependencySeparator.join(dependencySet)
+            fullString = dependencySeparator.join(dependencies)
             
             cmd = ['java', '-classpath', fullString, GatewayConfig.JAVA_GATEWAY_WRAPPER_CLASS]
             if self._debug_info: print('Java classpath: ' + fullString)

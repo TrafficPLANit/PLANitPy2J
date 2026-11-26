@@ -1,0 +1,5 @@
+planitIoReaderSettings: 1
+network: planit_reader_input.yaml
+zoning: planit_reader_input.yaml
+serviceNetwork: planit_reader_input.yaml
+routedServices: planit_reader_input.yaml

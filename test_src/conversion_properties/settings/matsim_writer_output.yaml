@@ -1,0 +1,4 @@
+planitMatsimWriterSettings: 1
+outputDirectory: ../../../testdata/converter/planit/output/matsim
+country: Australia
+writeAsGZip: false

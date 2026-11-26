@@ -3,6 +3,7 @@ import sys
 import tempfile
 import time
 from pathlib import Path
+from typing import Dict
 
 from py4j.protocol import Py4JJavaError
 
@@ -24,10 +25,17 @@ OSM_PATH = os.path.join(ABSOLUTE_PATH_TEST_DATA_CONVERTER, 'osm')
 OSM_INPUT_PATH = os.path.join(OSM_PATH, 'input')
 SYDNEY_OSM_SETTINGS_FILE_PATH = os.path.join(OSM_INPUT_PATH, "osm_settings_sydney_cbd.yaml")
 
-OSM_SETTINGS_PATH = os.path.join(ABSOLUTE_PATH, 'settings')
-OSM_SETTINGS_BASE_FILE_PATH = os.path.join(OSM_SETTINGS_PATH, "osm_settings_base.yaml")
-OSM_SETTINGS_CORRECTIONS_FILE_PATH = os.path.join(OSM_SETTINGS_PATH, "osm_settings_corrections.yaml")
-OSM_SETTINGS_BASE_AND_CORRECTIONS_FILE_PATH = os.path.join(OSM_SETTINGS_PATH, "osm_settings_base_and_corrections.yaml")
+SETTINGS_PATH = os.path.join(ABSOLUTE_PATH, 'settings')
+OSM_SETTINGS_BASE_FILE_PATH = os.path.join(SETTINGS_PATH, "osm_settings_base.yaml")
+OSM_SETTINGS_CORRECTIONS_FILE_PATH = os.path.join(SETTINGS_PATH, "osm_settings_corrections.yaml")
+OSM_SETTINGS_BASE_AND_CORRECTIONS_FILE_PATH = os.path.join(SETTINGS_PATH, "osm_settings_base_and_corrections.yaml")
+PLANIT_READER_SETTINGS_FILE_PATH = os.path.join(SETTINGS_PATH, "planit_reader_input.yaml")
+PLANIT_INTERMODAL_READER_SETTINGS_FILE_PATH = os.path.join(SETTINGS_PATH, "planit_intermodal_reader.yaml")
+PLANIT_WRITER_SETTINGS_FILE_PATH = os.path.join(SETTINGS_PATH, "planit_writer_output.yaml")
+PLANIT_NETWORK_WRITER_FILE_NAME_FILE_PATH = os.path.join(SETTINGS_PATH, "planit_network_writer_file_name.yaml")
+PLANIT_INTERMODAL_WRITER_SETTINGS_FILE_PATH = os.path.join(SETTINGS_PATH, "planit_intermodal_writer.yaml")
+MATSIM_WRITER_SETTINGS_FILE_PATH = os.path.join(SETTINGS_PATH, "matsim_writer_output.yaml")
+MATSIM_INTERMODAL_WRITER_SETTINGS_FILE_PATH = os.path.join(SETTINGS_PATH, "matsim_intermodal_writer.yaml")
 
 GTFS_PATH = os.path.join(ABSOLUTE_PATH_TEST_DATA_CONVERTER, 'gtfs')
 GTFS_INPUT_PATH = os.path.join(GTFS_PATH, 'input')
@@ -37,13 +45,24 @@ PLANIT_PATH = os.path.join(ABSOLUTE_PATH_TEST_DATA_CONVERTER, 'planit')
 PLANIT_INPUT_PATH = os.path.join(PLANIT_PATH, 'input')
 
 
-def write_osm_reader_settings_differing_from_defaults(osm_reader: OsmIntermodalReaderWrapper,
-                                                      settings_file_path: str) -> None:
-    """ write the settings of an OSM reader, the keys differing from their defaults, without descriptions. Through its
-    Java settings, as Python does not read settings back"""
-    settings_file_content = GatewayUtils.get_package_jvm().org.goplanit.utils.settings.SettingsFileContent
-    osm_reader.java.getSettings().writeSettingsFile(
+def write_settings_differing_from_defaults(reader_or_writer, settings_file_path: str) -> None:
+    """ write the settings of a reader or writer, the keys differing from their defaults, without descriptions.
+    Through its Java settings, as Python does not read settings back"""
+    settings_file_content = GatewayUtils.get_package_jvm().org.goplanit.utils.settings.SettingsFileContentType
+    reader_or_writer.java.getSettings().writeSettingsFile(
         GatewayUtils.to_java_path(settings_file_path), settings_file_content.KEYS_DIFFERING_FROM_DEFAULTS, False)
+
+
+def written_settings_differing_from_defaults(reader_or_writer, output_dir: str) -> Dict[str, str]:
+    """ the settings files written for a reader or writer, the keys differing from their defaults, by file name: its
+    own file, and for an intermodal reader or writer those of its parts next to it
+    :param reader_or_writer: whose settings to write
+    :param output_dir: a folder not there yet, to write the files in
+    :return the text of each file written, by file name
+    """
+    os.makedirs(output_dir)
+    write_settings_differing_from_defaults(reader_or_writer, os.path.join(output_dir, "settings.yaml"))
+    return {file_name: Path(output_dir, file_name).read_text() for file_name in sorted(os.listdir(output_dir))}
 
 
 class TestSuiteConverterProperties(unittest.TestCase):
@@ -69,7 +88,7 @@ class TestSuiteConverterProperties(unittest.TestCase):
             written_settings = {}
             for name, reader in [("base", base_reader), ("stacked", stacked_reader), ("single", single_file_reader)]:
                 settings_file_path = os.path.join(output_dir, name + ".yaml")
-                write_osm_reader_settings_differing_from_defaults(reader, settings_file_path)
+                write_settings_differing_from_defaults(reader, settings_file_path)
                 written_settings[name] = Path(settings_file_path).read_text()
             assert written_settings["stacked"] == written_settings["single"]
             assert written_settings["stacked"] != written_settings["base"]
@@ -93,8 +112,8 @@ class TestSuiteConverterProperties(unittest.TestCase):
         gc.collect()
 
     def test_osm_reader_from_settings_files_only(self):
-        # an OSM reader is made from a list of settings files only, its country the key country of the files; the
-        # other readers are not made from settings files yet
+        # an OSM reader is made from one settings file or a list of them only, its country the key country of the
+        # files; a TNTP reader is not made from settings files yet
         planit = Planit()
 
         network_converter = planit.converter_factory.create(ConverterType.NETWORK)
@@ -102,10 +121,10 @@ class TestSuiteConverterProperties(unittest.TestCase):
             network_converter.create_reader(NetworkReaderType.OSM, AUSTRALIA)
         with self.assertRaises(ValueError):
             network_converter.create_yaml_based_reader(NetworkReaderType.OSM, [])
+        assert network_converter.create_yaml_based_reader(NetworkReaderType.OSM, SYDNEY_OSM_SETTINGS_FILE_PATH) \
+            is not None
         with self.assertRaises(ValueError):
-            network_converter.create_yaml_based_reader(NetworkReaderType.OSM, SYDNEY_OSM_SETTINGS_FILE_PATH)
-        with self.assertRaises(ValueError):
-            network_converter.create_yaml_based_reader(NetworkReaderType.PLANIT, [SYDNEY_OSM_SETTINGS_FILE_PATH])
+            network_converter.create_yaml_based_reader(NetworkReaderType.TNTP, [SYDNEY_OSM_SETTINGS_FILE_PATH])
 
         intermodal_converter = planit.converter_factory.create(ConverterType.INTERMODAL)
         with self.assertRaises(ValueError):
@@ -134,6 +153,159 @@ class TestSuiteConverterProperties(unittest.TestCase):
                 IntermodalReaderType.OSM, intermodal_settings_file_path, AUSTRALIA)
             assert intermodal_converter.create_yaml_based_reader(
                 IntermodalReaderType.OSM, [intermodal_settings_file_path]) is not None
+
+        # ensure PLANit connection is reset
+        planit.force_stop_java()
+        gc.collect()
+
+    def test_planit_reader_from_one_settings_file_or_a_list(self):
+        # one settings file given as a path makes the same PLANit reader as a list holding only that file
+        planit = Planit()
+
+        with tempfile.TemporaryDirectory() as output_dir:
+            for name, converter_type, reader_type, settings_file_path in [
+                    ("network", ConverterType.NETWORK, NetworkReaderType.PLANIT, PLANIT_READER_SETTINGS_FILE_PATH),
+                    ("intermodal", ConverterType.INTERMODAL, IntermodalReaderType.PLANIT,
+                     PLANIT_INTERMODAL_READER_SETTINGS_FILE_PATH)]:
+                converter = planit.converter_factory.create(converter_type)
+                from_path = written_settings_differing_from_defaults(
+                    converter.create_yaml_based_reader(reader_type, settings_file_path),
+                    os.path.join(output_dir, name, "path"))
+                from_list = written_settings_differing_from_defaults(
+                    converter.create_yaml_based_reader(reader_type, [settings_file_path]),
+                    os.path.join(output_dir, name, "list"))
+                assert from_path == from_list, name
+                assert any("inputSource" in text for text in from_path.values()), name
+
+        # ensure PLANit connection is reset
+        planit.force_stop_java()
+        gc.collect()
+
+    def test_planit_zoning_and_demands_readers_from_settings_files(self):
+        # made from a settings file, the zoning and demands readers take the reference reader they take otherwise
+        planit = Planit()
+
+        network_reader = planit.converter_factory.create(ConverterType.NETWORK).create_yaml_based_reader(
+            NetworkReaderType.PLANIT, PLANIT_READER_SETTINGS_FILE_PATH)
+        zoning_reader = planit.converter_factory.create(ConverterType.ZONING).create_yaml_based_reader(
+            ZoningReaderType.PLANIT, PLANIT_READER_SETTINGS_FILE_PATH, network_reader)
+        demands_reader = planit.converter_factory.create(ConverterType.DEMANDS).create_yaml_based_reader(
+            DemandsReaderType.PLANIT, PLANIT_READER_SETTINGS_FILE_PATH, zoning_reader)
+        network_input_source = network_reader.java.getSettings().getInputSource()
+        assert network_input_source.equals(zoning_reader.java.getSettings().getInputSource())
+        assert network_input_source.equals(demands_reader.java.getSettings().getInputSource())
+
+        # ensure PLANit connection is reset
+        planit.force_stop_java()
+        gc.collect()
+
+    def test_planit_writers_from_settings_files(self):
+        # PLANit writers made from a settings file hold its settings, the zoning and demands writers too, made before
+        # anything is read; a writer without settings files is refused
+        planit = Planit()
+
+        with tempfile.TemporaryDirectory() as output_dir:
+            for name, converter_type, writer_type, settings_file_path in [
+                    ("network", ConverterType.NETWORK, NetworkWriterType.PLANIT, PLANIT_WRITER_SETTINGS_FILE_PATH),
+                    ("zoning", ConverterType.ZONING, ZoningWriterType.PLANIT, PLANIT_WRITER_SETTINGS_FILE_PATH),
+                    ("demands", ConverterType.DEMANDS, DemandsWriterType.PLANIT, PLANIT_WRITER_SETTINGS_FILE_PATH),
+                    ("intermodal", ConverterType.INTERMODAL, IntermodalWriterType.PLANIT,
+                     PLANIT_INTERMODAL_WRITER_SETTINGS_FILE_PATH)]:
+                writer = planit.converter_factory.create(converter_type).create_yaml_based_writer(
+                    writer_type, settings_file_path)
+                written = written_settings_differing_from_defaults(writer, os.path.join(output_dir, name))
+                assert any("country: Australia" in text for text in written.values()), name
+                assert any("outputDirectory" in text for text in written.values()), name
+
+        with self.assertRaises(ValueError):
+            planit.converter_factory.create(ConverterType.NETWORK).create_yaml_based_writer(
+                NetworkWriterType.SHAPE, PLANIT_WRITER_SETTINGS_FILE_PATH)
+
+        # ensure PLANit connection is reset
+        planit.force_stop_java()
+        gc.collect()
+
+    def test_planit_writer_later_settings_file_wins(self):
+        # made from the files of the output folder and of a file name, the writer holds both, the later file adding
+        # its file name
+        planit = Planit()
+
+        writer = planit.converter_factory.create(ConverterType.NETWORK).create_yaml_based_writer(
+            NetworkWriterType.PLANIT, [PLANIT_WRITER_SETTINGS_FILE_PATH, PLANIT_NETWORK_WRITER_FILE_NAME_FILE_PATH])
+        assert writer.java.getSettings().getFileName() == "network_from_settings.xml"
+        assert writer.java.getSettings().getCountry() == AUSTRALIA
+
+        # ensure PLANit connection is reset
+        planit.force_stop_java()
+        gc.collect()
+
+    def test_planit_default_settings_files_make_a_reader_and_a_writer(self):
+        # the defaults files of a PLANit reader and writer each make one; a writer's holds the country given, a reader
+        # has no country
+        planit = Planit()
+
+        network_converter = planit.converter_factory.create(ConverterType.NETWORK)
+        with tempfile.TemporaryDirectory() as settings_dir:
+            reader_settings_file_path = os.path.join(settings_dir, "planit_reader_defaults.yaml")
+            network_converter.write_default_settings_file(NetworkReaderType.PLANIT, reader_settings_file_path)
+            assert network_converter.create_yaml_based_reader(
+                NetworkReaderType.PLANIT, reader_settings_file_path) is not None
+            with self.assertRaises(ValueError):
+                network_converter.write_default_settings_file(
+                    NetworkReaderType.PLANIT, os.path.join(settings_dir, "refused.yaml"), AUSTRALIA)
+
+            writer_settings_file_path = os.path.join(settings_dir, "planit_writer_defaults.yaml")
+            network_converter.write_default_settings_file(
+                NetworkWriterType.PLANIT, writer_settings_file_path, AUSTRALIA)
+            assert "country: Australia" in Path(writer_settings_file_path).read_text()
+            assert network_converter.create_yaml_based_writer(
+                NetworkWriterType.PLANIT, writer_settings_file_path) is not None
+
+        # ensure PLANit connection is reset
+        planit.force_stop_java()
+        gc.collect()
+
+    def test_matsim_writers_from_one_settings_file_or_a_list(self):
+        # a MATSim network or intermodal writer made from one settings file given as a path holds the settings of its
+        # files, the intermodal file naming those of its parts, and so does one made from a list holding only that file
+        planit = Planit()
+
+        with tempfile.TemporaryDirectory() as output_dir:
+            for name, converter_type, writer_type, settings_file_path in [
+                    ("network", ConverterType.NETWORK, NetworkWriterType.MATSIM, MATSIM_WRITER_SETTINGS_FILE_PATH),
+                    ("intermodal", ConverterType.INTERMODAL, IntermodalWriterType.MATSIM,
+                     MATSIM_INTERMODAL_WRITER_SETTINGS_FILE_PATH)]:
+                converter = planit.converter_factory.create(converter_type)
+                from_path = written_settings_differing_from_defaults(
+                    converter.create_yaml_based_writer(writer_type, settings_file_path),
+                    os.path.join(output_dir, name, "path"))
+                from_list = written_settings_differing_from_defaults(
+                    converter.create_yaml_based_writer(writer_type, [settings_file_path]),
+                    os.path.join(output_dir, name, "list"))
+                assert from_path == from_list, name
+                assert any("country: Australia" in text for text in from_path.values()), name
+                assert any("outputDirectory" in text for text in from_path.values()), name
+                assert any("writeAsGZip: false" in text for text in from_path.values()), name
+
+        # ensure PLANit connection is reset
+        planit.force_stop_java()
+        gc.collect()
+
+    def test_matsim_default_settings_files_make_writers(self):
+        # the defaults files of the MATSim network and intermodal writers each make a writer, holding the country given
+        planit = Planit()
+
+        with tempfile.TemporaryDirectory() as settings_dir:
+            for name, converter_type, writer_type in [
+                    ("network", ConverterType.NETWORK, NetworkWriterType.MATSIM),
+                    ("intermodal", ConverterType.INTERMODAL, IntermodalWriterType.MATSIM)]:
+                converter = planit.converter_factory.create(converter_type)
+                settings_file_path = os.path.join(settings_dir, name, "matsim_writer_defaults.yaml")
+                converter.write_default_settings_file(writer_type, settings_file_path, AUSTRALIA)
+                written = [path.read_text() for path in Path(settings_file_path).parent.iterdir()]
+                assert any("country: Australia" in text for text in written), name
+                writer = converter.create_yaml_based_writer(writer_type, settings_file_path)
+                assert writer.java.getSettings() is not None, name
 
         # ensure PLANit connection is reset
         planit.force_stop_java()
@@ -269,7 +441,7 @@ class TestSuiteConverterProperties(unittest.TestCase):
         # general
         matsim_writer.settings.set_output_directory(OUTPUT_PATH)
         matsim_writer.settings.set_country(AUSTRALIA)
-        matsim_writer.settings.set_file_name("my_network")
+        matsim_writer.settings.network_settings.set_file_name("my_network")
 
         # network specific
         network_settings = matsim_writer.settings.network_settings

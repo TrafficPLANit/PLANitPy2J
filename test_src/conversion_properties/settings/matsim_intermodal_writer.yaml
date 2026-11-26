@@ -1,0 +1,4 @@
+planitMatsimWriterSettings: 1
+network: matsim_writer_output.yaml
+zoning: matsim_writer_output.yaml
+ptServices: matsim_writer_output.yaml

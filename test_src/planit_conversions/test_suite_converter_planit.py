@@ -1,6 +1,8 @@
 import os
 import sys
+import time
 from pathlib import Path
+from typing import List
 
 from planit.converter import DemandsConverter
 
@@ -20,6 +22,25 @@ GEOIO_PATH = os.path.join(ABSOLUTE_PATH_TEST_DATA_CONVERTER, 'geoio')
 
 PLANIT_PATH = os.path.join(ABSOLUTE_PATH_TEST_DATA_CONVERTER, 'planit')
 PLANIT_INPUT_PATH = os.path.join(PLANIT_PATH, 'input')
+# the folder the writer settings files name as their output directory
+PLANIT_OUTPUT_PATH = os.path.join(PLANIT_PATH, 'output', 'planit')
+
+SETTINGS_PATH = os.path.join(ABSOLUTE_PATH, '..', 'conversion_properties', 'settings')
+PLANIT_READER_SETTINGS_FILE_PATH = os.path.join(SETTINGS_PATH, "planit_reader_input.yaml")
+PLANIT_INTERMODAL_READER_SETTINGS_FILE_PATH = os.path.join(SETTINGS_PATH, "planit_intermodal_reader.yaml")
+PLANIT_WRITER_SETTINGS_FILE_PATH = os.path.join(SETTINGS_PATH, "planit_writer_output.yaml")
+PLANIT_INTERMODAL_WRITER_SETTINGS_FILE_PATH = os.path.join(SETTINGS_PATH, "planit_intermodal_writer.yaml")
+MATSIM_INTERMODAL_WRITER_SETTINGS_FILE_PATH = os.path.join(SETTINGS_PATH, "matsim_intermodal_writer.yaml")
+
+
+def written_since(file_names: List[str], start_time: float) -> bool:
+    """ whether each file of the PLANit output folder was written since the given time
+    :param file_names: of the files in the PLANit output folder
+    :param start_time: in seconds since the epoch
+    :return true when each was written since
+    """
+    return all(os.path.getmtime(os.path.join(PLANIT_OUTPUT_PATH, file_name)) >= start_time
+               for file_name in file_names)
 
 
 class TestSuiteConverterPlanit(unittest.TestCase):
@@ -53,6 +74,94 @@ class TestSuiteConverterPlanit(unittest.TestCase):
 
         # perform conversion
         intermodal_converter.convert_with_services(planit_reader, geo_writer)
+
+        planit.force_stop_java()
+        gc.collect()
+
+    def test_intermodal_converter_with_services_planit2geoio_from_settings_file(self):
+        OUTPUT_PATH = os.path.join(PLANIT_PATH, 'output', 'geoio')
+
+        planit = Planit()
+
+        # intermodal converter
+        intermodal_converter = planit.converter_factory.create(ConverterType.INTERMODAL)
+
+        # PLANit reader, made from a settings file naming the file of each part
+        planit_reader = intermodal_converter.create_yaml_based_reader(
+            IntermodalReaderType.PLANIT, PLANIT_INTERMODAL_READER_SETTINGS_FILE_PATH)
+
+        # GeoIo (GIS geometry shape) writer
+        geo_writer = intermodal_converter.create_writer(IntermodalWriterType.SHAPE)
+        geo_writer.settings.set_output_directory(OUTPUT_PATH)
+        geo_writer.settings.set_country(AUSTRALIA)
+
+        # perform conversion
+        intermodal_converter.convert_with_services(planit_reader, geo_writer)
+
+        planit.force_stop_java()
+        gc.collect()
+
+    def test_intermodal_converter_with_services_planit2matsim_from_settings_file(self):
+        start_time = time.time()
+        planit = Planit()
+
+        intermodal_converter = planit.converter_factory.create(ConverterType.INTERMODAL)
+
+        # PLANit reader and MATSim writer, each made from a settings file naming the file of each part
+        planit_reader = intermodal_converter.create_yaml_based_reader(
+            IntermodalReaderType.PLANIT, PLANIT_INTERMODAL_READER_SETTINGS_FILE_PATH)
+        matsim_writer = intermodal_converter.create_yaml_based_writer(
+            IntermodalWriterType.MATSIM, MATSIM_INTERMODAL_WRITER_SETTINGS_FILE_PATH)
+
+        # perform conversion
+        intermodal_converter.convert_with_services(planit_reader, matsim_writer)
+
+        # the network and the transit schedule are written to the files the settings name, not gzipped as they ask
+        java_settings = matsim_writer.java.getSettings()
+        for part_settings in [java_settings.getNetworkSettings(), java_settings.getPtServicesSettings()]:
+            written_file = os.path.join(part_settings.getOutputDirectory(), part_settings.getFileName() + ".xml")
+            assert os.path.getmtime(written_file) >= start_time, written_file
+
+        planit.force_stop_java()
+        gc.collect()
+
+    def test_zoning_converter_planit2planit_from_settings_files(self):
+        start_time = time.time()
+        planit = Planit()
+
+        planit_net_reader = planit.converter_factory.create(ConverterType.NETWORK).create_yaml_based_reader(
+            NetworkReaderType.PLANIT, PLANIT_READER_SETTINGS_FILE_PATH)
+
+        # zoning converter
+        converter: ZoningConverter = planit.converter_factory.create(ConverterType.ZONING)
+        planit_zon_reader = converter.create_yaml_based_reader(
+            ZoningReaderType.PLANIT, PLANIT_READER_SETTINGS_FILE_PATH, planit_net_reader)
+
+        # PLANit writer made before anything is read; the converter gives it the network the reader read
+        planit_writer = converter.create_yaml_based_writer(ZoningWriterType.PLANIT, PLANIT_WRITER_SETTINGS_FILE_PATH)
+
+        # perform conversion
+        converter.convert(planit_zon_reader, planit_writer)
+        assert written_since(["zoning.xml"], start_time)
+
+        planit.force_stop_java()
+        gc.collect()
+
+    def test_intermodal_converter_planit2planit_from_settings_files(self):
+        start_time = time.time()
+        planit = Planit()
+
+        intermodal_converter = planit.converter_factory.create(ConverterType.INTERMODAL)
+
+        # PLANit reader and writer, each made from a settings file naming the file of each part
+        planit_reader = intermodal_converter.create_yaml_based_reader(
+            IntermodalReaderType.PLANIT, PLANIT_INTERMODAL_READER_SETTINGS_FILE_PATH)
+        planit_writer = intermodal_converter.create_yaml_based_writer(
+            IntermodalWriterType.PLANIT, PLANIT_INTERMODAL_WRITER_SETTINGS_FILE_PATH)
+
+        # perform conversion
+        intermodal_converter.convert_with_services(planit_reader, planit_writer)
+        assert written_since(["network.xml", "zoning.xml", "service_network.xml", "routed_services.xml"], start_time)
 
         planit.force_stop_java()
         gc.collect()
@@ -135,9 +244,12 @@ class TestSuiteConverterPlanit(unittest.TestCase):
         planit_writer.settings.set_output_directory(OUTPUT_PATH)
         planit_writer.settings.set_country(AUSTRALIA)
 
-        # perform planit_conversions, test that running conversion twice does not cause problems
+        # perform planit_conversions, test that the same writer converts twice without problems; a reader reads once,
+        # filling the network it was made with, so the second conversion takes a new one
         intermodal_converter.convert(planit_reader, planit_writer)
-        intermodal_converter.convert_with_services(planit_reader, planit_writer)
+        services_reader = intermodal_converter.create_reader(IntermodalReaderType.PLANIT)
+        services_reader.settings.set_input_directory(PLANIT_INPUT_PATH)
+        intermodal_converter.convert_with_services(services_reader, planit_writer)
 
         planit.force_stop_java()
         gc.collect()

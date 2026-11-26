@@ -1,6 +1,5 @@
 from abc import abstractmethod
-from ctypes import Union
-from typing import List
+from typing import List, Union
 
 from py4j import java_collections
 from py4j.java_gateway import JavaObject
@@ -32,13 +31,15 @@ from planit import PlanitNetworkWriterWrapper
 from planit import GeometryIntermodalWriterWrapper
 
 
-def _to_java_settings_sources(settings_files: List[str]) -> java_collections.JavaList:
+def _to_java_settings_sources(settings_files: Union[str, List[str]]) -> java_collections.JavaList:
     """ the Java settings sources read from settings files, in the same order
-    :param settings_files: a list of at least one settings file
+    :param settings_files: one settings file, or a list of at least one applied in order
     :return java list of settings sources
     """
-    if not settings_files or isinstance(settings_files, str):
-        raise ValueError("Settings files are given as a list of at least one file")
+    if isinstance(settings_files, str):
+        settings_files = [settings_files]
+    if not settings_files:
+        raise ValueError("Settings files are given as one file or a list of at least one file")
     return GatewayUtils.to_java_list([
         GatewayUtils.get_package_jvm().org.goplanit.utils.settings.SettingsSource.ofFile(
             GatewayUtils.to_java_path(settings_file)) for settings_file in settings_files])
@@ -51,7 +52,30 @@ def _write_default_settings_file(java_default_settings: JavaObject, settings_fil
     """
     java_default_settings.writeSettingsFile(
         GatewayUtils.to_java_path(settings_file_path),
-        GatewayUtils.get_package_jvm().org.goplanit.utils.settings.SettingsFileContent.ALL_KEYS, True)
+        GatewayUtils.get_package_jvm().org.goplanit.utils.settings.SettingsFileContentType.ALL_KEYS, True)
+
+
+def _write_default_reader_settings_file(java_default_settings: JavaObject, settings_file_path: str,
+                                        country: str) -> None:
+    """ write reader settings made on their defaults to a settings file, for a reader whose settings have no country
+    :param java_default_settings: settings made on their defaults
+    :param settings_file_path: the settings file to write
+    :param country: only the default one is taken
+    """
+    if country != "Global":
+        raise ValueError(f"These reader settings have no country, {country} is not taken")
+    _write_default_settings_file(java_default_settings, settings_file_path)
+
+
+def _write_default_writer_settings_file(java_default_settings: JavaObject, settings_file_path: str,
+                                        country: str) -> None:
+    """ write writer settings made on their defaults to a settings file, with the country given
+    :param java_default_settings: settings made on their defaults
+    :param settings_file_path: the settings file to write
+    :param country: written as the key country of the file
+    """
+    java_default_settings.setCountry(country)
+    _write_default_settings_file(java_default_settings, settings_file_path)
 
 
 class _ConverterBase():
@@ -97,7 +121,7 @@ class NetworkConverter(_ConverterBase):
     #     NETWORK READER FACTORY METHODS
     #####################################
 
-    def __create_osm_network_reader(self, settings_files: List[str]) -> OsmNetworkReaderWrapper:
+    def __create_osm_network_reader(self, settings_files: Union[str, List[str]]) -> OsmNetworkReaderWrapper:
         java_settings = GatewayUtils.get_package_jvm().org.goplanit.osm.converter.settings.OsmReaderSettingsFactory. \
             createNetworkReaderSettingsFromYaml(_to_java_settings_sources(settings_files))
         java_network_reader = \
@@ -109,6 +133,14 @@ class NetworkConverter(_ConverterBase):
         java_network_reader = \
             GatewayUtils.get_package_jvm().org.goplanit.io.converter.network.PlanitNetworkReaderFactory.create()
         return PlanitNetworkReaderWrapper(java_network_reader)
+
+    def __create_planit_network_reader_from_files(self, settings_files: Union[str, List[str]]) \
+            -> PlanitNetworkReaderWrapper:
+        java_settings = GatewayUtils.get_package_jvm().org.goplanit.io.converter.PlanitXmlReaderSettingsFactory. \
+            createNetworkReaderSettingsFromYaml(_to_java_settings_sources(settings_files))
+        return PlanitNetworkReaderWrapper(
+            GatewayUtils.get_package_jvm().org.goplanit.io.converter.network.PlanitNetworkReaderFactory.create(
+                java_settings))
 
     def __create_tntp_network_reader(self) -> TntpNetworkReaderWrapper:
         java_network_reader = \
@@ -134,6 +166,22 @@ class NetworkConverter(_ConverterBase):
             GatewayUtils.get_package_jvm().org.goplanit.io.converter.network.PlanitNetworkWriterFactory.create()
         return PlanitNetworkWriterWrapper(java_network_writer)
 
+    def __create_planit_network_writer_from_files(self, settings_files: Union[str, List[str]]) \
+            -> PlanitNetworkWriterWrapper:
+        java_settings = GatewayUtils.get_package_jvm().org.goplanit.io.converter.PlanitXmlWriterSettingsFactory. \
+            createNetworkWriterSettingsFromYaml(_to_java_settings_sources(settings_files))
+        return PlanitNetworkWriterWrapper(
+            GatewayUtils.get_package_jvm().org.goplanit.io.converter.network.PlanitNetworkWriterFactory.create(
+                java_settings))
+
+    def __create_matsim_network_writer_from_files(self, settings_files: Union[str, List[str]]) \
+            -> MatsimNetworkWriterWrapper:
+        java_settings = GatewayUtils.get_package_jvm().org.goplanit.matsim.converter.MatsimWriterSettingsFactory. \
+            createNetworkWriterSettingsFromYaml(_to_java_settings_sources(settings_files))
+        return MatsimNetworkWriterWrapper(
+            GatewayUtils.get_package_jvm().org.goplanit.matsim.converter.network.MatsimNetworkWriterFactory.create(
+                java_settings))
+
     def create_reader(self, network_reader_type: NetworkReaderType, country: str = "Global") -> ZoningReaderWrapper:
         """ factory method to create a network reader compatible with this converter, for a reader not made from
         settings files; the OSM reader is made with create_yaml_based_reader
@@ -155,32 +203,63 @@ class NetworkConverter(_ConverterBase):
         else:
             raise Exception("Unsupported network reader type provided, unable to instantiate")
 
-    def create_yaml_based_reader(self, network_reader_type: NetworkReaderType, settings_files: List[str]) \
-            -> OsmNetworkReaderWrapper:
-        """ factory method to create a network reader compatible with this converter, made from settings files. So far
-        only the OSM reader is made this way
+    def create_yaml_based_reader(self, network_reader_type: NetworkReaderType,
+                                 settings_files: Union[str, List[str]]) -> NetworkReaderWrapper:
+        """ factory method to create a network reader compatible with this converter, made from settings files: the
+        OSM and PLANit readers
         :param network_reader_type: the type of reader to create
-        :param settings_files: applied in order, a later file winning; the country is the key country of the files
+        :param settings_files: one settings file, or several applied in order, a later file winning; for OSM the
+        country is the key country of the files
         :return the created reader
         """
         if network_reader_type == NetworkReaderType.OSM:
             return self.__create_osm_network_reader(settings_files)
+        if network_reader_type == NetworkReaderType.PLANIT:
+            return self.__create_planit_network_reader_from_files(settings_files)
         raise ValueError(f"No settings files for the {network_reader_type} reader yet, it is made with create_reader")
 
-    def write_default_settings_file(self, network_reader_type: NetworkReaderType, settings_file_path: str,
-                                    country: str = "Global") -> None:
-        """ write a settings file with every key at its default, with descriptions, to edit and give to
-        create_yaml_based_reader. So far only for the OSM reader. Keys without a default, such as the input source,
-        are written commented out, to fill in
-        :param network_reader_type: the type of reader whose settings to write
-        :param settings_file_path: the settings file to write
-        :param country: whose defaults to write, written as the key country of the file
+    def create_yaml_based_writer(self, network_writer_type: NetworkWriterType,
+                                 settings_files: Union[str, List[str]]) -> NetworkWriterWrapper:
+        """ factory method to create a network writer compatible with this converter, made from settings files: the
+        PLANit and MATSim writers
+        :param network_writer_type: the type of writer to create
+        :param settings_files: one settings file, or several applied in order, a later file winning
+        :return the created writer
         """
-        if network_reader_type != NetworkReaderType.OSM:
-            raise ValueError(f"No settings files for the {network_reader_type} reader yet")
-        _write_default_settings_file(
-            GatewayUtils.get_package_jvm().org.goplanit.osm.converter.settings.OsmReaderSettingsFactory.
-            createNetworkReaderSettings(country), settings_file_path)
+        if network_writer_type == NetworkWriterType.PLANIT:
+            return self.__create_planit_network_writer_from_files(settings_files)
+        if network_writer_type == NetworkWriterType.MATSIM:
+            return self.__create_matsim_network_writer_from_files(settings_files)
+        raise ValueError(f"No settings files for the {network_writer_type} writer yet, it is made with create_writer")
+
+    def write_default_settings_file(self, reader_or_writer_type: Union[NetworkReaderType, NetworkWriterType],
+                                    settings_file_path: str, country: str = "Global") -> None:
+        """ write a settings file with every key at its default, with descriptions, to edit and give to
+        create_yaml_based_reader or create_yaml_based_writer: for the OSM and PLANit readers and the PLANit and MATSim
+        writers. Keys without a default, such as the input source, are written commented out, to fill in
+        :param reader_or_writer_type: the type of reader or writer whose settings to write
+        :param settings_file_path: the settings file to write
+        :param country: whose defaults to write, written as the key country of the file; a reader without a country
+        takes only the default
+        """
+        if reader_or_writer_type == NetworkReaderType.OSM:
+            _write_default_settings_file(
+                GatewayUtils.get_package_jvm().org.goplanit.osm.converter.settings.OsmReaderSettingsFactory.
+                createNetworkReaderSettings(country), settings_file_path)
+        elif reader_or_writer_type == NetworkReaderType.PLANIT:
+            _write_default_reader_settings_file(
+                GatewayUtils.get_package_jvm().org.goplanit.io.converter.network.PlanitNetworkReaderSettings(),
+                settings_file_path, country)
+        elif reader_or_writer_type == NetworkWriterType.PLANIT:
+            _write_default_writer_settings_file(
+                GatewayUtils.get_package_jvm().org.goplanit.io.converter.network.PlanitNetworkWriterSettings(),
+                settings_file_path, country)
+        elif reader_or_writer_type == NetworkWriterType.MATSIM:
+            _write_default_writer_settings_file(
+                GatewayUtils.get_package_jvm().org.goplanit.matsim.converter.network.MatsimNetworkWriterSettings(),
+                settings_file_path, country)
+        else:
+            raise ValueError(f"No settings files for the {reader_or_writer_type} reader or writer yet")
 
     def create_writer(self, network_writer_type: NetworkWriterType) -> NetworkWriterWrapper:
         """ factory method to create a network writer compatible with this converter
@@ -234,6 +313,15 @@ class ZoningConverter(_ConverterBase):
                 reference_reader.java)
         return TntpZoningReaderWrapper(java_zoning_reader)
 
+    @staticmethod
+    def __create_planit_zoning_reader_from_files(settings_files: Union[str, List[str]],
+                                                 reference_reader: NetworkReaderWrapper) -> PlanitZoningReaderWrapper:
+        java_settings = GatewayUtils.get_package_jvm().org.goplanit.io.converter.PlanitXmlReaderSettingsFactory. \
+            createZoningReaderSettingsFromYaml(_to_java_settings_sources(settings_files))
+        return PlanitZoningReaderWrapper(
+            GatewayUtils.get_package_jvm().org.goplanit.io.converter.zoning.PlanitZoningReaderFactory.create(
+                java_settings, reference_reader.java))
+
     #####################################
     #     ZONING WRITER FACTORY METHODS
     #####################################
@@ -249,6 +337,14 @@ class ZoningConverter(_ConverterBase):
         java_zoning_writer = \
             GatewayUtils.get_package_jvm().org.goplanit.geoio.converter.zoning.GeometryZoningWriterFactory.create()
         return GeometryZoningWriterWrapper(java_zoning_writer)
+
+    @staticmethod
+    def __create_planit_zoning_writer_from_files(settings_files: Union[str, List[str]]) -> PlanitZoningWriterWrapper:
+        java_settings = GatewayUtils.get_package_jvm().org.goplanit.io.converter.PlanitXmlWriterSettingsFactory. \
+            createZoningWriterSettingsFromYaml(_to_java_settings_sources(settings_files))
+        return PlanitZoningWriterWrapper(
+            GatewayUtils.get_package_jvm().org.goplanit.io.converter.zoning.PlanitZoningWriterFactory.create(
+                java_settings))
 
     def create_reader(self,
                       zoning_reader_type: ZoningReaderType,
@@ -270,6 +366,55 @@ class ZoningConverter(_ConverterBase):
             return ZoningConverter.__create_tntp_zoning_reader(reference_reader)
         else:
             raise Exception("Unsupported zoning reader type provided, unable to instantiate")
+
+    def create_yaml_based_reader(self, zoning_reader_type: ZoningReaderType, settings_files: Union[str, List[str]],
+                                 reference_reader: NetworkReaderWrapper = None) -> ZoningReaderWrapper:
+        """ factory method to create a zoning reader compatible with this converter, made from settings files: the
+        PLANit reader
+
+        :param zoning_reader_type: the type of reader to create
+        :param settings_files: one settings file, or several applied in order, a later file winning
+        :param reference_reader: the network reader whose network the zoning is read on, as for create_reader
+        :return the created reader
+        """
+        if zoning_reader_type == ZoningReaderType.PLANIT:
+            return ZoningConverter.__create_planit_zoning_reader_from_files(settings_files, reference_reader)
+        raise ValueError(f"No settings files for the {zoning_reader_type} reader yet, it is made with create_reader")
+
+    def create_yaml_based_writer(self, zoning_writer_type: ZoningWriterType,
+                                 settings_files: Union[str, List[str]]) -> ZoningWriterWrapper:
+        """ factory method to create a zoning writer compatible with this converter, made from settings files: the
+        PLANit writer, given the network the reader read when converting
+
+        :param zoning_writer_type: the type of writer to create
+        :param settings_files: one settings file, or several applied in order, a later file winning
+        :return the created writer
+        """
+        if zoning_writer_type == ZoningWriterType.PLANIT:
+            return ZoningConverter.__create_planit_zoning_writer_from_files(settings_files)
+        raise ValueError(f"No settings files for the {zoning_writer_type} writer yet, it is made with create_writer")
+
+    def write_default_settings_file(self, reader_or_writer_type: Union[ZoningReaderType, ZoningWriterType],
+                                    settings_file_path: str, country: str = "Global") -> None:
+        """ write a settings file with every key at its default, with descriptions, to edit and give to
+        create_yaml_based_reader or create_yaml_based_writer: for the PLANit reader and writer. Keys without a default,
+        such as the input source, are written commented out, to fill in
+
+        :param reader_or_writer_type: the type of reader or writer whose settings to write
+        :param settings_file_path: the settings file to write
+        :param country: written as the key country of a writer's file; a reader without a country takes only the
+        default
+        """
+        if reader_or_writer_type == ZoningReaderType.PLANIT:
+            _write_default_reader_settings_file(
+                GatewayUtils.get_package_jvm().org.goplanit.io.converter.zoning.PlanitZoningReaderSettings(),
+                settings_file_path, country)
+        elif reader_or_writer_type == ZoningWriterType.PLANIT:
+            _write_default_writer_settings_file(
+                GatewayUtils.get_package_jvm().org.goplanit.io.converter.zoning.PlanitZoningWriterSettings(),
+                settings_file_path, country)
+        else:
+            raise ValueError(f"No settings files for the {reader_or_writer_type} reader or writer yet")
 
     def create_writer(self, zoning_writer_type: ZoningWriterType) -> ZoningWriterWrapper:
         """ factory method to create a zoning reader compatible with this converter.
@@ -323,6 +468,16 @@ class DemandsConverter(_ConverterBase):
                 reference_zoning_reader.java)
         return TntpDemandsReaderWrapper(java_reader)
 
+    @staticmethod
+    def __create_planit_demands_reader_from_files(settings_files: Union[str, List[str]],
+                                                  reference_zoning_reader: ZoningReaderWrapper) \
+            -> PlanitDemandsReaderWrapper:
+        java_settings = GatewayUtils.get_package_jvm().org.goplanit.io.converter.PlanitXmlReaderSettingsFactory. \
+            createDemandsReaderSettingsFromYaml(_to_java_settings_sources(settings_files))
+        return PlanitDemandsReaderWrapper(
+            GatewayUtils.get_package_jvm().org.goplanit.io.converter.demands.PlanitDemandsReaderFactory.create(
+                java_settings, reference_zoning_reader.java))
+
     #####################################
     #     DEMANDS WRITER FACTORY METHODS
     #####################################
@@ -332,6 +487,15 @@ class DemandsConverter(_ConverterBase):
         java_writer = \
             GatewayUtils.get_package_jvm().org.goplanit.io.converter.demands.PlanitDemandsWriterFactory.create()
         return PlanitDemandsWriterWrapper(java_writer)
+
+    @staticmethod
+    def __create_planit_demands_writer_from_files(settings_files: Union[str, List[str]]) \
+            -> PlanitDemandsWriterWrapper:
+        java_settings = GatewayUtils.get_package_jvm().org.goplanit.io.converter.PlanitXmlWriterSettingsFactory. \
+            createDemandsWriterSettingsFromYaml(_to_java_settings_sources(settings_files))
+        return PlanitDemandsWriterWrapper(
+            GatewayUtils.get_package_jvm().org.goplanit.io.converter.demands.PlanitDemandsWriterFactory.create(
+                java_settings))
 
     def create_reader(self,
                       demands_reader_type: DemandsReaderType, reference_zoning_reader: ZoningReaderWrapper = None) \
@@ -349,6 +513,55 @@ class DemandsConverter(_ConverterBase):
             return DemandsConverter.__create_tntp_demands_reader(reference_zoning_reader)
         else:
             raise Exception("Unsupported demands reader type provided, unable to instantiate")
+
+    def create_yaml_based_reader(self, demands_reader_type: DemandsReaderType, settings_files: Union[str, List[str]],
+                                 reference_zoning_reader: ZoningReaderWrapper = None) -> DemandsReaderWrapper:
+        """ factory method to create a demands reader compatible with this converter, made from settings files: the
+        PLANit reader
+
+        :param demands_reader_type: the type of reader to create
+        :param settings_files: one settings file, or several applied in order, a later file winning
+        :param reference_zoning_reader: the zoning reader related to these demands, as for create_reader
+        :return the created reader
+        """
+        if demands_reader_type == DemandsReaderType.PLANIT:
+            return DemandsConverter.__create_planit_demands_reader_from_files(settings_files, reference_zoning_reader)
+        raise ValueError(f"No settings files for the {demands_reader_type} reader yet, it is made with create_reader")
+
+    def create_yaml_based_writer(self, demands_writer_type: DemandsWriterType,
+                                 settings_files: Union[str, List[str]]) -> DemandsWriterWrapper:
+        """ factory method to create a demands writer compatible with this converter, made from settings files: the
+        PLANit writer, given the zoning the reader read when converting
+
+        :param demands_writer_type: the type of writer to create
+        :param settings_files: one settings file, or several applied in order, a later file winning
+        :return the created writer
+        """
+        if demands_writer_type == DemandsWriterType.PLANIT:
+            return DemandsConverter.__create_planit_demands_writer_from_files(settings_files)
+        raise ValueError(f"No settings files for the {demands_writer_type} writer yet, it is made with create_writer")
+
+    def write_default_settings_file(self, reader_or_writer_type: Union[DemandsReaderType, DemandsWriterType],
+                                    settings_file_path: str, country: str = "Global") -> None:
+        """ write a settings file with every key at its default, with descriptions, to edit and give to
+        create_yaml_based_reader or create_yaml_based_writer: for the PLANit reader and writer. Keys without a default,
+        such as the input source, are written commented out, to fill in
+
+        :param reader_or_writer_type: the type of reader or writer whose settings to write
+        :param settings_file_path: the settings file to write
+        :param country: written as the key country of a writer's file; a reader without a country takes only the
+        default
+        """
+        if reader_or_writer_type == DemandsReaderType.PLANIT:
+            _write_default_reader_settings_file(
+                GatewayUtils.get_package_jvm().org.goplanit.io.converter.demands.PlanitDemandsReaderSettings(),
+                settings_file_path, country)
+        elif reader_or_writer_type == DemandsWriterType.PLANIT:
+            _write_default_writer_settings_file(
+                GatewayUtils.get_package_jvm().org.goplanit.io.converter.demands.PlanitDemandsWriterSettings(),
+                settings_file_path, country)
+        else:
+            raise ValueError(f"No settings files for the {reader_or_writer_type} reader or writer yet")
 
     def create_writer(self, demands_writer_type: DemandsWriterType) -> DemandsWriterWrapper:
         """ factory method to create a demands writer compatible with this converter
@@ -396,7 +609,7 @@ class IntermodalConverter(_ConverterBase):
     #####################################
 
     @staticmethod
-    def __create_osm_intermodal_reader(settings_files: List[str]) -> OsmIntermodalReaderWrapper:
+    def __create_osm_intermodal_reader(settings_files: Union[str, List[str]]) -> OsmIntermodalReaderWrapper:
         java_settings = GatewayState.python_2_java_gateway.jvm.org.goplanit.osm.converter.settings. \
             OsmReaderSettingsFactory.createIntermodalReaderSettingsFromYaml(_to_java_settings_sources(settings_files))
         java_intermodal_reader = GatewayState.python_2_java_gateway.jvm.org.goplanit.osm.converter.intermodal. \
@@ -408,6 +621,15 @@ class IntermodalConverter(_ConverterBase):
         java_intermodal_reader = GatewayState.python_2_java_gateway.jvm.org.goplanit.io.converter.intermodal. \
             PlanitIntermodalReaderFactory.create()
         return PlanitIntermodalReaderWrapper(java_intermodal_reader)
+
+    @staticmethod
+    def __create_planit_intermodal_reader_from_files(settings_files: Union[str, List[str]]) \
+            -> PlanitIntermodalReaderWrapper:
+        java_settings = GatewayUtils.get_package_jvm().org.goplanit.io.converter.PlanitXmlReaderSettingsFactory. \
+            createIntermodalReaderSettingsFromYaml(_to_java_settings_sources(settings_files))
+        return PlanitIntermodalReaderWrapper(
+            GatewayUtils.get_package_jvm().org.goplanit.io.converter.intermodal.PlanitIntermodalReaderFactory.create(
+                java_settings))
 
     @staticmethod
     def __create_gtfs_intermodal_reader(country: str,
@@ -435,6 +657,24 @@ class IntermodalConverter(_ConverterBase):
         java_network_writer = GatewayState.python_2_java_gateway.jvm.org.goplanit.io.converter.intermodal. \
             PlanitIntermodalWriterFactory.create()
         return PlanitIntermodalWriterWrapper(java_network_writer)
+
+    @staticmethod
+    def __create_planit_intermodal_writer_from_files(settings_files: Union[str, List[str]]) \
+            -> PlanitIntermodalWriterWrapper:
+        java_settings = GatewayUtils.get_package_jvm().org.goplanit.io.converter.PlanitXmlWriterSettingsFactory. \
+            createIntermodalWriterSettingsFromYaml(_to_java_settings_sources(settings_files))
+        return PlanitIntermodalWriterWrapper(
+            GatewayUtils.get_package_jvm().org.goplanit.io.converter.intermodal.PlanitIntermodalWriterFactory.create(
+                java_settings))
+
+    @staticmethod
+    def __create_matsim_intermodal_writer_from_files(settings_files: Union[str, List[str]]) \
+            -> MatsimIntermodalWriterWrapper:
+        java_settings = GatewayUtils.get_package_jvm().org.goplanit.matsim.converter.MatsimWriterSettingsFactory. \
+            createIntermodalWriterSettingsFromYaml(_to_java_settings_sources(settings_files))
+        return MatsimIntermodalWriterWrapper(
+            GatewayUtils.get_package_jvm().org.goplanit.matsim.converter.MatsimIntermodalWriterFactory.create(
+                java_settings))
 
     @staticmethod
     def __create_geoio_intermodal_writer() -> GeometryIntermodalWriterWrapper:
@@ -471,33 +711,65 @@ class IntermodalConverter(_ConverterBase):
             raise Exception(f"Unsupported intermodal reader type provided {intermodal_reader_type}, "
                             f"unable to instantiate")
 
-    def create_yaml_based_reader(self, intermodal_reader_type: IntermodalReaderType, settings_files: List[str]) \
-            -> OsmIntermodalReaderWrapper:
-        """ factory method to create an intermodal reader compatible with this converter, made from settings files. So
-        far only the OSM reader is made this way
+    def create_yaml_based_reader(self, intermodal_reader_type: IntermodalReaderType,
+                                 settings_files: Union[str, List[str]]) -> IntermodalReaderWrapper:
+        """ factory method to create an intermodal reader compatible with this converter, made from settings files: the
+        OSM and PLANit readers
         :param intermodal_reader_type: the type of reader to create
-        :param settings_files: applied in order, a later file winning; the country is the key country of the files
+        :param settings_files: one settings file, or several applied in order, a later file winning; for OSM the
+        country is the key country of the files
         :return the created reader
         """
         if intermodal_reader_type == IntermodalReaderType.OSM:
             return IntermodalConverter.__create_osm_intermodal_reader(settings_files)
+        if intermodal_reader_type == IntermodalReaderType.PLANIT:
+            return IntermodalConverter.__create_planit_intermodal_reader_from_files(settings_files)
         raise ValueError(
             f"No settings files for the {intermodal_reader_type} reader yet, it is made with create_reader")
 
-    def write_default_settings_file(self, intermodal_reader_type: IntermodalReaderType, settings_file_path: str,
-                                    country: str = "Global") -> None:
-        """ write a settings file with every key at its default, with descriptions, to edit and give to
-        create_yaml_based_reader. So far only for the OSM reader. Keys without a default, such as the input source,
-        are written commented out, to fill in
-        :param intermodal_reader_type: the type of reader whose settings to write
-        :param settings_file_path: the settings file to write
-        :param country: whose defaults to write, written as the key country of the file
+    def create_yaml_based_writer(self, intermodal_writer_type: IntermodalWriterType,
+                                 settings_files: Union[str, List[str]]) -> IntermodalWriterWrapper:
+        """ factory method to create an intermodal writer compatible with this converter, made from settings files: the
+        PLANit and MATSim writers
+        :param intermodal_writer_type: the type of writer to create
+        :param settings_files: one settings file, or several applied in order, a later file winning
+        :return the created writer
         """
-        if intermodal_reader_type != IntermodalReaderType.OSM:
-            raise ValueError(f"No settings files for the {intermodal_reader_type} reader yet")
-        _write_default_settings_file(
-            GatewayUtils.get_package_jvm().org.goplanit.osm.converter.settings.OsmReaderSettingsFactory.
-            createIntermodalReaderSettings(country), settings_file_path)
+        if intermodal_writer_type == IntermodalWriterType.PLANIT:
+            return IntermodalConverter.__create_planit_intermodal_writer_from_files(settings_files)
+        if intermodal_writer_type == IntermodalWriterType.MATSIM:
+            return IntermodalConverter.__create_matsim_intermodal_writer_from_files(settings_files)
+        raise ValueError(
+            f"No settings files for the {intermodal_writer_type} writer yet, it is made with create_writer")
+
+    def write_default_settings_file(self, reader_or_writer_type: Union[IntermodalReaderType, IntermodalWriterType],
+                                    settings_file_path: str, country: str = "Global") -> None:
+        """ write a settings file with every key at its default, with descriptions, to edit and give to
+        create_yaml_based_reader or create_yaml_based_writer: for the OSM and PLANit readers and the PLANit and MATSim
+        writers. Keys without a default, such as the input source, are written commented out, to fill in
+        :param reader_or_writer_type: the type of reader or writer whose settings to write
+        :param settings_file_path: the settings file to write
+        :param country: whose defaults to write, written as the key country of the file; a reader without a country
+        takes only the default
+        """
+        if reader_or_writer_type == IntermodalReaderType.OSM:
+            _write_default_settings_file(
+                GatewayUtils.get_package_jvm().org.goplanit.osm.converter.settings.OsmReaderSettingsFactory.
+                createIntermodalReaderSettings(country), settings_file_path)
+        elif reader_or_writer_type == IntermodalReaderType.PLANIT:
+            _write_default_reader_settings_file(
+                GatewayUtils.get_package_jvm().org.goplanit.io.converter.intermodal.PlanitIntermodalReaderSettings(),
+                settings_file_path, country)
+        elif reader_or_writer_type == IntermodalWriterType.PLANIT:
+            _write_default_writer_settings_file(
+                GatewayUtils.get_package_jvm().org.goplanit.io.converter.intermodal.PlanitIntermodalWriterSettings(),
+                settings_file_path, country)
+        elif reader_or_writer_type == IntermodalWriterType.MATSIM:
+            _write_default_writer_settings_file(
+                GatewayUtils.get_package_jvm().org.goplanit.matsim.converter.MatsimIntermodalWriterSettings(),
+                settings_file_path, country)
+        else:
+            raise ValueError(f"No settings files for the {reader_or_writer_type} reader or writer yet")
 
     def create_writer(self, intermodal_writer_type: IntermodalWriterType) -> IntermodalWriterWrapper:
         """ factory method to create an intermodal writer compatible with this converter
